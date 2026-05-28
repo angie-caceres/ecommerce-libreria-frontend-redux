@@ -1,0 +1,47 @@
+.polaroid-principal {
+  background: white;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 10;
+  transform: rotate(-5deg);
+}
+
+.polaroid-secundaria {
+  background: white;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  position: absolute;
+  right: 16px;
+  top: 8px;
+  z-index: 0;
+  transform: rotate(5deg);
+}
+
+.polaroid-principal img {
+  height: 210px;
+  width: 160px;
+  object-fit: cover;
+}
+
+.polaroid-secundaria img {
+  height: 210px;
+  width: 160px;
+  object-fit: cover;
+}
+
+/* Cuando es imagen única (slide de Oriana) se ve más grande */
+.imagen-unica {
+  background: white;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 10;
+  transform: rotate(-3deg);
+}
+
+.imagen-unica img {
+  height: 320px;
+  width: 220px;
+  object-fit: cover;
+}
