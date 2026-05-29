@@ -62,7 +62,7 @@ function LibroCard({ categoria, titulo, precio, precioOriginal, descuento, image
             Solo muestra el badge si existe descuento
             (PDF: Renderizado condicional - Operador &&) */}
         {descuento && (
-          <span className="absolute top-3 right-3 bg-purple-500 text-white text-xs px-2 py-1">
+          <span className="absolute top-3 right-3 bg-[#7B5B98] text-white text-xs px-2 py-1">
             {descuento}
           </span>
         )}
@@ -99,13 +99,13 @@ function LibroCard({ categoria, titulo, precio, precioOriginal, descuento, image
 
 function Novedades() {
   return (
-    <section className="px-12 py-12 bg-white">
+    <section className="px-12 py-12 bg-[#FCF9F8]">
 
       {/* Encabezado de sección */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-[#2d2640]">Novedades</h2>
-          <div className="w-12 h-1 bg-purple-400 mt-2" />
+          <h2 className="text-3xl font-bold text-[#4A0E0E]" style={{ fontFamily: "'Libre Caslon Text', serif" }}>Novedades</h2>
+          <div className="w-12 h-1 bg-[#7B5B98] mt-2" />
         </div>
 
         {/* COMPONENTE Link — navega sin recargar (PDF: Routing - SPA) */}

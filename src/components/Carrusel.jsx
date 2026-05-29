@@ -71,16 +71,17 @@ function Carrusel() {
 
             {/* Texto del slide */}
             <div className="flex-1 max-w-md">
-              <h1 className="text-4xl font-bold text-[#2d2640] mb-4 leading-tight">
+              <h1 className="text-4xl font-bold text-[#2d2640] mb-4 leading-tight" style={{ fontFamily: "'Libre Caslon Text', serif" }}>
                 {slide.titulo}
               </h1>
-              <p className="text-gray-500 text-sm mb-8 leading-relaxed">
+              <p className="text-gray-500 text-sm mb-8 leading-relaxed" style={{ fontFamily: "'Manrope', sans-serif" }}>
                 {slide.descripcion}
               </p>
               {/* COMPONENTE Link — navega sin recargar (PDF: Routing - SPA) */}
               <Link
                 to={slide.link}
                 className="bg-[#2d2640] text-white text-sm px-6 py-3 hover:bg-purple-800 transition"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
               >
                 {slide.boton}
               </Link>

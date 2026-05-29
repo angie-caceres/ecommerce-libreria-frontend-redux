@@ -30,18 +30,3 @@
   object-fit: cover;
 }
 
-/* Cuando es imagen única (slide de Oriana) se ve más grande */
-.imagen-unica {
-  background: white;
-  padding: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  position: relative;
-  z-index: 10;
-  transform: rotate(-3deg);
-}
-
-.imagen-unica img {
-  height: 320px;
-  width: 220px;
-  object-fit: cover;
-}

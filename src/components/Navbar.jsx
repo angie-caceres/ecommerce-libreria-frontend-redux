@@ -18,20 +18,20 @@ function Navbar() {
     <header>
 
       {/* Barra superior púrpura */}
-      <div className="bg-purple-500 text-white text-center text-sm py-2">
+      <div className="bg-[#7B5B98] text-white text-center text-sm py-2">
         ENVÍO GRATIS EN PEDIDOS SUPERIORES A $100.000
       </div>
 
       {/* Barra media: logo, buscador, iconos */}
-      <div className="bg-white flex items-center justify-between px-8 py-4">
+      <div className="bg-white flex items-center justify-between px-8 h-20">
 
         {/* COMPONENTE Link de React Router — navega sin recargar la página (PDF: Routing) */}
-        <Link to="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Entre Letras" className="h-12" />
+        <Link to="/" className="flex items-center gap-2 h-full">
+          <img src="/logo.png" alt="Entre Letras" className="h-14 w-auto object-contain" />
         </Link>
 
         {/* Buscador */}
-        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-1/2">
+        <div className="flex items-center bg-[#EBE5F2] rounded-full px-4 py-2 w-1/2">
           <input
             type="text"
             placeholder="¿Qué estás buscando?"
@@ -46,15 +46,7 @@ function Navbar() {
         </div>
 
         {/* Iconos de usuario */}
-        <div className="flex items-center gap-6 text-xs text-gray-600">
-
-          {/* COMPONENTE Link — reemplaza la etiqueta <a> para mantener el flujo SPA (PDF: Routing) */}
-          <Link to="/mis-ordenes" className="flex flex-col items-center gap-1 hover:text-purple-600">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            MIS ORDENES
-          </Link>
+        <div className="flex items-center gap-6 text-xs text-[#7B5B98]">
 
           <Link to="/mi-cuenta" className="flex flex-col items-center gap-1 hover:text-purple-600">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,7 +66,7 @@ function Navbar() {
       </div>
 
       {/* Menú de navegación inferior */}
-      <nav className="bg-[#2d2640] flex justify-center gap-10 py-3 text-sm">
+      <nav className="bg-[#473954] flex justify-center gap-10 py-3 text-sm">
 
         {/* RENDERIZADO DE LISTA con .map() — itera el array navLinks
             Siempre se usa key única para que React identifique cada elemento
