@@ -4,6 +4,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Alerta from '../components/Alerta'
+import { calcularPrecioFinal } from '../components/ResumenCompra'
+
 
 // DATOS hardcodeados — en el futuro vendrían de una API con useEffect
 // (PDF: useEffect - Llamadas a APIs)
@@ -14,7 +16,8 @@ const libros = [
     autor: 'Suzanne Collins',
     editorial: 'Planeta',
     hojas: 460,
-    precio: 40000,
+    precioOriginal: 40000,
+    descuento: '-10%',
     descripcion: 'Una obra maestra definitiva de la filosofía moderna, esta primera edición limitada está encuadernada en cuero de ternera de color burdeos profundo, obtenido de forma ética. Con bordes de pan de oro de 24 quilates dorados a mano y un prólogo del descendiente directo del autor, representa la cumbre de la fabricación artesanal de libros.',
     imagen: '/libros/juegos.png',
   },
@@ -30,6 +33,8 @@ function DetalleLibro({ agregarAlCarrito }) {
 
   // Por ahora mostramos el primer libro — después usaríamos useParams
   const libro = libros[0]
+
+  const precioFinal = calcularPrecioFinal(libro.precioOriginal, libro.descuento)
 
   // EVENTO — agrega el libro al carrito y muestra mensaje
   // Llama a la función del padre pasada como prop
@@ -83,9 +88,22 @@ function DetalleLibro({ agregarAlCarrito }) {
             {libro.titulo}
           </h1>
 
-          <p className="text-2xl text-[#2d2640] mb-6">
-            ${libro.precio.toLocaleString()}
-          </p>
+          {/* Precio con descuento */}
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-2xl text-[#2d2640]">
+              ${precioFinal.toLocaleString()}
+            </span>
+            {libro.descuento && (
+              <>
+                <span className="text-sm text-gray-400 line-through">
+                  ${libro.precioOriginal.toLocaleString()}
+                </span>
+                <span className="bg-[#7B5B98] text-white text-xs px-2 py-1">
+                  {libro.descuento}
+                </span>
+              </>
+            )}
+          </div>
 
           <p className="text-sm text-gray-500 leading-relaxed mb-8">
             {libro.descripcion}
