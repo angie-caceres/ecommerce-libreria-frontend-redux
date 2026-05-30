@@ -10,6 +10,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
 import Checkout from './views/Checkout'
+import ConfirmacionPedido from './views/ConfirmacionPedido'
 
 function App() {
 
@@ -52,6 +53,9 @@ function App() {
     }
   }
 
+  // FUNCIÓN para vaciar el carrito al confirmar la compra
+  const vaciarCarrito = () => setCarrito([])
+
   return (
     <>
       {/* Navbar recibe carrito como prop para mostrar el badge
@@ -92,8 +96,15 @@ function App() {
         {/* Checkout */}
         <Route
           path="/checkout"
-          element={<Checkout carrito={carrito} />}
+          element={<Checkout carrito={carrito} vaciarCarrito={vaciarCarrito} />}
         />
+
+        {/* Confirmacion pedido */}
+        <Route 
+          path="/pedido" 
+          element={<ConfirmacionPedido/>} 
+        />
+
       </Routes>
       <Footer />
     </>

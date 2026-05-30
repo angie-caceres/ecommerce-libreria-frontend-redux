@@ -1,33 +1,73 @@
 // VISTA — página de checkout
-// Permite seleccionar método de pago y confirmar la compra
-// Renderizando componentes dentro de otros
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import ResumenCompra from '../components/ResumenCompra'
 
-function Checkout({ carrito }) {
+function Checkout({ carrito, vaciarCarrito }) {
 
-  // HOOK useState — método de pago seleccionado
-  // Estados locales y props - useState
   const [metodoPago, setMetodoPago] = useState('tarjeta')
+  const navigate = useNavigate()
 
-  // HOOK useState — controla mensaje final
-  const [compraConfirmada, setCompraConfirmada] = useState(false)
+  // --- DIRECCIÓN ---
+  const [editandoDireccion, setEditandoDireccion] = useState(false)
+  const [direccion, setDireccion] = useState({
+    calle: 'Av. del Libertador 1450, Piso 4B',
+    codigoPostal: 'C1425',
+    ciudad: 'Buenos Aires, Argentina',
+  })
+  // Copia temporal mientras se edita (para poder cancelar)
+  const [direccionTemp, setDireccionTemp] = useState(direccion)
 
-  // Cálculo del subtotal
-  const subtotal = carrito.reduce(
-    (acc, item) => acc + item.precio * item.cantidad,
-    0
-  )
+  const handleGuardarDireccion = () => {
+    setDireccion(direccionTemp)
+    setEditandoDireccion(false)
+  }
 
-  const envio = 2400
-  const descuento = 2000
+  const handleCancelarDireccion = () => {
+    setDireccionTemp(direccion)
+    setEditandoDireccion(false)
+  }
 
-  const total =
-    subtotal + envio - descuento
+  // --- TARJETA ---
+  const [tarjeta, setTarjeta] = useState({
+    nombre: '',
+    numero: '',
+    vencimiento: '',
+    cvv: '',
+  })
+
+  // Número: solo dígitos, máx 16, formateado en grupos de 4
+  const handleNumeroTarjeta = (e) => {
+    const solo = e.target.value.replace(/\D/g, '').slice(0, 16)
+    const formateado = solo.replace(/(.{4})/g, '$1 ').trim()
+    setTarjeta({ ...tarjeta, numero: formateado })
+  }
+
+  // Vencimiento: solo dígitos, formato MM / AA, máx 5 chars visibles
+  const handleVencimiento = (e) => {
+    const solo = e.target.value.replace(/\D/g, '').slice(0, 4)
+    const formateado = solo.length > 2
+      ? solo.slice(0, 2) + ' / ' + solo.slice(2)
+      : solo
+    setTarjeta({ ...tarjeta, vencimiento: formateado })
+  }
+
+  // CVV: solo dígitos, máx 3
+  const handleCVV = (e) => {
+    const solo = e.target.value.replace(/\D/g, '').slice(0, 3)
+    setTarjeta({ ...tarjeta, cvv: solo })
+  }
+
+  // Nombre: solo letras y espacios
+  const handleNombre = (e) => {
+    const solo = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')
+    setTarjeta({ ...tarjeta, nombre: solo })
+  }
 
   const handleConfirmarCompra = () => {
-    setCompraConfirmada(true)
+    navigate('/pedido',  { state: { carrito }}) // Redirige a página de confirmación con el carrito como estado)
+    vaciarCarrito() // Limpia el carrito en App.jsx
   }
 
   return (
@@ -43,7 +83,6 @@ function Checkout({ carrito }) {
       <div className="max-w-7xl mx-auto flex gap-10">
 
         {/* COLUMNA IZQUIERDA */}
-
         <div className="flex-1">
 
           <h2
@@ -56,7 +95,6 @@ function Checkout({ carrito }) {
           <div className="border-t border-gray-200 mb-6"></div>
 
           {/* Tarjeta / Mercado Pago */}
-
           <div className="grid grid-cols-2 gap-4 mb-10">
 
             <button
@@ -67,13 +105,8 @@ function Checkout({ carrito }) {
                   : 'border border-gray-300 bg-white p-6 text-left'
               }
             >
-              <p className="font-semibold uppercase text-sm">
-                Tarjeta de Crédito
-              </p>
-
-              <p className="text-sm text-gray-500 mt-2">
-                Visa, Mastercard, Amex
-              </p>
+              <p className="font-semibold uppercase text-sm">Tarjeta de Crédito</p>
+              <p className="text-sm text-gray-500 mt-2">Visa, Mastercard, Amex</p>
             </button>
 
             <button
@@ -84,28 +117,24 @@ function Checkout({ carrito }) {
                   : 'border border-gray-300 bg-white p-6 text-left'
               }
             >
-              <p className="font-semibold uppercase text-sm">
-                Mercado Pago
-              </p>
-
-              <p className="text-sm text-gray-500 mt-2">
-                Dinero en cuenta o cuotas
-              </p>
+              <p className="font-semibold uppercase text-sm">Mercado Pago</p>
+              <p className="text-sm text-gray-500 mt-2">Dinero en cuenta o cuotas</p>
             </button>
 
           </div>
 
           {/* Datos tarjeta */}
-
           <div className="grid grid-cols-2 gap-4 mb-12">
 
             <div>
               <label className="text-xs uppercase tracking-wider text-gray-500">
                 Nombre en la tarjeta
               </label>
-
               <input
                 type="text"
+                value={tarjeta.nombre}
+                onChange={handleNombre}
+                placeholder="JUAN PÉREZ"
                 className="w-full border border-gray-300 p-3 mt-2 bg-white"
               />
             </div>
@@ -114,9 +143,10 @@ function Checkout({ carrito }) {
               <label className="text-xs uppercase tracking-wider text-gray-500">
                 Número de tarjeta
               </label>
-
               <input
                 type="text"
+                value={tarjeta.numero}
+                onChange={handleNumeroTarjeta}
                 placeholder="**** **** **** ****"
                 className="w-full border border-gray-300 p-3 mt-2 bg-white"
               />
@@ -126,21 +156,21 @@ function Checkout({ carrito }) {
               <label className="text-xs uppercase tracking-wider text-gray-500">
                 Vencimiento
               </label>
-
               <input
                 type="text"
+                value={tarjeta.vencimiento}
+                onChange={handleVencimiento}
                 placeholder="MM / AA"
                 className="w-full border border-gray-300 p-3 mt-2 bg-white"
               />
             </div>
 
             <div>
-              <label className="text-xs uppercase tracking-wider text-gray-500">
-                CVV
-              </label>
-
+              <label className="text-xs uppercase tracking-wider text-gray-500">CVV</label>
               <input
                 type="text"
+                value={tarjeta.cvv}
+                onChange={handleCVV}
                 placeholder="000"
                 className="w-full border border-gray-300 p-3 mt-2 bg-white"
               />
@@ -149,151 +179,108 @@ function Checkout({ carrito }) {
           </div>
 
           {/* ENVÍO */}
-
           <div>
-
             <div className="flex justify-between items-center mb-4">
-
               <h2
                 className="text-xl text-[#2d2640]"
                 style={{ fontFamily: "'Libre Caslon Text', serif" }}
               >
                 Envío
               </h2>
-
-              <button className="border border-gray-400 px-3 py-1 text-xs uppercase">
-                Editar
-              </button>
-
+              {!editandoDireccion && (
+                <button
+                  onClick={() => setEditandoDireccion(true)}
+                  className="border border-gray-400 px-3 py-1 text-xs uppercase hover:bg-gray-100 transition"
+                >
+                  Editar
+                </button>
+              )}
             </div>
 
-            <div className="bg-white border border-gray-200 p-6">
+            {/* Modo lectura */}
+            {!editandoDireccion ? (
+              <div className="bg-white border border-gray-200 p-6">
+                <p className="text-gray-700">{direccion.calle}</p>
+                <p className="text-gray-500">{direccion.codigoPostal} {direccion.ciudad}</p>
+                <p className="text-sm text-gray-400 mt-4">Entrega estimada: 3 a 5 días hábiles.</p>
+              </div>
 
-              <p className="text-gray-700">
-                Av. del Libertador 1450, Piso 4B
-              </p>
+            ) : (
+              /* Modo edición */
+              <div className="bg-white border border-[#7B5B98] p-6">
 
-              <p className="text-gray-500">
-                C1425 Buenos Aires, Argentina
-              </p>
+                <div className="grid grid-cols-2 gap-4 mb-4">
 
-              <p className="text-sm text-gray-400 mt-4">
-                Entrega estimada: 3 a 5 días hábiles.
-              </p>
+                  <div className="col-span-2">
+                    <label className="text-xs uppercase tracking-wider text-gray-500">
+                      Calle y número
+                    </label>
+                    <input
+                      type="text"
+                      value={direccionTemp.calle}
+                      onChange={e => setDireccionTemp({ ...direccionTemp, calle: e.target.value })}
+                      className="w-full border border-gray-300 p-3 mt-2 bg-white"
+                    />
+                  </div>
 
-            </div>
+                  <div>
+                    <label className="text-xs uppercase tracking-wider text-gray-500">
+                      Código postal
+                    </label>
+                    <input
+                      type="text"
+                      value={direccionTemp.codigoPostal}
+                      onChange={e => setDireccionTemp({ ...direccionTemp, codigoPostal: e.target.value.slice(0, 8) })}
+                      className="w-full border border-gray-300 p-3 mt-2 bg-white"
+                    />
+                  </div>
 
+                  <div>
+                    <label className="text-xs uppercase tracking-wider text-gray-500">
+                      Ciudad
+                    </label>
+                    <input
+                      type="text"
+                      value={direccionTemp.ciudad}
+                      onChange={e => setDireccionTemp({ ...direccionTemp, ciudad: e.target.value })}
+                      className="w-full border border-gray-300 p-3 mt-2 bg-white"
+                    />
+                  </div>
+
+                </div>
+
+                <div className="flex gap-3 mt-2">
+                  <button
+                    onClick={handleGuardarDireccion}
+                    className="bg-[#4E3B67] text-white px-6 py-2 text-xs uppercase tracking-widest hover:bg-[#7B5B98] transition"
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    onClick={handleCancelarDireccion}
+                    className="border border-gray-300 px-6 py-2 text-xs uppercase tracking-widest text-gray-500 hover:bg-gray-50 transition"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+
+              </div>
+            )}
           </div>
 
         </div>
 
         {/* RESUMEN */}
-
-        <div className="w-[380px] bg-white border border-gray-200 p-8">
-
-          <h2
-            className="text-3xl text-[#2d2640] mb-8"
-            style={{ fontFamily: "'Libre Caslon Text', serif" }}
-          >
-            Resumen de Compra
-          </h2>
-
-          {carrito.map(item => (
-
-            <div
-              key={item.id}
-              className="flex gap-4 py-5 border-b border-gray-200"
-            >
-
-              <img
-                src={item.imagen}
-                alt={item.titulo}
-                className="w-16 h-24 object-cover"
-              />
-
-              <div className="flex-1">
-
-                <h3 className="font-semibold text-[#2d2640]">
-                  {item.titulo}
-                </h3>
-
-                <p className="text-sm text-gray-500">
-                  {item.autor}
-                </p>
-
-                <p className="text-sm text-gray-500 mt-4">
-                  Cant: {item.cantidad}
-                </p>
-
-              </div>
-
-              <span className="font-medium text-[#2d2640]">
-                ${(item.precio * item.cantidad).toLocaleString()}
-              </span>
-
-            </div>
-
-          ))}
-
-          <div className="mt-8 space-y-4 text-sm">
-
-            <div className="flex justify-between">
-              <span>SUBTOTAL</span>
-              <span>${subtotal.toLocaleString()}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>ENVÍO</span>
-              <span>${envio.toLocaleString()}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>DESCUENTO</span>
-              <span>-${descuento.toLocaleString()}</span>
-            </div>
-
-          </div>
-
-          <div className="border-t-2 border-[#2d2640] mt-6 pt-6 flex justify-between">
-
-            <span className="font-semibold">
-              TOTAL
-            </span>
-
-            <span className="font-bold text-3xl text-[#2d2640]">
-              ${total.toLocaleString()}
-            </span>
-
-          </div>
-
-          <button
-            onClick={handleConfirmarCompra}
-            className="w-full bg-[#4E3B67] text-white py-4 mt-10 uppercase tracking-widest text-sm hover:bg-[#7B5B98] transition"
-          >
-            Confirmar compra
-          </button>
-
-          <Link
-            to="/carrito"
-            className="block text-center bg-white border border-gray-300 py-4 mt-4 text-sm uppercase tracking-widest text-gray-500"
-          >
-            Cancelar y volver al carrito
-          </Link>
-
-          {compraConfirmada && (
-
-            <div className="bg-purple-100 text-purple-700 p-4 mt-4 rounded">
-
-              ✓ Compra realizada correctamente
-
-            </div>
-
-          )}
-
+        <div className="w-[380px]">
+          <ResumenCompra
+            carrito={carrito}
+            onConfirmar={handleConfirmarCompra}
+            mostrarBoton={true}
+            confirmado={false}
+          />
         </div>
 
       </div>
-
     </div>
   )
 }

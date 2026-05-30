@@ -1,15 +1,19 @@
 // VISTA — página del carrito de compras
 // (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { Link } from 'react-router-dom'
+import { calcularPrecioFinal } from '../components/ResumenCompra'
 
 // PROPS — recibe carrito, eliminarDelCarrito y cambiarCantidad del padre App.jsx
 // (PDF: Estados locales y props - ¿Qué son las props?)
 function Carrito({ carrito, eliminarDelCarrito, cambiarCantidad }) {
 
   // Calcula el total del carrito
-  // reduce() recorre el array sumando precio * cantidad de cada item
+  // reduce() recorre el array sumando precioFinal * cantidad de cada item
   // (PDF: Estados locales y props - Estado)
-  const total = carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0)
+  const total = carrito.reduce((acc, item) => {
+    const precio = calcularPrecioFinal(item.precioOriginal, item.descuento)
+    return acc + precio * item.cantidad
+  }, 0)
 
   return (
     <div className="bg-[#FCF9F8] min-h-screen px-12 py-8">
@@ -48,58 +52,62 @@ function Carrito({ carrito, eliminarDelCarrito, cambiarCantidad }) {
             {/* RENDERIZADO DE LISTA con .map()
                 Cada item del carrito se renderiza como una fila
                 (PDF: Renderizado condicional - Listas) */}
-            {carrito.map((item) => (
-              <div key={item.id} className="flex items-center justify-between py-6 border-b border-gray-200">
+            {carrito.map((item) => {
+              // Calculamos el precio final aplicando el descuento del libro
+              const precio = calcularPrecioFinal(item.precioOriginal, item.descuento)
+              return (
+                <div key={item.id} className="flex items-center justify-between py-6 border-b border-gray-200">
 
-                {/* Imagen y datos del libro */}
-                <div className="flex items-center gap-4 w-1/2">
-                  <img
-                    src={item.imagen}
-                    alt={item.titulo}
-                    className="h-20 w-14 object-cover"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-[#2d2640]">{item.titulo}</p>
-                    <p className="text-xs text-gray-400">{item.autor}</p>
-                    {/* EVENTO onClick — elimina el item del carrito
-                        Llama a función del padre pasada como prop
-                        (PDF: Estados locales y props - Flujo unidireccional) */}
+                  {/* Imagen y datos del libro */}
+                  <div className="flex items-center gap-4 w-1/2">
+                    <img
+                      src={item.imagen}
+                      alt={item.titulo}
+                      className="h-20 w-14 object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-[#2d2640]">{item.titulo}</p>
+                      <p className="text-xs text-gray-400">{item.autor}</p>
+                      {/* EVENTO onClick — elimina el item del carrito
+                          Llama a función del padre pasada como prop
+                          (PDF: Estados locales y props - Flujo unidireccional) */}
+                      <button
+                        onClick={() => eliminarDelCarrito(item.id)}
+                        className="text-xs text-red-400 hover:text-red-600 mt-1 uppercase tracking-wider"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Selector de cantidad */}
+                  <div className="flex items-center gap-3">
+                    {/* EVENTO onClick — reduce la cantidad
+                        (PDF: Estados locales y props - Eventos) */}
                     <button
-                      onClick={() => eliminarDelCarrito(item.id)}
-                      className="text-xs text-red-400 hover:text-red-600 mt-1 uppercase tracking-wider"
+                      onClick={() => cambiarCantidad(item.id, item.cantidad - 1)}
+                      className="w-7 h-7 border border-gray-300 flex items-center justify-center hover:bg-gray-100"
                     >
-                      Eliminar
+                      −
+                    </button>
+                    <span className="text-sm w-4 text-center">{item.cantidad}</span>
+                    {/* EVENTO onClick — aumenta la cantidad */}
+                    <button
+                      onClick={() => cambiarCantidad(item.id, item.cantidad + 1)}
+                      className="w-7 h-7 border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                    >
+                      +
                     </button>
                   </div>
+
+                  {/* Subtotal del item */}
+                  <span className="text-sm text-[#2d2640] font-medium">
+                    ${(precio * item.cantidad).toLocaleString()}
+                  </span>
+
                 </div>
-
-                {/* Selector de cantidad */}
-                <div className="flex items-center gap-3">
-                  {/* EVENTO onClick — reduce la cantidad
-                      (PDF: Estados locales y props - Eventos) */}
-                  <button
-                    onClick={() => cambiarCantidad(item.id, item.cantidad - 1)}
-                    className="w-7 h-7 border border-gray-300 flex items-center justify-center hover:bg-gray-100"
-                  >
-                    −
-                  </button>
-                  <span className="text-sm w-4 text-center">{item.cantidad}</span>
-                  {/* EVENTO onClick — aumenta la cantidad */}
-                  <button
-                    onClick={() => cambiarCantidad(item.id, item.cantidad + 1)}
-                    className="w-7 h-7 border border-gray-300 flex items-center justify-center hover:bg-gray-100"
-                  >
-                    +
-                  </button>
-                </div>
-
-                {/* Subtotal del item */}
-                <span className="text-sm text-[#2d2640] font-medium">
-                  ${(item.precio * item.cantidad).toLocaleString()}
-                </span>
-
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Recuadro total del carrito */}
@@ -116,7 +124,7 @@ function Carrito({ carrito, eliminarDelCarrito, cambiarCantidad }) {
 
               {/* Botón checkout */}
               <Link to="/checkout" className="w-full bg-[#2d2640] text-white py-3 text-sm uppercase tracking-widest hover:bg-purple-800 transition mt-4 flex items-center justify-center gap-2">
-              Checkout →
+                Checkout →
               </Link>
 
               {/* Pago seguro */}
