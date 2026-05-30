@@ -2,10 +2,15 @@
 // Muestra el resumen de compra con el banner de confirmado
 // y el componente Quote al pie
 
+import { useLocation } from 'react-router-dom'
 import ResumenCompra from '../components/ResumenCompra'
 import Quote from '../components/Quote'
 
-function ConfirmacionPedido({ carrito }) {
+function ConfirmacionPedido({}) {
+
+  const { state } = useLocation()
+  const carrito = state?.carrito ?? []
+
   return (
     <div className="bg-[#FCF9F8] min-h-screen">
 

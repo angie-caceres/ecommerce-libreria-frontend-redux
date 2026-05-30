@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ResumenCompra from '../components/ResumenCompra'
 
-function Checkout({ carrito }) {
+function Checkout({ carrito, vaciarCarrito }) {
 
   const [metodoPago, setMetodoPago] = useState('tarjeta')
   const navigate = useNavigate()
@@ -66,7 +66,8 @@ function Checkout({ carrito }) {
   }
 
   const handleConfirmarCompra = () => {
-    navigate('/pedido')
+    navigate('/pedido',  { state: { carrito }}) // Redirige a página de confirmación con el carrito como estado)
+    vaciarCarrito() // Limpia el carrito en App.jsx
   }
 
   return (
