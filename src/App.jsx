@@ -8,6 +8,7 @@ import Carrito from './views/Carrito'
 import DetalleLibro from './views/DetalleLibro'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import Catalogo from './views/Catalogo'
 
 function App() {
 
@@ -56,17 +57,37 @@ function App() {
           (PDF: Estados locales y props - Flujo unidireccional) */}
       <Navbar carrito={carrito} />
       <Routes>
+
         <Route path="/" element={<Home />} />
+
         {/* DetalleLibro recibe agregarAlCarrito como prop */}
-        <Route path="/libro/:id" element={<DetalleLibro agregarAlCarrito={agregarAlCarrito} />} />
-        {/* Carrito recibe todo lo necesario como props */}
-        <Route path="/carrito" element={
-          <Carrito
-            carrito={carrito}
-            eliminarDelCarrito={eliminarDelCarrito}
-            cambiarCantidad={cambiarCantidad}
-          />}
+        <Route
+          path="/libro/:id"
+          element={
+            <DetalleLibro
+              agregarAlCarrito={agregarAlCarrito}
+            />
+          }
         />
+
+        {/* Carrito recibe todo lo necesario como props */}
+        <Route
+          path="/carrito"
+          element={
+            <Carrito
+              carrito={carrito}
+              eliminarDelCarrito={eliminarDelCarrito}
+              cambiarCantidad={cambiarCantidad}
+            />
+          }
+        />
+
+        {/* Catálogo */}
+        <Route
+          path="/catalogo"
+          element={<Catalogo />}
+        />
+
       </Routes>
       <Footer />
     </>
