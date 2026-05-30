@@ -34,7 +34,7 @@ function Checkout({ carrito }) {
     <div className="bg-[#FCF9F8] min-h-screen px-12 py-12">
 
       <h1
-        className="text-6xl text-center text-[#4E3B67] mb-16"
+        className="text-3xl font-bold text-[#4E3B67] mb-16"
         style={{ fontFamily: "'Libre Caslon Text', serif" }}
       >
         Checkout
@@ -47,7 +47,7 @@ function Checkout({ carrito }) {
         <div className="flex-1">
 
           <h2
-            className="text-4xl text-[#2d2640] mb-6"
+            className="text-xl text-[#2d2640] mb-6"
             style={{ fontFamily: "'Libre Caslon Text', serif" }}
           >
             Método de Pago
@@ -155,7 +155,7 @@ function Checkout({ carrito }) {
             <div className="flex justify-between items-center mb-4">
 
               <h2
-                className="text-4xl text-[#2d2640]"
+                className="text-xl text-[#2d2640]"
                 style={{ fontFamily: "'Libre Caslon Text', serif" }}
               >
                 Envío

@@ -14,7 +14,10 @@ function Carrito({ carrito, eliminarDelCarrito, cambiarCantidad }) {
   return (
     <div className="bg-[#FCF9F8] min-h-screen px-12 py-8">
 
-      <h1 className="text-3xl font-bold text-[#2d2640] mb-8">Mi Carrito</h1>
+      <h1
+        className="text-3xl font-bold text-[#4E3B67] mb-8"
+        style={{ fontFamily: "'Libre Caslon Text', serif" }}
+      >Mi Carrito</h1>
 
       {/* RENDERIZADO CONDICIONAL con ternario
           Si el carrito está vacío muestra mensaje, sino muestra los items
