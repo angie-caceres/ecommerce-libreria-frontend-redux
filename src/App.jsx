@@ -9,6 +9,7 @@ import DetalleLibro from './views/DetalleLibro'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
+import Checkout from './views/Checkout'
 
 function App() {
 
@@ -88,6 +89,11 @@ function App() {
           element={<Catalogo />}
         />
 
+        {/* Checkout */}
+        <Route
+          path="/checkout"
+          element={<Checkout carrito={carrito} />}
+        />
       </Routes>
       <Footer />
     </>

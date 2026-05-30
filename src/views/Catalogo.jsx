@@ -1,12 +1,10 @@
 // VISTA — página que muestra todos los libros disponibles
-// (PDF: Exposición de experto - Renderizando componentes dentro de otros)
+// Renderizando componentes dentro de otros
 
 import { useState } from 'react'
 import LibroCard from '../components/LibroCard'
 
 // DATOS hardcodeados
-// En una aplicación real vendrían desde una API utilizando useEffect
-// (PDF: useEffect - Llamadas a APIs)
 const libros = [
       {
     id: 1,
@@ -145,36 +143,36 @@ const libros = [
 function Catalogo() {
 
   // HOOK useState — guarda el valor máximo del filtro de precio
-  // (PDF: Estados locales y props - useState)
+  // Estados locales y props - useState
   const [precioMax, setPrecioMax] = useState(50000)
 
   // HOOK useState — guarda el autor seleccionado
-  // (PDF: Estados locales y props - useState)
+  // Estados locales y props - useState)
   const [autorSeleccionado, setAutorSeleccionado] = useState('')
 
 // HOOK useState — guarda la editorial seleccionada
-// (PDF: Estados locales y props - useState)
+// Estados locales y props - useState
   const [editorialSeleccionada, setEditorialSeleccionada] = useState('')
 
   // HOOK useState — guarda los géneros marcados
   // Se utiliza un array porque pueden seleccionarse varios géneros
-  // (PDF: Estados locales y props - useState)
+  // Estados locales y props - useState
   const [generosSeleccionados, setGenerosSeleccionados] = useState([])
 
   // Se obtienen géneros únicos para construir los checkboxes
-  // (PDF: Renderizado de listas)
+  // Renderizado de listas
   const generos = [...new Set(libros.map(libro => libro.genero))]
 
   // Se obtienen autores únicos para construir el select
-  // (PDF: Renderizado de listas)
+  // Renderizado de listas
   const autores = [...new Set(libros.map(libro => libro.autor))]
 
   // Se obtienen editoriales únicas para construir los botones
-  // (PDF: Renderizado de listas)
+  // Renderizado de listas
   const editoriales = [...new Set(libros.map(libro => libro.editorial))]
 
   // EVENTO — agrega o quita géneros seleccionados
-  // (PDF: Estados locales y props - Eventos)
+  // Estados locales y props - Eventos
   const handleGenero = (genero) => {
 
     if (generosSeleccionados.includes(genero)) {
@@ -196,7 +194,7 @@ function Catalogo() {
   // FILTRADO de datos
   // Cada vez que cambia un estado React vuelve a renderizar
   // utilizando el DOM virtual
-  // (PDF: Renderizado condicional)
+  // Renderizado condicional
   const librosFiltrados = libros.filter(libro => {
 
     const cumplePrecio =
@@ -252,7 +250,7 @@ function Catalogo() {
             </h3>
 
             {/* RENDERIZADO DE LISTA con map()
-                (PDF: Renderizado de listas) */}
+                Renderizado de listas */}
 
             {generos.map(genero => (
 
@@ -362,7 +360,7 @@ function Catalogo() {
             <div className="flex flex-wrap gap-2">
 
                 {/* RENDERIZADO DE LISTA con map()
-                    (PDF: Renderizado de listas) */}
+                   Renderizado de listas */}
 
                 {editoriales.map(editorial => (
 
@@ -402,7 +400,7 @@ function Catalogo() {
 
             {/* RENDERIZADO DE LISTA con map()
                 Se reutiliza el componente LibroCard
-                (PDF: Componentes reutilizables) */}
+                Componentes reutilizables*/}
 
             {librosFiltrados.map(libro => (
 

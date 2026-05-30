@@ -112,9 +112,9 @@ function Carrito({ carrito, eliminarDelCarrito, cambiarCantidad }) {
               </div>
 
               {/* Botón checkout */}
-              <button className="w-full bg-[#2d2640] text-white py-3 text-sm uppercase tracking-widest hover:bg-purple-800 transition mt-4 flex items-center justify-center gap-2">
-                Checkout →
-              </button>
+              <Link to="/checkout" className="w-full bg-[#2d2640] text-white py-3 text-sm uppercase tracking-widest hover:bg-purple-800 transition mt-4 flex items-center justify-center gap-2">
+              Checkout →
+              </Link>
 
               {/* Pago seguro */}
               <div className="flex items-center justify-center gap-2 mt-4 text-xs text-gray-400">
