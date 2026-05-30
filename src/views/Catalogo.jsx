@@ -8,35 +8,137 @@ import LibroCard from '../components/LibroCard'
 // En una aplicación real vendrían desde una API utilizando useEffect
 // (PDF: useEffect - Llamadas a APIs)
 const libros = [
-    {
+      {
     id: 1,
-    titulo: '1984',
-    autor: 'George Orwell',
+    titulo: 'Amanecer en la cosecha',
+    autor: 'Suzanne Collins',
     editorial: 'Planeta',
+    hojas: 460,
     genero: 'Distopía',
-    precio: 18000,
-    categoria: 'Clásico',
-    imagen: '/libros/1984.jpg'
+    precio: 40000,
+    descripcion: 'Una obra maestra definitiva de la filosofía moderna, esta primera edición limitada está encuadernada en cuero de ternera de color burdeos profundo, obtenido de forma ética. Con bordes de pan de oro de 24 quilates dorados a mano y un prólogo del descendiente directo del autor, representa la cumbre de la fabricación artesanal de libros.',
+    imagen: '/libros/juegos.png',
     },
     {
     id: 2,
-    titulo: 'El Hobbit',
-    autor: 'J.R.R. Tolkien',
-    editorial: 'Minotauro',
-    genero: 'Fantasía',
-    precio: 25000,
-    categoria: 'Novela',
-    imagen: '/libros/hobbit.jpg'
+    titulo: '1984',
+    autor: 'George Orwell',
+    editorial: 'Planeta',
+    hojas: 600,
+    genero: 'Distopía',
+    precio: 18000,
+    descripcion: 'Una obra maestra definitiva de la filosofía moderna, esta primera edición limitada está encuadernada en cuero de ternera de color burdeos profundo, obtenido de forma ética. Con bordes de pan de oro de 24 quilates dorados a mano y un prólogo del descendiente directo del autor, representa la cumbre de la fabricación artesanal de libros.',
+    imagen: '/libros/1984.jpg'
     },
     {
     id: 3,
+    titulo: 'El Hobbit',
+    autor: 'J.R.R. Tolkien',
+    editorial: 'Minotauro',
+    hojas: 320,
+    genero: 'Fantasía',
+    precio: 25000,
+    descripcion: 'Una obra maestra definitiva de la filosofía moderna, esta primera edición limitada está encuadernada en cuero de ternera de color burdeos profundo, obtenido de forma ética. Con bordes de pan de oro de 24 quilates dorados a mano y un prólogo del descendiente directo del autor, representa la cumbre de la fabricación artesanal de libros.',
+    imagen: '/libros/hobbit.jpg'
+    },
+    {
+    id: 4,
     titulo: 'Drácula',
     autor: 'Bram Stoker',
     editorial: 'Penguin',
     genero: 'Terror',
     precio: 22000,
-    categoria: 'Clásico',
+    hojas: 480,
+    descripcion: 'Una obra maestra definitiva de la filosofía moderna, esta primera edición limitada está encuadernada en cuero de ternera de color burdeos profundo, obtenido de forma ética. Con bordes de pan de oro de 24 quilates dorados a mano y un prólogo del descendiente directo del autor, representa la cumbre de la fabricación artesanal de libros.',
     imagen: '/libros/dracula.jpg'
+    },
+    {
+    id: 5,
+    titulo: 'Crimen y Castigo',
+    autor: 'Fiódor Dostoyevski',
+    editorial: 'Alianza',
+    hojas: 720,
+    genero: 'Clásico',
+    precio: 28000,
+    descripcion: 'Novela fundamental de la literatura rusa que explora la culpa, la moral y la redención.',
+    imagen: '/libros/crimen.jpg'
+    },
+    {
+    id: 6,
+    titulo: 'Orgullo y Prejuicio',
+    autor: 'Jane Austen',
+    editorial: 'Penguin',
+    hojas: 430,
+    genero: 'Romance',
+    precio: 21000,
+    descripcion: 'Historia clásica sobre el amor, el orgullo y las diferencias sociales en la Inglaterra del siglo XIX.',
+    imagen: '/libros/orgullo.jpg'
+    },
+    {
+    id: 7,
+    titulo: 'Fahrenheit 451',
+    autor: 'Ray Bradbury',
+    editorial: 'Minotauro',
+    hojas: 310,
+    genero: 'Distopía',
+    precio: 19000,
+    descripcion: 'Una sociedad donde los libros están prohibidos y los bomberos los queman.',
+    imagen: '/libros/fahrenheit.jpg'
+    },
+    {
+    id: 8,
+    titulo: 'El Nombre del Viento',
+    autor: 'Patrick Rothfuss',
+    editorial: 'Plaza & Janés',
+    hojas: 880,
+    genero: 'Fantasía',
+    precio: 38000,
+    descripcion: 'Las memorias de Kvothe, músico, mago y leyenda viviente.',
+    imagen: '/libros/nombre-viento.jpg'
+    },
+    {
+    id: 9,
+    titulo: 'It',
+    autor: 'Stephen King',
+    editorial: 'Debolsillo',
+    hojas: 1500,
+    genero: 'Terror',
+    precio: 45000,
+    descripcion: 'Una presencia maligna despierta cada veintisiete años para sembrar el terror.',
+    imagen: '/libros/it.jpg'
+    },
+    {
+    id: 10,
+    titulo: 'El Principito',
+    autor: 'Antoine de Saint-Exupéry',
+    editorial: 'Salamandra',
+    hojas: 120,
+    genero: 'Infantil',
+    precio: 12000,
+    descripcion: 'Un clásico universal sobre la amistad, la imaginación y el sentido de la vida.',
+    imagen: '/libros/principito.jpg'
+    },
+    {
+    id: 11,
+    titulo: 'La República',
+    autor: 'Platón',
+    editorial: 'Gredos',
+    hojas: 520,
+    genero: 'Filosofía',
+    precio: 26000,
+    descripcion: 'Diálogo filosófico sobre la justicia, el conocimiento y la organización ideal del Estado.',
+    imagen: '/libros/republica.jpg'
+    },
+    {
+    id: 12,
+    titulo: 'Más allá del bien y del mal',
+    autor: 'Friedrich Nietzsche',
+    editorial: 'Alianza',
+    hojas: 340,
+    genero: 'Filosofía',
+    precio: 24000,
+    descripcion: 'Una crítica profunda a la moral tradicional y a los valores de la cultura occidental.',
+    imagen: '/libros/nietzsche.jpg'
     }
 ]
 
