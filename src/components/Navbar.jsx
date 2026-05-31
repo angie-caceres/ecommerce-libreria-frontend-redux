@@ -55,7 +55,7 @@ function Navbar({ carrito }) { //recibe carrito como prop
         {/* Iconos de usuario */}
         <div className="flex items-center gap-6 text-xs text-[#7B5B98]">
 
-          <Link to="/mi-cuenta" className="flex flex-col items-center gap-1 hover:text-purple-600">
+          <Link to="/login" className="flex flex-col items-center gap-1 hover:text-purple-600">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>

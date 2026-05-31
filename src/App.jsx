@@ -11,6 +11,9 @@ import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
 import Checkout from './views/Checkout'
 import ConfirmacionPedido from './views/ConfirmacionPedido'
+import Login from "./views/Login";
+
+
 
 function App() {
 
@@ -105,6 +108,12 @@ function App() {
           element={<ConfirmacionPedido/>} 
         />
 
+        {/* Login */}
+        <Route 
+          path="/login" 
+          element={<Login/>} 
+        />
+        
       </Routes>
       <Footer />
     </>
