@@ -6,7 +6,7 @@ import LibroCard from './LibroCard'
 const libros = [
   {
     id: 1,
-    categoria: 'CLÁSICOS MODERNOS',
+    categoria: 'DISTOPIA',
     titulo: 'Amanecer en la cosecha',
     precio: 36000,
     precioOriginal: 40000,

@@ -272,13 +272,15 @@ function Checkout({ carrito, vaciarCarrito }) {
 
         {/* RESUMEN */}
         <div className="w-[380px]">
-          <ResumenCompra
-            carrito={carrito}
-            onConfirmar={handleConfirmarCompra}
-            mostrarBoton={true}
-            confirmado={false}
-          />
-        </div>
+        <ResumenCompra
+          carrito={carrito}
+          titulo="Resumen de Compra"
+          editable={false}
+          mostrarEnvio={true}
+          mostrarBoton={true}
+          onConfirmar={handleConfirmarCompra}
+        />
+      </div>
 
       </div>
     </div>
