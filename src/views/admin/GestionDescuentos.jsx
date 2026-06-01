@@ -1,11 +1,11 @@
-// COMPONENTE — Vista de gestión de géneros del panel de administrador
+// COMPONENTE — Vista de gestión de descuentos del panel de administrador
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, X, Pencil } from 'lucide-react'
+import { Trash2, Plus, X, Pencil } from 'lucide-react'
 import HeaderAdmin from "../../components/HeaderAdmin";
 import Sidebar from "../../components/Sidebar";
 import Pagination from "../../components/Pagination";
 
-// DATOS DE PRUEBA — reemplazá esto por una llamada a tu API
+// DATOS DE PRUEBA
 const descuentosIniciales = [
   { id: '#DESC-1', libro: 'Harry Potter y la piedra filosofal', porcentaje:'20%', activo: true  },
   { id: '#DESC-2', libro: 'Los juegos del hambre', porcentaje:'5%', activo: true  },
@@ -40,21 +40,20 @@ const POR_PAGINA = 9
 
 function GestionDescuentos() {
 
-  // ESTADOS — cada uno controla una parte de la UI
-  // (PDF: Estados locales y props - Estado)
+  // ESTADOS — Control de la lista, paginación y modales
   const [lista, setLista]       = useState(descuentosIniciales)
   const [pagina, setPagina]     = useState(1)
   const [modal, setModal]       = useState(null)   // null | 'crear' | 'editar'
-  const [editItem, setEditItem] = useState(null)   // género que se está editando
-  const [deleteId, setDeleteId] = useState(null)   // id del género a eliminar
+  const [editItem, setEditItem] = useState(null)   
+  const [deleteId, setDeleteId] = useState(null)   
 
-  // ESTADOS DEL FORMULARIO (Inputs individuales)
-  const [libro, setLibro]       = useState('')
+  // ESTADOS DEL FORMULARIO
+  const [libro, setLibro]           = useState('')
   const [porcentaje, setPorcentaje] = useState('')
-  const [activo, setActivo]     = useState(true)
+  const [activo, setActivo]         = useState(true)
 
-  //ESTADOS PARA EL AUTOCOMPLETADO
-  const [sugerencias, setSugerencias] = useState([])
+  // ESTADOS PARA EL AUTOCOMPLETADO
+  const [sugerencias, setSugerencias]               = useState([])
   const [mostrarSugerencias, setMostrarSugerencias] = useState(false)
 
   // PAGINACIÓN — calcula qué items mostrar según la página actual
@@ -74,7 +73,6 @@ function GestionDescuentos() {
 
   const abrirEditar = (descuento) => {
     setLibro(descuento.libro)
-    // Limpiamos el símbolo '%' para editar solo el número limpiamente
     setPorcentaje(descuento.porcentaje.replace('%', ''))
     setActivo(descuento.activo)
     setSugerencias([])
@@ -88,12 +86,9 @@ function GestionDescuentos() {
     setDeleteId(null)
   }
 
-  // 💡 FUNCIÓN PARA MANEJAR EL CAMBIO EN EL INPUT DEL LIBRO
   const handleLibroChange = (val) => {
     setLibro(val)
-    
     if (val.trim().length > 0) {
-      // Filtramos las opciones que contengan la cadena escrita (ignorando mayúsculas)
       const filtrados = LIBROS_DISPONIBLES.filter(titulo =>
         titulo.toLowerCase().includes(val.toLowerCase())
       )
@@ -105,130 +100,151 @@ function GestionDescuentos() {
     }
   }
 
-  // 💡 FUNCIÓN AL HACER CLIC EN UNA COINCIDENCIA
   const seleccionarSugerencia = (titulo) => {
     setLibro(titulo)
     setMostrarSugerencias(false)
   }
 
-  // Crea o edita un género según el modal abierto
   const handleAceptar = () => {
     if (!libro.trim() || !porcentaje.trim()) return
 
-    // Formateamos el porcentaje para que guarde siempre con el símbolo '%'
     const porcentajeFormateado = porcentaje.endsWith('%') ? porcentaje.trim() : `${porcentaje.trim()}%`
 
     if (modal === 'editar' && editItem) {
-      // EDITAR — reemplaza el género con el mismo id
       setLista(lista.map(g =>
         g.id === editItem.id ? { ...g, libro: libro.trim(), porcentaje: porcentajeFormateado, activo: activo} : g
       ))
     } else {
-      // CREAR — agrega un nuevo género al array
       const nuevoId = `#DESC-${lista.length + 1}`
       setLista([...lista, { id: nuevoId, libro: libro.trim(), porcentaje: porcentajeFormateado, activo: activo}])
     }
-
     cerrarModal()
   }
 
-  // ELIMINAR — filtra el array quitando el género con ese id
   const handleEliminar = () => {
     setLista(lista.filter(g => g.id !== deleteId))
     cerrarModal()
   }
 
   return (
-    // LAYOUT — Sidebar fija a la izquierda, contenido a la derecha
-    <div className="flex min-h-screen bg-[#f5f2ec]">
+    <div className="min-h-screen bg-[#f7f4ef] font-sans">
 
-      {/* COMPONENTE Sidebar — navegación lateral */}
+      {/* Menú lateral */}
       <Sidebar />
 
-      {/* Columna principal */}
-      <div className="flex-1 flex flex-col ml-44">
+      {/* Columna principal — El margen ml-56 previene que la sidebar pise el contenido */}
+      <div className="ml-56 min-h-screen flex flex-col">
 
-        {/* COMPONENTE HeaderAdmin — barra superior */}
+        {/* Encabezado */}
         <HeaderAdmin />
 
-        {/* Contenido de la página */}
-        <main className="flex-1 p-6 space-y-5 mt-14">
+        {/* Contenido principal */}
+        <main className="flex-1 p-8 space-y-6">
 
-          <h1 className="text-2xl font-bold text-gray-800">Gestión de Descuentos</h1>
-
-          {/* Tabla principal */}
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-
-            {/* Botón nuevo género */}
-            <div className="flex justify-end px-5 py-4 border-b border-gray-100">
+          {/* Bloque superior con Título y Botón de Acción integrado al estilo header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-800">Gestión de descuentos</h2>
+            </div>
+            <div>
               <button
                 onClick={abrirCrear}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-semibold hover:opacity-90 transition-opacity bg-[#2d2660]"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-xs font-semibold hover:opacity-90 transition-opacity bg-purple-600 shadow-sm uppercase tracking-wider"
               >
                 <Plus size={14} />
-                NUEVO DESCUENTO
+                Nuevo Descuento
               </button>
             </div>
+          </div>
 
-            {/* Tabla */}
+          {/* CONTENEDOR DE LA TABLA */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full">
                 <thead>
-                  <tr className="text-[10px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
-                    <th className="px-5 py-3 text-left">ID</th>
-                    <th className="px-4 py-3 text-left">Libro</th>
-                    <th className="px-4 py-3 text-left">Porcentaje</th>
-                    <th className="px-4 py-3 text-left">Estado</th>
-                    <th className="px-4 py-3 text-left">Acciones</th>
+                  <tr className="border-b border-gray-100">
+                    {["ID", "LIBRO", "PORCENTAJE", "ESTADO", "ACCIONES"].map((h) => (
+                      <th 
+                        key={h} 
+                        className="text-left text-xs font-bold text-gray-400 uppercase tracking-widest px-6 py-4"
+                      >
+                        {h}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody>
-                  {/* RENDERIZADO DE LISTA con .map() */}
+
+                <tbody className="divide-y divide-gray-50">
                   {paginados.map((descuento) => (
-                    <tr key={descuento.id} className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors">
-
-                      <td className="px-5 py-3 text-xs text-gray-500 font-mono">{descuento.id}</td>
-
-                      <td className="px-4 py-3">
-                        <span className="inline-flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
-                          <span className="text-xs text-gray-800 font-medium">{descuento.libro}</span>
-                        </span>
+                    <tr 
+                      key={descuento.id} 
+                      className="hover:bg-purple-50/30 transition-colors"
+                    >
+                      {/* ID */}
+                      <td className="px-6 py-4 text-xs text-gray-500 font-mono">
+                        {descuento.id}
                       </td>
 
-                      <td className="px-4 py-3 text-xs text-gray-600">{descuento.porcentaje}</td>
+                      {/* Libro asignado */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <span className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
+                          <span className="text-sm font-semibold text-gray-800">
+                            {descuento.libro}
+                          </span>
+                        </div>
+                      </td>
 
-                      {/* COLUMNA ESTADO (ACTIVO/INACTIVO) */}
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                      {/* Porcentaje */}
+                      <td className="px-6 py-4 text-sm font-medium text-gray-600">
+                        {descuento.porcentaje}
+                      </td>
+
+                      {/* Estado Rediseñado estilo GestiónUsuarios */}
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
                           descuento.activo 
-                            ? 'bg-green-50 text-green-700' 
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                            : 'bg-gray-50 text-gray-500 border-gray-200'
                         }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${descuento.activo ? 'bg-green-500' : 'bg-gray-400'}`} />
+                          <span className={`w-1.5 h-1.5 rounded-full ${descuento.activo ? 'bg-emerald-500' : 'bg-gray-400'}`} />
                           {descuento.activo ? 'Activo' : 'Inactivo'}
                         </span>
                       </td>
 
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          {/* EVENTO onClick — abre el modal de editar con los datos del género */}
-                          <button onClick={() => abrirEditar(descuento)} className="text-gray-400 hover:text-purple-600 transition-colors">
+                      {/* Acciones */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <button 
+                            onClick={() => abrirEditar(descuento)} 
+                            className="text-gray-400 hover:text-purple-600 transition-colors"
+                          >
                             <Pencil size={15} />
                           </button>
-                          <button onClick={() => setDeleteId(descuento.id)} className="text-gray-400 hover:text-red-500 transition-colors">
+                          <button 
+                            onClick={() => setDeleteId(descuento.id)} 
+                            className="text-gray-400 hover:text-red-500 transition-colors"
+                          >
                             <Trash2 size={15} />
                           </button>
                         </div>
                       </td>
-
                     </tr>
                   ))}
+
+                  {paginados.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-16 text-center text-gray-400 text-sm">
+                        No hay descuentos registrados en este momento.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
 
-            {/* COMPONENTE Pagination — recibe los datos necesarios como props */}
+            {/* COMPONENTE Paginación */}
             <Pagination
               currentPage={pagina}
               totalPages={totalPaginas}
@@ -240,15 +256,13 @@ function GestionDescuentos() {
 
           </div>
 
-          {/* Modal crear / editar
-              RENDERIZADO CONDICIONAL con && */}
+          {/* Modal Crear / Editar */}
           {modal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div className="absolute inset-0 backdrop-blur-sm bg-[#2d1f5e]/70" onClick={cerrarModal} />
               <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 z-10">
 
                 <div className="flex items-center justify-between mb-5">
-                  {/* OPERADOR TERNARIO — título cambia según si es crear o editar */}
                   <span className="font-semibold text-gray-800">
                     {modal === 'editar' ? 'Editar Descuento' : 'Nuevo Descuento'}
                   </span>
@@ -270,11 +284,10 @@ function GestionDescuentos() {
                       value={libro}
                       onChange={e => handleLibroChange(e.target.value)}
                       onFocus={() => libro.trim().length > 0 && setMostrarSugerencias(true)}
-                      // Agregamos un leve delay al desenfocar para permitir el click en la lista
                       onBlur={() => setTimeout(() => setMostrarSugerencias(false), 200)}
                     />
 
-                    {/* CAJA DE COINCIDENCIAS DESPLEGABLE */}
+                    {/* SUGERENCIAS DESPLEGABLES */}
                     {mostrarSugerencias && sugerencias.length > 0 && (
                       <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 max-h-40 bg-white border border-gray-200 rounded-lg shadow-lg overflow-y-auto text-sm divide-y divide-gray-50">
                         {sugerencias.map((opcion, index) => (
@@ -289,12 +302,13 @@ function GestionDescuentos() {
                       </ul>
                     )}
                   </div>
+
+                  {/* PORCENTAJE DE DESCUENTO */}
                   <div>
                     <label className="block text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
                       Porcentaje de descuento
                     </label>
                     <input
-                      autoFocus
                       className="w-full border border-purple-400 rounded-lg px-3 py-2 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-purple-100"
                       placeholder="Ej: 15"
                       value={porcentaje}
@@ -302,7 +316,8 @@ function GestionDescuentos() {
                       onKeyDown={e => e.key === 'Enter' && handleAceptar()}
                     />
                   </div>
-                  {/* SELECT ESTADO (ACTIVO / INACTIVO) */}
+
+                  {/* SELECT ESTADO */}
                   <div>
                     <label className="block text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
                       Estado del Descuento
@@ -317,7 +332,7 @@ function GestionDescuentos() {
                     </select>
                   </div>
 
-                  <div className="flex justify-end gap-3">
+                  <div className="flex justify-end gap-3 pt-2">
                     <button onClick={cerrarModal} className="px-4 py-2 text-xs font-semibold text-gray-500 hover:text-gray-700 uppercase tracking-wider">
                       CANCELAR
                     </button>
@@ -335,8 +350,7 @@ function GestionDescuentos() {
             </div>
           )}
 
-          {/* Modal confirmación de borrado
-              RENDERIZADO CONDICIONAL con && */}
+          {/* Modal confirmación de borrado */}
           {deleteId && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div className="absolute inset-0 backdrop-blur-sm bg-[#2d1f5e]/70" onClick={cerrarModal} />
@@ -371,5 +385,4 @@ function GestionDescuentos() {
     </div>
   )
 }
-
 export default GestionDescuentos

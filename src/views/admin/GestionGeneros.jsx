@@ -1,14 +1,14 @@
 // COMPONENTE — Vista de gestión de géneros del panel de administrador
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, X, Pencil } from 'lucide-react'
+import { Trash2, Plus, X, Pencil } from 'lucide-react'
 import HeaderAdmin from "../../components/HeaderAdmin";
 import Sidebar from "../../components/Sidebar";
 import Pagination from "../../components/Pagination";
 
-// DATOS DE PRUEBA — reemplazá esto por una llamada a tu API
+// DATOS DE PRUEBA
 const generosIniciales = [
   { id: '#GEN-1', nombre: 'Fantasía',           libros: 87  },
-  { id: '#GEN-2', nombre: 'Ficción',             libros: 142 },
+  { id: '#GEN-2', nombre: 'Ficción',            libros: 142 },
   { id: '#GEN-3', nombre: 'Novela',              libros: 95  },
   { id: '#GEN-4', nombre: 'Novela corta',        libros: 63  },
   { id: '#GEN-5', nombre: 'Clásicos Literarios', libros: 54  },
@@ -22,8 +22,7 @@ const POR_PAGINA = 9
 
 function GestionGeneros() {
 
-  // ESTADOS — cada uno controla una parte de la UI
-  // (PDF: Estados locales y props - Estado)
+  // ESTADOS — Control de la lista, ventanas modales y formularios
   const [lista, setLista]       = useState(generosIniciales)
   const [pagina, setPagina]     = useState(1)
   const [modal, setModal]       = useState(null)   // null | 'crear' | 'editar'
@@ -58,12 +57,12 @@ function GestionGeneros() {
     if (!nombre.trim()) return
 
     if (modal === 'editar' && editItem) {
-      // EDITAR — reemplaza el género con el mismo id
+      // EDITAR
       setLista(lista.map(g =>
         g.id === editItem.id ? { ...g, nombre: nombre.trim() } : g
       ))
     } else {
-      // CREAR — agrega un nuevo género al array
+      // CREAR
       const nuevoId = `#GEN-${lista.length + 1}`
       setLista([...lista, { id: nuevoId, nombre: nombre.trim(), libros: 0 }])
     }
@@ -71,90 +70,120 @@ function GestionGeneros() {
     cerrarModal()
   }
 
-  // ELIMINAR — filtra el array quitando el género con ese id
+  // ELIMINAR
   const handleEliminar = () => {
     setLista(lista.filter(g => g.id !== deleteId))
     cerrarModal()
   }
 
   return (
-    // LAYOUT — Sidebar fija a la izquierda, contenido a la derecha
-    <div className="flex min-h-screen bg-[#f5f2ec]">
+    <div className="min-h-screen bg-[#f7f4ef] font-sans">
 
-      {/* COMPONENTE Sidebar — navegación lateral */}
+      {/* Menú lateral */}
       <Sidebar />
 
-      {/* Columna principal */}
-      <div className="flex-1 flex flex-col ml-44">
+      {/* Columna principal — El margen ml-56 previene la superposición */}
+      <div className="ml-56 min-h-screen flex flex-col">
 
-        {/* COMPONENTE HeaderAdmin — barra superior */}
+        {/* Encabezado */}
         <HeaderAdmin />
 
-        {/* Contenido de la página */}
-        <main className="flex-1 p-6 space-y-5 mt-14">
+        {/* Contenido principal */}
+        <main className="flex-1 p-8 space-y-6">
 
-          <h1 className="text-2xl font-bold text-gray-800">Gestión de Géneros</h1>
-
-          {/* Tabla principal */}
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-
-            {/* Botón nuevo género */}
-            <div className="flex justify-end px-5 py-4 border-b border-gray-100">
+          {/* Bloque superior con Título y Botón de Acción integrado al estilo header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-800">Gestión de géneros</h2>
+              
+            </div>
+            <div>
               <button
                 onClick={abrirCrear}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-semibold hover:opacity-90 transition-opacity bg-[#2d2660]"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-xs font-semibold hover:opacity-90 transition-opacity bg-purple-600 shadow-sm uppercase tracking-wider"
               >
                 <Plus size={14} />
-                NUEVO GÉNERO
+                Nuevo Género
               </button>
             </div>
+          </div>
 
-            {/* Tabla */}
+          {/* CONTENEDOR DE LA TABLA */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full">
                 <thead>
-                  <tr className="text-[10px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
-                    <th className="px-5 py-3 text-left">ID</th>
-                    <th className="px-4 py-3 text-left">Nombre</th>
-                    <th className="px-4 py-3 text-left">Libros</th>
-                    <th className="px-4 py-3 text-left">Acciones</th>
+                  <tr className="border-b border-gray-100">
+                    {["ID", "NOMBRE", "LIBROS", "ACCIONES"].map((h) => (
+                      <th 
+                        key={h} 
+                        className="text-left text-xs font-bold text-gray-400 uppercase tracking-widest px-6 py-4"
+                      >
+                        {h}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody>
-                  {/* RENDERIZADO DE LISTA con .map() */}
+
+                <tbody className="divide-y divide-gray-50">
                   {paginados.map((genero) => (
-                    <tr key={genero.id} className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors">
-
-                      <td className="px-5 py-3 text-xs text-gray-500 font-mono">{genero.id}</td>
-
-                      <td className="px-4 py-3">
-                        <span className="inline-flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
-                          <span className="text-xs text-gray-800 font-medium">{genero.nombre}</span>
-                        </span>
+                    <tr 
+                      key={genero.id} 
+                      className="hover:bg-purple-50/30 transition-colors"
+                    >
+                      {/* ID */}
+                      <td className="px-6 py-4 text-xs text-gray-500 font-mono">
+                        {genero.id}
                       </td>
 
-                      <td className="px-4 py-3 text-xs text-gray-600">{genero.libros}</td>
-
-                      <td className="px-4 py-3">
+                      {/* Nombre del Género */}
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          {/* EVENTO onClick — abre el modal de editar con los datos del género */}
-                          <button onClick={() => abrirEditar(genero)} className="text-gray-400 hover:text-purple-600 transition-colors">
+                          <span className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
+                          <span className="text-sm font-semibold text-gray-800">
+                            {genero.nombre}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Cantidad de libros */}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {genero.libros} libros
+                      </td>
+
+                      {/* Acciones */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <button 
+                            onClick={() => abrirEditar(genero)} 
+                            className="text-gray-400 hover:text-purple-600 transition-colors"
+                          >
                             <Pencil size={15} />
                           </button>
-                          <button onClick={() => setDeleteId(genero.id)} className="text-gray-400 hover:text-red-500 transition-colors">
+                          <button 
+                            onClick={() => setDeleteId(genero.id)} 
+                            className="text-gray-400 hover:text-red-500 transition-colors"
+                          >
                             <Trash2 size={15} />
                           </button>
                         </div>
                       </td>
-
                     </tr>
                   ))}
+
+                  {paginados.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-16 text-center text-gray-400 text-sm">
+                        No hay géneros registrados en este momento.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
 
-            {/* COMPONENTE Pagination — recibe los datos necesarios como props */}
+            {/* COMPONENTE Paginación */}
             <Pagination
               currentPage={pagina}
               totalPages={totalPaginas}
@@ -166,15 +195,13 @@ function GestionGeneros() {
 
           </div>
 
-          {/* Modal crear / editar
-              RENDERIZADO CONDICIONAL con && */}
+          {/* Modal Crear / Editar */}
           {modal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div className="absolute inset-0 backdrop-blur-sm bg-[#2d1f5e]/70" onClick={cerrarModal} />
               <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 z-10">
 
                 <div className="flex items-center justify-between mb-5">
-                  {/* OPERADOR TERNARIO — título cambia según si es crear o editar */}
                   <span className="font-semibold text-gray-800">
                     {modal === 'editar' ? 'Editar Género' : 'Nuevo Género'}
                   </span>
@@ -215,8 +242,7 @@ function GestionGeneros() {
             </div>
           )}
 
-          {/* Modal confirmación de borrado
-              RENDERIZADO CONDICIONAL con && */}
+          {/* Modal confirmación de borrado */}
           {deleteId && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div className="absolute inset-0 backdrop-blur-sm bg-[#2d1f5e]/70" onClick={cerrarModal} />
