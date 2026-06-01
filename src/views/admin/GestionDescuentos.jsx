@@ -7,15 +7,33 @@ import Pagination from "../../components/Pagination";
 
 // DATOS DE PRUEBA — reemplazá esto por una llamada a tu API
 const descuentosIniciales = [
-  { id: '#DESC-1', libro: 'Harry Potter', porcentaje:'20%', activo: true  },
+  { id: '#DESC-1', libro: 'Harry Potter y la piedra filosofal', porcentaje:'20%', activo: true  },
   { id: '#DESC-2', libro: 'Los juegos del hambre', porcentaje:'5%', activo: true  },
   { id: '#DESC-3', libro: 'Rayuela', porcentaje:'10%', activo: true  },
   { id: '#DESC-4', libro: 'Submarino', porcentaje:'10%', activo: true  },
-  { id: '#DESC-5', libro: 'Sherlock Holmes', porcentaje:'15%', activo: true  },
-  { id: '#DESC-6', libro: 'Lobo', porcentaje:'30%', activo: true  },
-  { id: '#DESC-7', libro: 'El laberinto', porcentaje:'20%', activo: true  },
+  { id: '#DESC-5', libro: 'Sherlock Holmes: Estudio en escarlata', porcentaje:'15%', activo: true  },
+  { id: '#DESC-6', libro: 'Lobo estepario', porcentaje:'30%', activo: true  },
+  { id: '#DESC-7', libro: 'El laberinto de la soledad', porcentaje:'20%', activo: true  },
   { id: '#DESC-8', libro: 'Caperucita Roja', porcentaje:'10%', activo: true  },
-  { id: '#DESC-9', libro: 'Floricienta', porcentaje:'20%', activo: true  },
+  { id: '#DESC-9', libro: 'Floricienta: El cuento original', porcentaje:'20%', activo: true  },
+]
+
+const LIBROS_DISPONIBLES = [
+  'Harry Potter y la piedra filosofal',
+  'Harry Potter y la cámara secreta',
+  'Los juegos del hambre',
+  'En llamas',
+  'Sinsajo',
+  'Rayuela',
+  'Submarino',
+  'Sherlock Holmes: Estudio en escarlata',
+  'El sabueso de los Baskerville',
+  'Lobo estepario',
+  'El laberinto de la soledad',
+  'Caperucita Roja',
+  'Floricienta: El cuento original',
+  'Cien años de soledad',
+  'Ficciones'
 ]
 
 const POR_PAGINA = 9
@@ -35,6 +53,10 @@ function GestionDescuentos() {
   const [porcentaje, setPorcentaje] = useState('')
   const [activo, setActivo]     = useState(true)
 
+  //ESTADOS PARA EL AUTOCOMPLETADO
+  const [sugerencias, setSugerencias] = useState([])
+  const [mostrarSugerencias, setMostrarSugerencias] = useState(false)
+
   // PAGINACIÓN — calcula qué items mostrar según la página actual
   const totalPaginas = Math.ceil(lista.length / POR_PAGINA)
   const paginados = lista.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
@@ -44,6 +66,8 @@ function GestionDescuentos() {
     setLibro('')
     setPorcentaje('')
     setActivo(true)
+    setSugerencias([])
+    setMostrarSugerencias(false)
     setEditItem(null)
     setModal('crear')
   }
@@ -53,6 +77,8 @@ function GestionDescuentos() {
     // Limpiamos el símbolo '%' para editar solo el número limpiamente
     setPorcentaje(descuento.porcentaje.replace('%', ''))
     setActivo(descuento.activo)
+    setSugerencias([])
+    setMostrarSugerencias(false)
     setEditItem(descuento)
     setModal('editar')
   }
@@ -60,6 +86,29 @@ function GestionDescuentos() {
   const cerrarModal = () => {
     setModal(null)
     setDeleteId(null)
+  }
+
+  // 💡 FUNCIÓN PARA MANEJAR EL CAMBIO EN EL INPUT DEL LIBRO
+  const handleLibroChange = (val) => {
+    setLibro(val)
+    
+    if (val.trim().length > 0) {
+      // Filtramos las opciones que contengan la cadena escrita (ignorando mayúsculas)
+      const filtrados = LIBROS_DISPONIBLES.filter(titulo =>
+        titulo.toLowerCase().includes(val.toLowerCase())
+      )
+      setSugerencias(filtrados)
+      setMostrarSugerencias(true)
+    } else {
+      setSugerencias([])
+      setMostrarSugerencias(false)
+    }
+  }
+
+  // 💡 FUNCIÓN AL HACER CLIC EN UNA COINCIDENCIA
+  const seleccionarSugerencia = (titulo) => {
+    setLibro(titulo)
+    setMostrarSugerencias(false)
   }
 
   // Crea o edita un género según el modal abierto
@@ -209,18 +258,36 @@ function GestionDescuentos() {
                 </div>
 
                 <div className="space-y-4">
-                  <div>
+                  {/* INPUT LIBRO CON SUGERENCIAS */}
+                  <div className="relative">
                     <label className="block text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
-                      Nombre del libro
+                      Libro
                     </label>
                     <input
                       autoFocus
                       className="w-full border border-purple-400 rounded-lg px-3 py-2 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-purple-100"
-                      placeholder="Ej: Ciencia ficción"
+                      placeholder="Escribí para buscar libro..."
                       value={libro}
-                      onChange={e => setLibro(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && handleAceptar()}
+                      onChange={e => handleLibroChange(e.target.value)}
+                      onFocus={() => libro.trim().length > 0 && setMostrarSugerencias(true)}
+                      // Agregamos un leve delay al desenfocar para permitir el click en la lista
+                      onBlur={() => setTimeout(() => setMostrarSugerencias(false), 200)}
                     />
+
+                    {/* CAJA DE COINCIDENCIAS DESPLEGABLE */}
+                    {mostrarSugerencias && sugerencias.length > 0 && (
+                      <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 max-h-40 bg-white border border-gray-200 rounded-lg shadow-lg overflow-y-auto text-sm divide-y divide-gray-50">
+                        {sugerencias.map((opcion, index) => (
+                          <li 
+                            key={index}
+                            onClick={() => seleccionarSugerencia(opcion)}
+                            className="px-3 py-2 text-xs text-gray-700 hover:bg-purple-50 cursor-pointer transition-colors text-left font-medium"
+                          >
+                            {opcion}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
