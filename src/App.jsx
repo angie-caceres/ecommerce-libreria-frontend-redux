@@ -11,6 +11,10 @@ import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
 import Checkout from './views/Checkout'
 import ConfirmacionPedido from './views/ConfirmacionPedido'
+import QuienesSomos from './views/QuienesSomos'
+import Contacto from './views/Contacto'
+
+
 
 import GestionGeneros from './views/admin/GestionGeneros'
 import GestionEditoriales from './views/admin/GestionEditoriales'
@@ -124,10 +128,16 @@ function App() {
           element={<ConfirmacionPedido/>} 
         />
 
+
         <Route path="/admin/generos" element={<GestionGeneros />} />
         <Route path="/admin/editoriales" element={<GestionEditoriales />} />
         <Route path="/admin/autores" element={<GestionAutores />} />
         <Route path="/admin/descuentos" element={<GestionDescuentos />} />
+
+        <Route path="/quienes-somos" element={<QuienesSomos />} /> 
+
+        <Route path="/contacto" element={<Contacto />} />
+
 
       </Routes>
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Footer si NO es admin */}
