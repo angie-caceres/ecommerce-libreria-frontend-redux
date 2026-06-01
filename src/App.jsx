@@ -1,9 +1,8 @@
 // COMPONENTE raíz — contiene el estado global del carrito
 // El estado vive acá porque es el padre de todos los componentes
 // que necesitan acceder al carrito (PDF: Estados locales y props - Flujo unidireccional)
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import { useLocation } from "react-router-dom";
 import Home from './views/Home'
 import Carrito from './views/Carrito'
 import DetalleLibro from './views/DetalleLibro'
@@ -12,21 +11,28 @@ import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
 import Checkout from './views/Checkout'
 import ConfirmacionPedido from './views/ConfirmacionPedido'
-import AdminDashboard from './views/AdminDashboard'
-import CrearLibro from './views/CrearLibro';
-import EditarLibro from './views/EditarLibro';
-import VerPedidos from './views/VerPedidos';
-import GestionUsuarios from './views/GestionUsuario';
+
+import GestionGeneros from './views/admin/GestionGeneros'
+import GestionEditoriales from './views/admin/GestionEditoriales'
+import GestionAutores from './views/admin/GestionAutores'
+import GestionDescuentos from './views/admin/GestionDescuentos'
+import HeaderAdmin from './components/HeaderAdmin'
+import Sidebar from './components/Sidebar'
+import Pagination from './components/Pagination'
 
 function App() {
 
+  // Evaluamos en qué ruta está parado el navegador actualmente
   const location = useLocation();
-const esAdmin = location.pathname.startsWith("/admin");
 
+  // Si la ruta empieza con "/admin", esta constante va a ser true
+  const esAdmin = location.pathname.startsWith("/admin");
+  
   // HOOK useState — estado global del carrito
   // Array de objetos, cada uno representa un libro agregado
   // (PDF: Estados locales y props - useState)
   const [carrito, setCarrito] = useState([])
+
 
   // FUNCIÓN para agregar un libro al carrito
   // Se pasa como PROP a DetalleLibro (PDF: Estados locales y props - Props)
@@ -66,74 +72,68 @@ const esAdmin = location.pathname.startsWith("/admin");
   const vaciarCarrito = () => setCarrito([])
 
   return (
-  <>
-    {!esAdmin && <Navbar carrito={carrito} />}
+    <>
 
-    <Routes>
-      <Route path="/" element={<Home />} />
+      {/* Navbar recibe carrito como prop para mostrar el badge
+          (PDF: Estados locales y props - Flujo unidireccional) */}
+      
+      {/*RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
+      {!esAdmin && <Navbar carrito={carrito} />}
 
-      <Route
-        path="/libro/:id"
-        element={
-          <DetalleLibro
-            agregarAlCarrito={agregarAlCarrito}
-          />
-        }
-      />
+      <Routes>
 
-      <Route
-        path="/carrito"
-        element={
-          <Carrito
-            carrito={carrito}
-            eliminarDelCarrito={eliminarDelCarrito}
-            cambiarCantidad={cambiarCantidad}
-          />
-        }
-      />
+        <Route path="/" element={<Home />} />
 
-      <Route path="/catalogo" element={<Catalogo />} />
+        {/* DetalleLibro recibe agregarAlCarrito como prop */}
+        <Route
+          path="/libro/:id"
+          element={
+            <DetalleLibro
+              agregarAlCarrito={agregarAlCarrito}
+            />
+          }
+        />
 
-      <Route
-        path="/checkout"
-        element={
-          <Checkout
-            carrito={carrito}
-            vaciarCarrito={vaciarCarrito}
-          />
-        }
-      />
+        {/* Carrito recibe todo lo necesario como props */}
+        <Route
+          path="/carrito"
+          element={
+            <Carrito
+              carrito={carrito}
+              eliminarDelCarrito={eliminarDelCarrito}
+              cambiarCantidad={cambiarCantidad}
+            />
+          }
+        />
 
-      <Route
-        path="/pedido"
-        element={<ConfirmacionPedido />}
-      />
+        {/* Catálogo */}
+        <Route
+          path="/catalogo"
+          element={<Catalogo />}
+        />
 
-      <Route
-        path="/admin"
-        element={<AdminDashboard />}
-      />
-    <Route
-        path="/admin/crear-libro"
-        element={<CrearLibro />}
-      />
-      <Route
-        path="/admin/editar-libro"
-        element={<EditarLibro />}
-      />
-      <Route
-        path="/admin/pedidos"
-        element={<VerPedidos />}
-      />
-      <Route
-        path="/admin/usuarios"
-        element={<GestionUsuarios />}
-      />
-    </Routes>
+        {/* Checkout */}
+        <Route
+          path="/checkout"
+          element={<Checkout carrito={carrito} vaciarCarrito={vaciarCarrito} />}
+        />
 
-    {!esAdmin && <Footer />}
-  </>
-)
+        {/* Confirmacion pedido */}
+        <Route 
+          path="/pedido" 
+          element={<ConfirmacionPedido/>} 
+        />
+
+        <Route path="/admin/generos" element={<GestionGeneros />} />
+        <Route path="/admin/editoriales" element={<GestionEditoriales />} />
+        <Route path="/admin/autores" element={<GestionAutores />} />
+        <Route path="/admin/descuentos" element={<GestionDescuentos />} />
+
+      </Routes>
+      {/* RENDERIZADO CONDICIONAL: Solo muestra el Footer si NO es admin */}
+      {!esAdmin && <Footer />}
+    </>
+  )
 }
 
 export default App

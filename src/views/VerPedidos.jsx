@@ -39,6 +39,7 @@ const AVATAR_COLORS = [
   "#0D9488","#B45309","#4F46E5","#DB2777","#16A34A",
 ];
 
+{/*
 function Pagination({ currentPage, totalPages, onPageChange }) {
   const getPages = () => {
     // Si hay pocas páginas, mostrar todas
@@ -63,10 +64,11 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         {TODOS_LOS_PEDIDOS.length} resultados
       </p>
 
-      {/* Controles de paginación */}
-      <div className="flex items-center gap-1">
+      {/* Controles de paginación */} 
+
+{/*      <div className="flex items-center gap-1">
         {/* Botón anterior */}
-        <button
+{/*        <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors
@@ -92,7 +94,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         ))}
 
         {/* Botón siguiente */}
-        <button
+{/*        <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors
@@ -104,10 +106,11 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     </div>
   );
 }
+*/}
 // ─────────────────────────────────────────────────────────────
 // PRINCIPAL: TodosLosPedidos
 // ─────────────────────────────────────────────────────────────
-export default function TodosLosPedidos() {
+export default function VerPedidos() {
 
   // Página actual de la tabla (paginación)
   const [currentPage, setCurrentPage] = useState(1);
