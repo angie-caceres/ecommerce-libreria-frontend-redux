@@ -3,6 +3,7 @@
 // que necesitan acceder al carrito (PDF: Estados locales y props - Flujo unidireccional)
 import { Routes, Route } from 'react-router-dom'
 import { useState } from 'react'
+import { useLocation } from "react-router-dom";
 import Home from './views/Home'
 import Carrito from './views/Carrito'
 import DetalleLibro from './views/DetalleLibro'
@@ -11,8 +12,16 @@ import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
 import Checkout from './views/Checkout'
 import ConfirmacionPedido from './views/ConfirmacionPedido'
+import AdminDashboard from './views/AdminDashboard'
+import CrearLibro from './views/CrearLibro';
+import EditarLibro from './views/EditarLibro';
+import VerPedidos from './views/VerPedidos';
+import GestionUsuarios from './views/GestionUsuario';
 
 function App() {
+
+  const location = useLocation();
+const esAdmin = location.pathname.startsWith("/admin");
 
   // HOOK useState — estado global del carrito
   // Array de objetos, cada uno representa un libro agregado
@@ -57,58 +66,74 @@ function App() {
   const vaciarCarrito = () => setCarrito([])
 
   return (
-    <>
-      {/* Navbar recibe carrito como prop para mostrar el badge
-          (PDF: Estados locales y props - Flujo unidireccional) */}
-      <Navbar carrito={carrito} />
-      <Routes>
+  <>
+    {!esAdmin && <Navbar carrito={carrito} />}
 
-        <Route path="/" element={<Home />} />
+    <Routes>
+      <Route path="/" element={<Home />} />
 
-        {/* DetalleLibro recibe agregarAlCarrito como prop */}
-        <Route
-          path="/libro/:id"
-          element={
-            <DetalleLibro
-              agregarAlCarrito={agregarAlCarrito}
-            />
-          }
-        />
+      <Route
+        path="/libro/:id"
+        element={
+          <DetalleLibro
+            agregarAlCarrito={agregarAlCarrito}
+          />
+        }
+      />
 
-        {/* Carrito recibe todo lo necesario como props */}
-        <Route
-          path="/carrito"
-          element={
-            <Carrito
-              carrito={carrito}
-              eliminarDelCarrito={eliminarDelCarrito}
-              cambiarCantidad={cambiarCantidad}
-            />
-          }
-        />
+      <Route
+        path="/carrito"
+        element={
+          <Carrito
+            carrito={carrito}
+            eliminarDelCarrito={eliminarDelCarrito}
+            cambiarCantidad={cambiarCantidad}
+          />
+        }
+      />
 
-        {/* Catálogo */}
-        <Route
-          path="/catalogo"
-          element={<Catalogo />}
-        />
+      <Route path="/catalogo" element={<Catalogo />} />
 
-        {/* Checkout */}
-        <Route
-          path="/checkout"
-          element={<Checkout carrito={carrito} vaciarCarrito={vaciarCarrito} />}
-        />
+      <Route
+        path="/checkout"
+        element={
+          <Checkout
+            carrito={carrito}
+            vaciarCarrito={vaciarCarrito}
+          />
+        }
+      />
 
-        {/* Confirmacion pedido */}
-        <Route 
-          path="/pedido" 
-          element={<ConfirmacionPedido/>} 
-        />
+      <Route
+        path="/pedido"
+        element={<ConfirmacionPedido />}
+      />
 
-      </Routes>
-      <Footer />
-    </>
-  )
+      <Route
+        path="/admin"
+        element={<AdminDashboard />}
+      />
+    <Route
+        path="/admin/crear-libro"
+        element={<CrearLibro />}
+      />
+      <Route
+        path="/admin/editar-libro"
+        element={<EditarLibro />}
+      />
+      <Route
+        path="/admin/pedidos"
+        element={<VerPedidos />}
+      />
+      <Route
+        path="/admin/usuarios"
+        element={<GestionUsuarios />}
+      />
+    </Routes>
+
+    {!esAdmin && <Footer />}
+  </>
+)
 }
 
 export default App
