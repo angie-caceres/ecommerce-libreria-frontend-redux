@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   BookOpen,
@@ -12,14 +13,14 @@ import {
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Panel de control" },
-  { icon: BookOpen, label: "Gestión de libros" },
-  { icon: Tags, label: "Gestión de géneros" },
-  { icon: Building2, label: "Gestión de editoriales" },
-  { icon: PenTool, label: "Gestión de autores" },
-  { icon: Percent, label: "Gestión de descuentos" },
-  { icon: ShoppingBag, label: "Ver pedidos" },
-  { icon: UserCheck, label: "Ver usuarios" },
-  { icon: Image, label: "Gestión de imágenes" },
+  { icon: BookOpen, label: "Gestión de libros", to: "/admin/libros"   },
+  { icon: Tags, label: "Gestión de géneros", to: "/admin/generos" },
+  { icon: Building2, label: "Gestión de editoriales", to: "/admin/editoriales" },
+  { icon: PenTool, label: "Gestión de autores", to: "/admin/autores" },
+  { icon: Percent, label: "Gestión de descuentos", to: "/admin/descuentos" },
+  { icon: ShoppingBag, label: "Ver pedidos", to: "/admin/pedidos" },
+  { icon: UserCheck, label: "Ver usuarios", to: "/admin/usuarios" },
+  { icon: Image, label: "Gestión de imágenes", to: "/admin/imagenes" },
 ];
 
 function Sidebar() {
@@ -37,19 +38,26 @@ function Sidebar() {
         </div>
       </div>
 
-      {/* Navegación */}
+{/* Navegación */}
       <nav className="mt-10 space-y-1">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
-
           return (
-            <button
+            <NavLink
               key={item.label}
-              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/90 hover:bg-white/10 text-left"
+              to={item.to}
+              end={item.to === "/admin"}
+              className={({ isActive }) =>
+                `w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition-colors ${
+                  isActive
+                    ? "bg-white/20 text-white font-semibold"
+                    : "text-white/90 hover:bg-white/10"
+                }`
+              }
             >
               <Icon size={15} />
               {item.label}
-            </button>
+            </NavLink>
           );
         })}
       </nav>

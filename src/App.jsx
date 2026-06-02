@@ -21,6 +21,7 @@ import GestionGeneros from './views/admin/GestionGeneros'
 import GestionEditoriales from './views/admin/GestionEditoriales'
 import GestionAutores from './views/admin/GestionAutores'
 import GestionDescuentos from './views/admin/GestionDescuentos'
+import GestionLibros from './views/admin/GestionLibros'
 import HeaderAdmin from './components/HeaderAdmin'
 import Sidebar from './components/Sidebar'
 import Pagination from './components/Pagination'
@@ -148,6 +149,7 @@ function App() {
         <Route path="/admin/editoriales" element={usuario?.rol === 'admin' ? <GestionEditoriales /> : <Navigate to="/login" />} />
         <Route path="/admin/autores" element={usuario?.rol === 'admin' ? <GestionAutores /> : <Navigate to="/login" />} />
         <Route path="/admin/descuentos" element={usuario?.rol === 'admin' ? <GestionDescuentos /> : <Navigate to="/login" />} />
+        <Route path="/admin/libros" element={usuario?.rol === 'admin' ? <GestionLibros /> : <Navigate to="/login" />} />
 
         <Route path="/quienes-somos" element={<QuienesSomos />} /> 
 
