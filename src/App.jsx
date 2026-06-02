@@ -26,6 +26,7 @@ import Sidebar from './components/Sidebar'
 import Pagination from './components/Pagination'
 
 import Login from "./views/Login";
+import MisOrdenes from "./views/MisOrdenes";
 
 
 
@@ -148,6 +149,8 @@ function App() {
         <Route path="/admin/editoriales" element={usuario?.rol === 'admin' ? <GestionEditoriales /> : <Navigate to="/login" />} />
         <Route path="/admin/autores" element={usuario?.rol === 'admin' ? <GestionAutores /> : <Navigate to="/login" />} />
         <Route path="/admin/descuentos" element={usuario?.rol === 'admin' ? <GestionDescuentos /> : <Navigate to="/login" />} />
+
+        <Route path="/mis-ordenes" element={usuario?.rol === 'usuario' ? <MisOrdenes /> : <Navigate to="/login" />} />
 
         <Route path="/quienes-somos" element={<QuienesSomos />} /> 
 

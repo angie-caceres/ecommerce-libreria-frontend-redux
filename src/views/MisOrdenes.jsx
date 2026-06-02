@@ -50,7 +50,7 @@ function MisOrdenes() {
 
  return (
 
-   <main className="bg-[#faf7f5] px-4 py-10">
+   <main className="bg-[#FCF9F8] px-4 py-10">
 
      <section className="max-w-6xl mx-auto">
 
