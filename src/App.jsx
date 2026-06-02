@@ -11,6 +11,7 @@ import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
 import Checkout from './views/Checkout'
 import ConfirmacionPedido from './views/ConfirmacionPedido'
+<<<<<<< HEAD
 import QuienesSomos from './views/QuienesSomos'
 import Contacto from './views/Contacto'
 
@@ -23,6 +24,11 @@ import GestionDescuentos from './views/admin/GestionDescuentos'
 import HeaderAdmin from './components/HeaderAdmin'
 import Sidebar from './components/Sidebar'
 import Pagination from './components/Pagination'
+
+import Login from "./views/Login";
+
+
+
 
 function App() {
 
@@ -129,6 +135,7 @@ function App() {
         />
 
 
+
         <Route path="/admin/generos" element={<GestionGeneros />} />
         <Route path="/admin/editoriales" element={<GestionEditoriales />} />
         <Route path="/admin/autores" element={<GestionAutores />} />
@@ -138,6 +145,14 @@ function App() {
 
         <Route path="/contacto" element={<Contacto />} />
 
+
+
+        {/* Login */}
+        <Route 
+          path="/login" 
+          element={<Login/>} 
+        />
+        
 
       </Routes>
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Footer si NO es admin */}
