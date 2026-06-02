@@ -2,24 +2,25 @@
 // Un componente en React es una función JavaScript que devuelve JSX.
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function Login() {
-  // HOOK useState
-  // Relación teoría: useState permite guardar datos internos del componente.
-  // En este caso guardamos lo que el usuario escribe en email y password.
+function Login({ setUsuario }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  // EVENTO submit
-  // Relación teoría: el DOM responde a eventos del usuario como input, change y submit.
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Por ahora solo mostramos los datos.
-    // Más adelante acá se conectaría con el backend/API.
-    console.log("Email:", email);
-    console.log("Password:", password);
+    if (email === "administrator@gmail.com") {
+      setUsuario({ email, rol: "admin" });
+      navigate("/admin/generos");
+    } else if (email === "juan@gmail.com") {
+      setUsuario({ email, rol: "usuario" });
+      navigate("/");
+    } else {
+      setError("Correo no reconocido.");
+    }
   };
 
   return (
@@ -74,6 +75,10 @@ function Login() {
               className="w-full border-b border-[#8c7a80] bg-transparent px-3 py-3 outline-none text-gray-700 placeholder:text-gray-400"
             />
           </div>
+
+          {error && (
+            <p className="text-red-500 text-sm mb-4">{error}</p>
+          )}
 
           <button
             type="submit"

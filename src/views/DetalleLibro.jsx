@@ -21,7 +21,7 @@ const libros = [
 
 // PROPS — recibe agregarAlCarrito del padre App.jsx
 // (PDF: Estados locales y props - ¿Qué son las props?)
-function DetalleLibro({ agregarAlCarrito }) {
+function DetalleLibro({ agregarAlCarrito, puedeComprar }) {
 
   // Por ahora mostramos el primer libro
   // Con backend usaríamos useParams para obtener el id de la URL
@@ -40,6 +40,7 @@ function DetalleLibro({ agregarAlCarrito }) {
       <DetalleLibroCard
         libro={libro}
         agregarAlCarrito={agregarAlCarrito}
+        puedeComprar={puedeComprar}
       />
 
     </div>

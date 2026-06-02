@@ -5,7 +5,7 @@ import { Link, NavLink } from 'react-router-dom'
 // PROPS — recibe carrito del padre App.jsx 
 // Son de solo lectura, no se pueden modificar desde acá
 // (PDF: Estados locales y props - ¿Qué son las props?)
-function Navbar({ carrito }) { //recibe carrito como prop
+function Navbar({ carrito, usuario }) {
 
   // ARRAY de links del menú — dato estático definido dentro del componente
   // Se usa .map() para renderizar la lista (PDF: Renderizado condicional - Listas)
@@ -62,25 +62,22 @@ function Navbar({ carrito }) { //recibe carrito como prop
             MI CUENTA
           </Link>
 
-           {/* Ícono carrito con badge
-              RENDERIZADO CONDICIONAL con &&
-              Solo muestra el badge si hay items en el carrito
-              (PDF: Renderizado condicional - Operador &&) */}
-          <Link to="/carrito" className="flex flex-col items-center gap-1 hover:text-purple-600 relative">
-            <div className="relative">  {/* ← NUEVO: div relativo para posicionar el badge */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-
-              {/* Badge — solo se muestra si totalItems > 0 ← NUEVO */}
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
-            </div>
-            MI CARRITO
-          </Link>
+          {/* Ícono carrito — solo visible para usuarios */}
+          {usuario?.rol === 'usuario' && (
+            <Link to="/carrito" className="flex flex-col items-center gap-1 hover:text-purple-600 relative">
+              <div className="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                {totalItems > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </div>
+              MI CARRITO
+            </Link>
+          )}
 
         </div>
       </div>

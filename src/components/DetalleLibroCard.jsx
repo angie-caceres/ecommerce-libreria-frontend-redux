@@ -8,7 +8,7 @@ import { calcularPrecioFinal } from '../utils/calcularPrecio'
 
 // PROPS — recibe los datos del libro y la función del carrito desde el padre
 // (PDF: Estados locales y props - ¿Qué son las props?)
-function DetalleLibroCard({ libro, agregarAlCarrito }) {
+function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
 
   // HOOK useState — controla si se muestra el mensaje de éxito
   // (PDF: Estados locales y props - useState)
@@ -86,12 +86,18 @@ function DetalleLibroCard({ libro, agregarAlCarrito }) {
 
         {/* EVENTO onClick — dispara handleAgregar
             (PDF: Estados locales y props - Eventos) */}
-        <button
-          onClick={handleAgregar}
-          className="w-full bg-[#2d2640] text-white py-4 text-sm uppercase tracking-widest hover:bg-purple-800 transition"
-        >
-          Añadir al carrito
-        </button>
+        {puedeComprar ? (
+          <button
+            onClick={handleAgregar}
+            className="w-full bg-[#2d2640] text-white py-4 text-sm uppercase tracking-widest hover:bg-purple-800 transition"
+          >
+            Añadir al carrito
+          </button>
+        ) : (
+          <p className="text-sm text-gray-400 text-center py-4 border border-gray-200">
+            Iniciá sesión como usuario para comprar
+          </p>
+        )}
 
         {/* RENDERIZADO CONDICIONAL con &&
             (PDF: Renderizado condicional - Operador &&) */}
