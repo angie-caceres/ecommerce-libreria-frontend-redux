@@ -34,9 +34,7 @@ const TODOS_LOS_PEDIDOS = [
 const ITEMS_POR_PAGINA = 15;
 
 const AVATAR_COLORS = [
-  "#7C3AED","#059669","#DC2626","#D97706","#0891B2",
-  "#BE185D","#15803D","#1D4ED8","#9333EA","#EA580C",
-  "#0D9488","#B45309","#4F46E5","#DB2777","#16A34A",
+  "#CBAAE9"
 ];
 // ─────────────────────────────────────────────────────────────
 // PRINCIPAL: TodosLosPedidos
@@ -103,7 +101,7 @@ export default function VerPedidos() {
                     onClick={() => handleFiltro(f)}
                     className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
                       filtroEstado === f
-                        ? "bg-purple-600 text-white"
+                        ? "bg-[#7B5B98] text-white"
                         : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                     }`}>
                     {f === "TODOS" ? "Todos" : f === "CONFIRMADO" ? "Confirmados" : "Pendientes"}
@@ -116,10 +114,10 @@ export default function VerPedidos() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-purple-100">
+                  <tr className="bg-[#EBE5F2]">
                     {["ID DE PEDIDO", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO"].map(h => (
                       <th key={h}
-                        className="text-left text-xs font-bold text-purple-700 uppercase tracking-wider px-6 py-3.5">
+                        className="text-left text-xs font-bold text-[#473954] uppercase tracking-wider px-6 py-3.5">
                         {h}
                       </th>
                     ))}

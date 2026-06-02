@@ -103,7 +103,7 @@ function GestionGeneros() {
             <div>
               <button
                 onClick={abrirCrear}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-xs font-semibold hover:opacity-90 transition-opacity bg-purple-600 shadow-sm uppercase tracking-wider"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-xs font-semibold hover:opacity-90 transition-opacity bg-[#CBAAE9] shadow-sm uppercase tracking-wider"
               >
                 <Plus size={14} />
                 Nuevo Género
@@ -143,7 +143,7 @@ function GestionGeneros() {
                       {/* Nombre del Género */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <span className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
+                          <span className="w-2 h-2 rounded-full border-[#CBAAE9] flex-shrink-0" />
                           <span className="text-sm font-semibold text-gray-800">
                             {genero.nombre}
                           </span>

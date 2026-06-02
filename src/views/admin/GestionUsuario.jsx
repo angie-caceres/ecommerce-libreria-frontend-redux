@@ -31,7 +31,7 @@ const USUARIOS = [
 ];
 
 const ITEMS_POR_PAGINA = 15;
-const AVATAR_BG = "bg-purple-400";
+const AVATAR_BG = "bg-[#CBAAE9]";
 
 export default function GestionUsuarios() {
 
@@ -105,7 +105,7 @@ export default function GestionUsuarios() {
                     onClick={() => handleFiltroActivo(f)}
                     className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
                       filtroActivo === f
-                        ? "bg-purple-600 text-white"
+                        ? "bg-[#CBAAE9] text-white"
                         : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                     }`}>
                     {f}

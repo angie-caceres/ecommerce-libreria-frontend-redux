@@ -29,9 +29,9 @@ function FormField({ label, children, className = "" }) {
 }
 
 const inputClass =
-  "w-full px-4 py-2.5 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg " +
-  "focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 " +
-  "placeholder:text-gray-300 transition-colors";
+  "w-full px-4 py-2.5 text-sm text-[#544341] bg-white border border-[#CBC4CE] rounded-lg " +
+  "focus:outline-none focus:ring-2 focus:ring-[#EBE5F2] focus:border-[#7B5B98] " +
+  "placeholder:text-[#877270] transition-colors";
 
 
 // ─────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ export default function EditarLibro() {
         {/* Encabezado de la página */}
         <div>
           <h2
-            className="text-4xl font-bold text-gray-900"
+            className="text-4xl text-[#1C1B1B]"
             style={{ fontFamily: "'Playfair Display', serif" }}>
             Editar Libro
           </h2>
@@ -257,11 +257,11 @@ export default function EditarLibro() {
                 <div className={`${inputClass} flex flex-wrap gap-2 min-h-[44px] cursor-text`}>
                   {autores.map((autor) => (
                     <span key={autor}
-                      className="inline-flex items-center gap-1.5 bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                      className="inline-flex items-center gap-1.5 bg-[#EBE5F2] text-[#473954] text-xs font-semibold px-2.5 py-1 rounded-full">
                       {autor}
 
                       <button onClick={() => eliminarAutor(autor)}
-                        className="hover:text-purple-900 font-bold leading-none">×</button>
+                        className="hover:text-[#200538] font-bold leading-none">×</button>
                     </span>
                   ))}
                   <input
@@ -304,7 +304,7 @@ export default function EditarLibro() {
               Cancelar
             </button>
             <button onClick={handleSubmit}
-              className="px-6 py-2.5 text-sm font-bold text-white bg-purple-900 rounded-xl hover:bg-purple-800 active:scale-95 transition-all shadow-sm">
+              className="px-6 py-2.5 text-sm font-bold text-white bg-[#473954] rounded-xl hover:bg-[#3A3074] active:scale-95 transition-all shadow-sm">
               Actualizar Libro
             </button>
           </div>

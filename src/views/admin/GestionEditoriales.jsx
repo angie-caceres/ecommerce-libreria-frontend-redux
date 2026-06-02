@@ -101,7 +101,7 @@ function GestionEditoriales() {
             <div>
               <button
                 onClick={abrirCrear}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-xs font-semibold hover:opacity-90 transition-opacity bg-purple-600 shadow-sm uppercase tracking-wider"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-xs font-semibold hover:opacity-90 transition-opacity bg-[#CBAAE9] shadow-sm uppercase tracking-wider"
               >
                 <Plus size={14} />
                 Nueva Editorial
@@ -141,7 +141,7 @@ function GestionEditoriales() {
                       {/* Nombre con indicador circular */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <span className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-[#7B5B98] flex-shrink-0" />
                           <span className="text-sm font-semibold text-gray-800">
                             {editorial.nombre}
                           </span>

@@ -1,7 +1,7 @@
 // COMPONENTE raíz — contiene el estado global del carrito
 // El estado vive acá porque es el padre de todos los componentes
 // que necesitan acceder al carrito (PDF: Estados locales y props - Flujo unidireccional)
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useState } from 'react'
 import Home from './views/Home'
 import Carrito from './views/Carrito'
@@ -11,6 +11,11 @@ import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
 import Checkout from './views/Checkout'
 import ConfirmacionPedido from './views/ConfirmacionPedido'
+
+import QuienesSomos from './views/QuienesSomos'
+import Contacto from './views/Contacto'
+
+
 
 import GestionGeneros from './views/admin/GestionGeneros'
 import GestionEditoriales from './views/admin/GestionEditoriales'
@@ -24,6 +29,13 @@ import CrearLibro from './views/admin/CrearLibro'
 import EditarLibro from './views/admin/EditarLibro'
 import GestionUsuario from './views/admin/GestionUsuario'
 import VerPedidos from './views/admin/VerPedidos'
+// import GestionLibros from "./views/GestionLibros"
+
+import Login from "./views/Login";
+import MisOrdenes from "./views/MisOrdenes";
+
+
+
 
 function App() {
 
@@ -37,6 +49,7 @@ function App() {
   // Array de objetos, cada uno representa un libro agregado
   // (PDF: Estados locales y props - useState)
   const [carrito, setCarrito] = useState([])
+  const [usuario, setUsuario] = useState(null)
 
 
   // FUNCIÓN para agregar un libro al carrito
@@ -83,7 +96,7 @@ function App() {
           (PDF: Estados locales y props - Flujo unidireccional) */}
       
       {/*RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
-      {!esAdmin && <Navbar carrito={carrito} />}
+      {!esAdmin && <Navbar carrito={carrito} usuario={usuario} />}
 
       <Routes>
 
@@ -95,19 +108,22 @@ function App() {
           element={
             <DetalleLibro
               agregarAlCarrito={agregarAlCarrito}
+              puedeComprar={usuario?.rol === 'usuario'}
             />
           }
         />
 
-        {/* Carrito recibe todo lo necesario como props */}
+        {/* Carrito — solo usuarios */}
         <Route
           path="/carrito"
           element={
-            <Carrito
-              carrito={carrito}
-              eliminarDelCarrito={eliminarDelCarrito}
-              cambiarCantidad={cambiarCantidad}
-            />
+            usuario?.rol === 'usuario' ? (
+              <Carrito
+                carrito={carrito}
+                eliminarDelCarrito={eliminarDelCarrito}
+                cambiarCantidad={cambiarCantidad}
+              />
+            ) : <Navigate to="/login" />
           }
         />
 
@@ -117,28 +133,36 @@ function App() {
           element={<Catalogo />}
         />
 
-        {/* Checkout */}
+        {/* Checkout — solo usuarios */}
         <Route
           path="/checkout"
-          element={<Checkout carrito={carrito} vaciarCarrito={vaciarCarrito} />}
+          element={
+            usuario?.rol === 'usuario' ? (
+              <Checkout carrito={carrito} vaciarCarrito={vaciarCarrito} />
+            ) : <Navigate to="/login" />
+          }
         />
+
+        //<Route path="/gestion-libros" element={<GestionLibros />} />
 
         {/* Confirmacion pedido */}
         <Route 
           path="/pedido" 
           element={<ConfirmacionPedido/>} 
         />
-
-        <Route path="/admin/generos" element={<GestionGeneros />} />
-        <Route path="/admin/editoriales" element={<GestionEditoriales />} />
-        <Route path="/admin/autores" element={<GestionAutores />} />
-        <Route path="/admin/descuentos" element={<GestionDescuentos />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/crear-libro" element={<CrearLibro />} />
-        <Route path="/admin/editar-libro" element={<EditarLibro />} />
-        <Route path="/admin/usuarios" element={<GestionUsuario />} />
-        <Route path="/admin/pedidos" element={<VerPedidos />} />
-
+        <Route path="/admin/generos" element={usuario?.rol === 'admin' ? <GestionGeneros /> : <Navigate to="/login" />} />
+        <Route path="/admin/editoriales" element={usuario?.rol === 'admin' ? <GestionEditoriales /> : <Navigate to="/login" />} />
+        <Route path="/admin/autores" element={usuario?.rol === 'admin' ? <GestionAutores /> : <Navigate to="/login" />} />
+        <Route path="/admin/descuentos" element={usuario?.rol === 'admin' ? <GestionDescuentos /> : <Navigate to="/login" />} />
+        <Route path="/admin" element={usuario?.rol === 'admin' ? <AdminDashboard /> : <Navigate to="/login" />} />
+        <Route path="/admin/crear-libro" element={usuario?.rol === 'admin' ? <CrearLibro /> : <Navigate to="/login" />} />
+        <Route path="/admin/editar-libro" element={usuario?.rol === 'admin' ? <EditarLibro /> : <Navigate to="/login" />} />
+        <Route path="/admin/usuarios" element={usuario?.rol === 'admin' ? <GestionUsuario /> : <Navigate to="/login" />} />
+        <Route path="/admin/pedidos" element={usuario?.rol === 'admin' ? <VerPedidos /> : <Navigate to="/login" />} />
+        <Route path="/mis-ordenes" element={usuario?.rol === 'usuario' ? <MisOrdenes /> : <Navigate to="/login" />} />
+        <Route path="/quienes-somos" element={<QuienesSomos />} />
+        <Route path="/contacto" element={<Contacto />} />
+        <Route path="/login" element={<Login setUsuario={setUsuario} />}/>
       </Routes>
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Footer si NO es admin */}
       {!esAdmin && <Footer />}

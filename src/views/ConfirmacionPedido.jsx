@@ -26,6 +26,9 @@ function ConfirmacionPedido({}) {
         {/* Resumen con banner confirmado y sin botón */}
         <ResumenCompra
           carrito={carrito}
+          titulo="Resumen de Compra"
+          editable={false}
+          mostrarEnvio={true}
           mostrarBoton={false}
           confirmado={true}
         />

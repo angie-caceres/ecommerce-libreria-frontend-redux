@@ -1,15 +1,14 @@
 //Vista de administrador dashboard 
 //Hook de React (actualmente no se utiliza en el código)
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import HeaderAdmin from "../../components/HeaderAdmin";
 import Sidebar from "../../components/Sidebar";
 import { BookOpen, Users } from "lucide-react";
 
-
 // ===============================
 // DATOS DE PRUEBA
 // ===============================
-
 // Información utilizada para generar el gráfico de ventas semanales
 const WEEKLY_SALES = [
   { day: "L", amount: 18500 },
@@ -42,12 +41,15 @@ const RECENT_ORDERS = [
 // un valor y opcionalmente una etiqueta (badge)
 function StatCard({ icon, label, value, badge }) {
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+     <div
+        onClick={onClick}
+        className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-all"
+      >
       <div className="flex justify-between">
 
         {/* Contenido principal de la tarjeta */}
         <div>
-          <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center mb-3">
+          <div className="w-8 h-8 rounded-lg bg-[#EBE5F2] text-[#7B5B98] flex items-center justify-center mb-3">
             {icon}
           </div>
 
@@ -59,7 +61,7 @@ function StatCard({ icon, label, value, badge }) {
 
         {/* Badge opcional */}
         {badge && (
-          <span className="h-fit text-xs font-bold text-yellow-700 bg-yellow-100 px-3 py-1 rounded-full">
+          <span className="h-fit text-xs font-bold text-[#877270] bg-[#E5E2DC] px-3 py-1 rounded-full">
             {badge}
           </span>
         )}
@@ -113,8 +115,8 @@ function SalesChart({ data }) {
               <div
                 className={`w-12 rounded-t-md ${
                   isHighest
-                    ? "bg-[#80609f]"
-                    : "bg-[#c6a4e8]"
+                    ? "bg-[#7B5B98]" //Barra alta
+                    : "bg-[#CBAAE9]" //Resto de barras
                 }`}
                 style={{
                   height: `${heightPct}%`,
@@ -126,7 +128,7 @@ function SalesChart({ data }) {
               <span
                 className={`text-xs font-bold mt-3 ${
                   isHighest
-                    ? "text-[#80609f]"
+                    ? "text-[#7B5B98]"
                     : "text-gray-500"
                 }`}
               >
@@ -153,7 +155,7 @@ function SalesChart({ data }) {
         </div>
 
         {/* Porcentaje de crecimiento */}
-        <span className="text-sm font-bold text-yellow-700 bg-yellow-100 border border-yellow-200 px-3 py-1 rounded">
+        <span className="text-sm font-bold text-[#877270] bg-[#E5E2DC] border border-[#CBC4CE] px-3 py-1 rounded">
           +12%
         </span>
 
@@ -197,12 +199,12 @@ function OrdersTable({ orders }) {
       <table className="w-full">
 
         {/* Encabezados */}
-        <thead className="bg-purple-50/40">
+        <thead className="bg-[#EBE5F2]">
           <tr>
             {["ID", "USUARIO", "ROL", "TOTAL", "ESTADO", "FECHA"].map((h) => (
               <th
                 key={h}
-                className="text-left text-xs font-bold text-purple-400 uppercase tracking-widest px-8 py-4"
+                className="text-left text-xs font-bold text-[#7B5B98] uppercase tracking-widest px-8 py-4"
               >
                 {h}
               </th>
@@ -224,7 +226,7 @@ function OrdersTable({ orders }) {
               <td className="px-8 py-5">
                 <div className="flex items-center gap-3">
 
-                  <div className="w-8 h-8 rounded-full bg-[#c6a4e8] flex items-center justify-center text-purple-900 text-xs font-bold">
+                  <div className="w-8 h-8 rounded-full bg-[#CBAAE9] flex items-center justify-center text-[#473954] text-xs font-bold">
                     {order.initials}
                   </div>
 
@@ -237,7 +239,7 @@ function OrdersTable({ orders }) {
 
               {/* Rol */}
               <td className="px-8 py-5">
-                <span className="text-xs font-bold bg-purple-100 text-yellow-700 px-3 py-1 rounded-full">
+                <span className="text-xs font-bold bg-[#EBE5F2] text-[#473954] px-3 py-1 rounded-full">
                   Usuario
                 </span>
               </td>
@@ -274,6 +276,7 @@ function OrdersTable({ orders }) {
 
 // Dashboard de administración
 export default function AdminDashboard() {
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-[#f7f4ef] flex font-serif">
@@ -303,6 +306,7 @@ export default function AdminDashboard() {
               icon={<BookOpen size={16} />}
               label="Total Libros"
               value="1,240"
+              onClick={() => navigate("/gestion-libros")}
             />
 
             <StatCard

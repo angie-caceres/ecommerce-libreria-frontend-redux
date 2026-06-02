@@ -19,10 +19,9 @@ function FormField({ label, children, className = "" }) {
 }
 // Estilos base reutilizables para todos los inputs
 const inputClass =
-  "w-full px-4 py-2.5 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg " +
-  "focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 " +
-  "placeholder:text-gray-300 transition-colors";
-
+  "w-full px-4 py-2.5 text-sm text-[#544341] bg-white border border-[#CBC4CE] rounded-lg " +
+  "focus:outline-none focus:ring-2 focus:ring-[#EBE5F2] focus:border-[#7B5B98] " +
+  "placeholder:text-[#877270] transition-colors";
 
 // ─────────────────────────────────────────────────────────────
 // PRINCIPAL: CrearLibro
@@ -114,7 +113,7 @@ export default function CrearLibro() {
             {/* Contenido principal */}
             <main className="flex-1 p-8">
           <h2
-            className="text-4xl font-bold text-gray-900"
+            className="text-4xl text-[#1C1B1B]"
             style={{ fontFamily: "'Playfair Display', serif" }}>
             Crear Libro
           </h2>
@@ -276,7 +275,7 @@ export default function CrearLibro() {
             </button>
             <button
               onClick={handleSubmit}
-              className="px-6 py-2.5 text-sm font-bold text-white bg-purple-900 rounded-xl hover:bg-purple-800 active:scale-95 transition-all shadow-sm"
+              className="px-6 py-2.5 text-sm font-bold text-white bg-[#473954] rounded-xl hover:bg-[#3A3074] active:scale-95 transition-all shadow-sm"
             >
               CREAR LIBRO
             </button>

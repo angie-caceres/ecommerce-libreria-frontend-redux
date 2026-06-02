@@ -2,10 +2,10 @@
 // Cada componente es un archivo propio, nombre en PascalCase (PDF: Exposición de experto - Componentes)
 import { Link, NavLink } from 'react-router-dom'
 
-// PROPS — recibe carrito del padre App.jsx 
+// PROPS — recibe carrito y usuario del padre App.jsx 
 // Son de solo lectura, no se pueden modificar desde acá
 // (PDF: Estados locales y props - ¿Qué son las props?)
-function Navbar({ carrito }) { //recibe carrito como prop
+function Navbar({ carrito, usuario }) {
 
   // ARRAY de links del menú — dato estático definido dentro del componente
   // Se usa .map() para renderizar la lista (PDF: Renderizado condicional - Listas)
@@ -16,10 +16,11 @@ function Navbar({ carrito }) { //recibe carrito como prop
     { label: 'QUIÉNES SOMOS', to: '/quienes-somos' },
     { label: 'CONTACTO', to: '/contacto' },
   ]
-  // Calcula el total de items en el carrito // ← NUEVO
+
+  // Calcula el total de items en el carrito
   // reduce() suma todas las cantidades del array
   // (PDF: Estados locales y props - Estado)
-  const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0) 
+  const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0)
 
   return (
     <header>
@@ -55,24 +56,52 @@ function Navbar({ carrito }) { //recibe carrito como prop
         {/* Iconos de usuario */}
         <div className="flex items-center gap-6 text-xs text-[#7B5B98]">
 
-          <Link to="/mi-cuenta" className="flex flex-col items-center gap-1 hover:text-purple-600">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            MI CUENTA
-          </Link>
+          {/* RENDERIZADO CONDICIONAL con ternario
+              Si el usuario está logueado muestra MIS ÓRDENES y MI PERFIL
+              Si no está logueado muestra solo MI CUENTA que lleva al login
+              (PDF: Renderizado condicional - Operador ternario) */}
+          {usuario?.rol === 'usuario' ? (
+            <>
+              {/* Mis Órdenes — solo visible cuando está logueado */}
+              <Link to="/mis-ordenes" className="flex flex-col items-center gap-1 hover:text-purple-600">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M12 11h4M12 15h4M8 11h.01M8 15h.01" />
+                </svg>
+                MIS ÓRDENES
+              </Link>
 
-           {/* Ícono carrito con badge
-              RENDERIZADO CONDICIONAL con &&
-              Solo muestra el badge si hay items en el carrito
-              (PDF: Renderizado condicional - Operador &&) */}
-          <Link to="/carrito" className="flex flex-col items-center gap-1 hover:text-purple-600 relative">
-            <div className="relative">  {/* ← NUEVO: div relativo para posicionar el badge */}
+              {/* Mi Perfil — cuando está logueado lleva al perfil */}
+              <Link to="/perfil" className="flex flex-col items-center gap-1 hover:text-purple-600">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                MI PERFIL
+              </Link>
+            </>
+          ) : (
+            /* Sin login — MI CUENTA lleva al login
+               (PDF: Renderizado condicional - Operador ternario) */
+            <Link to="/login" className="flex flex-col items-center gap-1 hover:text-purple-600">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              MI CUENTA
+            </Link>
+          )}
+
+          {/* Carrito — siempre visible
+              Si está logueado va a /carrito, sino va a /login
+              (PDF: Renderizado condicional - Operador ternario) */}
+          <Link
+            to={usuario?.rol === 'usuario' ? '/carrito' : '/login'}
+            className="flex flex-col items-center gap-1 hover:text-purple-600 relative"
+          >
+            <div className="relative">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-
-              {/* Badge — solo se muestra si totalItems > 0 ← NUEVO */}
+              {/* Badge — solo si hay items en el carrito
+                  (PDF: Renderizado condicional - Operador &&) */}
               {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {totalItems}
