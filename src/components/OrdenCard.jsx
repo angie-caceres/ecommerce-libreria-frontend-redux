@@ -1,6 +1,5 @@
 // COMPONENTE OrdenCard
 // Representa una orden individual.
-//
 // Teoría:
 // Un componente encapsula una parte de la interfaz.
 // React construye la UI combinando componentes más pequeños.

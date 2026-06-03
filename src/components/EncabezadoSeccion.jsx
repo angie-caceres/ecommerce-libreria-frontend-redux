@@ -1,10 +1,8 @@
 // COMPONENTE reutilizable — título y botón de acción
 // Se usa en todas las vistas de gestión admin
-// (PDF: Exposición de experto - Componentes reutilizables)
 import { Plus } from 'lucide-react'
 
 // PROPS — recibe titulo, textBoton y onAccion del padre
-// (PDF: Estados locales y props - ¿Qué son las props?)
 function EncabezadoSeccion({ titulo, textBoton, onAccion }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -16,8 +14,7 @@ function EncabezadoSeccion({ titulo, textBoton, onAccion }) {
       </h2>
 
       {/* RENDERIZADO CONDICIONAL con &&
-          Solo muestra el botón si se pasó textBoton como prop
-          (PDF: Renderizado condicional - Operador &&) */}
+          Solo muestra el botón si se pasó textBoton como prop  */}
       {textBoton && (
         <button
           onClick={onAccion}

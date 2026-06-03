@@ -1,5 +1,4 @@
 // VISTA — página de Contacto
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { BsTelephone, BsEnvelope, BsClock } from 'react-icons/bs'
 
 function Contacto() {

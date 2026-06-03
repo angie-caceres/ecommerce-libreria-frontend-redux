@@ -1,18 +1,15 @@
 // VISTA Perfil
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Pencil } from 'lucide-react'
 import Swal from 'sweetalert2'
 
 // PROPS — recibe usuario y cerrarSesion del padre App.jsx
-// (PDF: Estados locales y props - ¿Qué son las props?)
 function Perfil({ usuario, cerrarSesion }) {
 
   const navigate = useNavigate()
 
   // HOOK useState — estado local del formulario
-  // (PDF: Estados locales y props - useState)
   const [form, setForm] = useState({
     nombre: usuario?.nombre || '',
     email: usuario?.email || '',
@@ -20,7 +17,6 @@ function Perfil({ usuario, cerrarSesion }) {
   })
 
   // HOOK useState — controla qué campo está siendo editado
-  // (PDF: Estados locales y props - useState)
   const [editando, setEditando] = useState({
     nombre: false,
     email: false,
@@ -28,7 +24,6 @@ function Perfil({ usuario, cerrarSesion }) {
   })
 
   // EVENTO — actualiza el campo editado
-  // (PDF: Estados locales y props - Eventos)
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
@@ -61,7 +56,6 @@ function Perfil({ usuario, cerrarSesion }) {
 
   const handleVolver = () => {
     // RENDERIZADO CONDICIONAL — vuelve según el rol
-    // (PDF: Renderizado condicional - Operador ternario)
     navigate(usuario?.rol === 'admin' ? '/admin/generos' : '/')
   }
 
@@ -84,8 +78,7 @@ function Perfil({ usuario, cerrarSesion }) {
             </label>
             <div className="flex items-center gap-3 border-b border-[#cbbfc2] pb-3">
               {/* RENDERIZADO CONDICIONAL con ternario
-                  Muestra input o texto según si está editando
-                  (PDF: Renderizado condicional - Operador ternario) */}
+                  Muestra input o texto según si está editando  */}
               {editando.nombre ? (
                 <input
                   autoFocus
@@ -100,8 +93,7 @@ function Perfil({ usuario, cerrarSesion }) {
                   {form.nombre || '—'}
                 </p>
               )}
-              {/* EVENTO onClick — activa edición del campo
-                  (PDF: Estados locales y props - Eventos) */}
+              {/* EVENTO onClick — activa edición del campo  */}
               {!editando.nombre && (
                 <button onClick={() => handleEditar('nombre')} className="text-gray-400 hover:text-purple-600 transition">
                   <Pencil size={14} />
@@ -169,8 +161,7 @@ function Perfil({ usuario, cerrarSesion }) {
         <div className="flex flex-col gap-3 mt-10">
 
           {/* RENDERIZADO CONDICIONAL con &&
-              Solo muestra el botón guardar si hay algún campo editado
-              (PDF: Renderizado condicional - Operador &&) */}
+              Solo muestra el botón guardar si hay algún campo editado  */}
           {hayEdicion && (
             <button
               onClick={handleGuardar}

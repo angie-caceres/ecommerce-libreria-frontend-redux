@@ -1,5 +1,4 @@
 // VISTA — gestión de autores del panel admin
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { useState } from 'react'
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
@@ -27,7 +26,6 @@ const inputClass = "w-full border border-purple-400 rounded-lg px-3 py-2 text-sm
 function GestionAutores() {
 
   // HOOK useState — estados locales del componente
-  // (PDF: Estados locales y props - useState)
   const [lista, setLista]             = useState(autoresIniciales)
   const [pagina, setPagina]           = useState(1)
   const [modal, setModal]             = useState(null)
@@ -44,7 +42,6 @@ function GestionAutores() {
   const cerrarModal = () => { setModal(null); setDeleteId(null) }
 
   // EVENTO — crea o edita un autor
-  // (PDF: Estados locales y props - Eventos)
   const handleAceptar = () => {
     if (!nombre.trim()) return
     if (modal === 'editar' && editItem) {
@@ -68,8 +65,7 @@ function GestionAutores() {
         <HeaderAdmin />
         <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título y botón
-              (PDF: Exposición de experto - Componentes reutilizables) */}
+          {/* COMPONENTE reutilizable — título y botón  */}
           <EncabezadoSeccion
             titulo="Gestión de autores"
             textBoton="Nuevo Autor"
@@ -87,8 +83,7 @@ function GestionAutores() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {/* RENDERIZADO DE LISTA con .map()
-                      (PDF: Renderizado condicional - Listas) */}
+                  {/* RENDERIZADO DE LISTA con .map()  */}
                   {paginados.map(autor => (
                     <tr key={autor.id} className="hover:bg-purple-50/30 transition-colors">
                       <td className="px-6 py-4 text-xs text-gray-500 font-mono">{autor.id}</td>
@@ -117,8 +112,7 @@ function GestionAutores() {
             <Pagination currentPage={pagina} totalPages={totalPaginas} totalItems={lista.length} itemsPerPage={POR_PAGINA} itemLabel="autores" onPageChange={setPagina} />
           </div>
 
-          {/* RENDERIZADO CONDICIONAL con &&
-              (PDF: Renderizado condicional - Operador &&) */}
+          {/* RENDERIZADO CONDICIONAL con &&  */}
           {modal && (
             <ModalFormulario
               titulo={modal === 'editar' ? 'Editar Autor' : 'Nuevo Autor'}

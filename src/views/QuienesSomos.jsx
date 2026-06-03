@@ -1,5 +1,4 @@
 // VISTA — página Quiénes Somos
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import Quote from '../components/Quote'
 
 function QuienesSomos() {
@@ -40,8 +39,7 @@ function QuienesSomos() {
         </div>
       </div>
 
-      {/* COMPONENTE Quote — reutilizable
-          (PDF: Exposición de experto - Componentes reutilizables) */}
+      {/* COMPONENTE Quote — reutilizable  */}
       <Quote />
 
     </div>

@@ -1,10 +1,10 @@
 // COMPONENTE — función JavaScript que devuelve JSX
-// Nombre en PascalCase, archivo propio (PDF: Exposición de experto - Componentes)
+// Nombre en PascalCase, archivo propio
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 // DATOS del carrusel — array de objetos con la info de cada slide
-// En el futuro esto vendría de una API (PDF: useEffect - Llamadas a APIs)
+// En el futuro esto vendría de una API
 const slides = [
   {
     id: 1,
@@ -38,12 +38,10 @@ const slides = [
 function Carrusel() {
 
   // HOOK useState — guarda el índice del slide actual
-  // (PDF: Estados locales y props - useState)
   const [current, setCurrent] = useState(0)
 
   // EVENTOS — actualizan el estado al hacer click en las flechas
   // Nunca se modifica el estado directamente
-  // (PDF: Estados locales y props - Nunca modifiques el estado directamente)
   const handlePrev = () => {
     setCurrent(current === 0 ? slides.length - 1 : current - 1)
   }
@@ -55,7 +53,7 @@ function Carrusel() {
   return (
     <div className="relative flex items-center justify-center px-16 py-16 bg-[#FCF9F8] min-h-[500px]">
 
-      {/* EVENTO onClick — dispara handlePrev (PDF: Estados locales y props) */}
+      {/* EVENTO onClick — dispara handlePrev */}
       <button
         onClick={handlePrev}
         className="absolute left-4 text-gray-400 hover:text-purple-600 text-3xl z-10"
@@ -63,8 +61,7 @@ function Carrusel() {
         ‹
       </button>
 
-      {/* RENDERIZADO CONDICIONAL — solo muestra el slide activo
-          (PDF: Renderizado condicional) */}
+      {/* RENDERIZADO CONDICIONAL — solo muestra el slide activo  */}
       {slides.map((slide, index) => (
         index === current && (
           <div key={slide.id} className="flex items-center justify-between w-full max-w-5xl gap-12">
@@ -77,7 +74,7 @@ function Carrusel() {
               <p className="text-gray-500 text-sm mb-8 leading-relaxed" style={{ fontFamily: "'Manrope', sans-serif" }}>
                 {slide.descripcion}
               </p>
-              {/* COMPONENTE Link — navega sin recargar (PDF: Routing - SPA) */}
+              {/* COMPONENTE Link — navega sin recargar */}
               <Link
                 to={slide.link}
                 className="bg-[#2d2640] text-white text-sm px-6 py-3 hover:bg-purple-800 transition"
@@ -91,8 +88,7 @@ function Carrusel() {
             <div className="flex-1 flex justify-center items-center relative h-96">
 
               {/* RENDERIZADO CONDICIONAL con ternario
-                  Si hay segunda imagen usa tamaño normal, sino usa tamaño grande
-                  (PDF: Renderizado condicional - Operador ternario) */}
+                  Si hay segunda imagen usa tamaño normal, sino usa tamaño grande  */}
               <div className={`bg-white shadow-xl p-3 relative z-10 ${slide.imagen2 ? '-rotate-6' : '-rotate-3'}`}>
                 <img
                   src={slide.imagen1}
@@ -102,8 +98,7 @@ function Carrusel() {
               </div>
 
               {/* RENDERIZADO CONDICIONAL con &&
-                  Solo muestra segunda imagen si existe
-                  (PDF: Renderizado condicional - Operador &&) */}
+                  Solo muestra segunda imagen si existe  */}
               {slide.imagen2 && (
                 <div className="bg-white shadow-xl p-3 absolute right-4 top-4 z-0 rotate-6">
                   <img
@@ -128,8 +123,7 @@ function Carrusel() {
         ›
       </button>
 
-      {/* Dots — RENDERIZADO DE LISTA con .map() + ternario
-          (PDF: Renderizado condicional - Operador ternario) */}
+      {/* Dots — RENDERIZADO DE LISTA con .map() + ternario  */}
       <div className="absolute bottom-6 flex gap-2">
         {slides.map((_, index) => (
           <button
@@ -147,5 +141,5 @@ function Carrusel() {
   )
 }
 
-// EXPORTACIÓN del componente (PDF: Exposición de experto - Estructura de un componente)
+// EXPORTACIÓN del componente
 export default Carrusel

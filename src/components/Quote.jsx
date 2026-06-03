@@ -1,5 +1,5 @@
 // COMPONENTE — función JavaScript que devuelve JSX
-// Nombre en PascalCase, archivo propio (PDF: Exposición de experto - Componentes)
+// Nombre en PascalCase, archivo propio
 
 function Quote() {
   return (
@@ -19,5 +19,5 @@ function Quote() {
   )
 }
 
-// EXPORTACIÓN del componente (PDF: Exposición de experto - Estructura de un componente)
+// EXPORTACIÓN del componente
 export default Quote

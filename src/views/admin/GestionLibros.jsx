@@ -1,5 +1,4 @@
 // VISTA — gestión de libros del panel admin
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { useState } from 'react'
 import { Trash2, Pencil, X } from 'lucide-react'
 import HeaderAdmin from "../../components/HeaderAdmin"
@@ -41,7 +40,6 @@ function GestionLibros() {
   const navigate = useNavigate()
 
   // HOOK useState — estados locales del componente
-  // (PDF: Estados locales y props - useState)
   const [lista, setLista]       = useState(librosIniciales)
   const [pagina, setPagina]     = useState(1)
   const [deleteId, setDeleteId] = useState(null)
@@ -52,7 +50,6 @@ function GestionLibros() {
   const cerrarModal = () => setDeleteId(null)
 
   // EVENTO — elimina un libro
-  // (PDF: Estados locales y props - Eventos)
   const handleEliminar = () => {
     setLista(lista.filter(l => l.id !== deleteId))
     cerrarModal()
@@ -74,8 +71,7 @@ function GestionLibros() {
         <HeaderAdmin />
         <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título y botón
-              (PDF: Exposición de experto - Componentes reutilizables) */}
+          {/* COMPONENTE reutilizable — título y botón  */}
           <EncabezadoSeccion
             titulo="Gestión de libros"
             textBoton="Nuevo Libro"
@@ -93,16 +89,14 @@ function GestionLibros() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {/* RENDERIZADO DE LISTA con .map()
-                      (PDF: Renderizado condicional - Listas) */}
+                  {/* RENDERIZADO DE LISTA con .map()  */}
                   {paginados.map(libro => (
                     <tr key={libro.id} className="hover:bg-purple-50/30 transition-colors">
                       <td className="px-6 py-4 text-xs text-gray-500 font-mono">#{libro.id}</td>
                       <td className="px-6 py-4 text-sm font-semibold text-gray-800">{libro.titulo}</td>
                       <td className="px-6 py-4 text-sm text-gray-500">{libro.autor}</td>
                       <td className="px-6 py-4">
-                        {/* RENDERIZADO CONDICIONAL con ternario
-                            (PDF: Renderizado condicional - Operador ternario) */}
+                        {/* RENDERIZADO CONDICIONAL con ternario  */}
                         <span className={`text-xs font-medium px-3 py-1 rounded-full ${GENERO_COLORES[libro.genero] ?? 'bg-gray-100 text-gray-600'}`}>
                           {libro.genero}
                         </span>
@@ -129,8 +123,7 @@ function GestionLibros() {
             <Pagination currentPage={pagina} totalPages={totalPaginas} totalItems={lista.length} itemsPerPage={POR_PAGINA} itemLabel="libros" onPageChange={setPagina} />
           </div>
 
-          {/* RENDERIZADO CONDICIONAL con &&
-              (PDF: Renderizado condicional - Operador &&) */}
+          {/* RENDERIZADO CONDICIONAL con &&  */}
           {deleteId && (
             <ModalConfirmacion
               titulo="Eliminar libro"

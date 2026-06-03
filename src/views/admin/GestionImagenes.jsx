@@ -6,7 +6,6 @@ import Sidebar from "../../components/Sidebar";
 export default function GestionImagenes() {
 
   // HOOK useState — estado local de las imágenes cargadas
-  // (PDF: Estados locales y props - useState)
   const [imagenes, setImagenes] = useState([
     { id: 1, nombre: "1984", url: "/libros/1984.png" },
     { id: 2, nombre: "El Hobbit", url: "/libros/elhobbit.png" },
@@ -14,7 +13,6 @@ export default function GestionImagenes() {
   ])
 
   // HOOK useState — estado local del formulario
-  // (PDF: Estados locales y props - useState)
   const [nombre, setNombre] = useState("")
   const [archivo, setArchivo] = useState(null)
   const [mensaje, setMensaje] = useState("")
@@ -22,13 +20,11 @@ export default function GestionImagenes() {
   // EVENTO — agrega una nueva imagen al estado
   // Usa URL.createObjectURL para crear una URL temporal del archivo
   // No modifica el estado directamente
-  // (PDF: Estados locales y props - Nunca modifiques el estado directamente)
   const handleAgregarImagen = (e) => {
     e.preventDefault()
 
     if (!nombre.trim() || !archivo) {
       // Validación con estado — no usa alert() ni toca el DOM
-      // (PDF: Estados locales y props - useState)
       setMensaje("Completá todos los campos")
       return
     }
@@ -53,7 +49,6 @@ export default function GestionImagenes() {
 
   // EVENTO — elimina una imagen del estado por id
   // Usa filter sin modificar el array directamente
-  // (PDF: Estados locales y props - Nunca modifiques el estado directamente)
   const handleEliminar = (id) => {
     setImagenes(imagenes.filter((imagen) => imagen.id !== id))
   }
@@ -117,8 +112,7 @@ export default function GestionImagenes() {
             </form>
 
             {/* RENDERIZADO CONDICIONAL con &&
-                Solo muestra el mensaje si existe
-                (PDF: Renderizado condicional - Operador &&) */}
+                Solo muestra el mensaje si existe  */}
             {mensaje && (
               <p className="mt-4 text-sm font-semibold text-[#7b5b99]">
                 {mensaje}
@@ -135,16 +129,14 @@ export default function GestionImagenes() {
 
             {/* RENDERIZADO DE LISTA con .map()
                 Cada imagen se renderiza como una tarjeta
-                Siempre con key única
-                (PDF: Renderizado condicional - Listas) */}
+                Siempre con key única  */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6">
               {imagenes.map((imagen) => (
                 <div key={imagen.id} className="border border-gray-100 rounded-xl p-4 shadow-sm">
 
                   <div className="h-40 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden mb-4">
                     {/* RENDERIZADO CONDICIONAL con ternario
-                        Si tiene URL muestra la imagen, sino muestra ícono placeholder
-                        (PDF: Renderizado condicional - Operador ternario) */}
+                        Si tiene URL muestra la imagen, sino muestra ícono placeholder  */}
                     {imagen.url ? (
                       <img
                         src={imagen.url}
@@ -158,8 +150,7 @@ export default function GestionImagenes() {
 
                   <h3 className="font-bold text-gray-800 text-sm">{imagen.nombre}</h3>
 
-                  {/* EVENTO onClick — elimina la imagen del estado
-                      (PDF: Estados locales y props - Eventos) */}
+                  {/* EVENTO onClick — elimina la imagen del estado  */}
                   <button
                     onClick={() => handleEliminar(imagen.id)}
                     className="flex items-center gap-2 text-red-500 text-xs font-semibold hover:underline"

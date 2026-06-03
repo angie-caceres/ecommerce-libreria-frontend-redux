@@ -1,9 +1,7 @@
 // COMPONENTE reutilizable — modal de confirmación de borrado
 // Se usa en todas las vistas de gestión admin
-// (PDF: Exposición de experto - Componentes reutilizables)
 
 // PROPS — recibe titulo, mensaje y funciones del padre
-// (PDF: Estados locales y props - ¿Qué son las props?)
 function ModalConfirmacion({ titulo, mensaje, onCancelar, onConfirmar }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -12,8 +10,7 @@ function ModalConfirmacion({ titulo, mensaje, onCancelar, onConfirmar }) {
 
         <div className="flex items-center justify-between mb-4">
           <span className="font-semibold text-gray-800">{titulo}</span>
-          {/* EVENTO onClick — cierra el modal
-              (PDF: Estados locales y props - Eventos) */}
+          {/* EVENTO onClick — cierra el modal  */}
           <button onClick={onCancelar} className="text-gray-400 hover:text-gray-600">✕</button>
         </div>
 
@@ -26,8 +23,7 @@ function ModalConfirmacion({ titulo, mensaje, onCancelar, onConfirmar }) {
           >
             CANCELAR
           </button>
-          {/* EVENTO onClick — confirma la acción del padre
-              (PDF: Estados locales y props - Flujo unidireccional) */}
+          {/* EVENTO onClick — confirma la acción del padre  */}
           <button
             onClick={onConfirmar}
             className="px-5 py-2 rounded-lg text-white text-xs font-semibold uppercase bg-red-500 hover:bg-red-600 transition-colors"

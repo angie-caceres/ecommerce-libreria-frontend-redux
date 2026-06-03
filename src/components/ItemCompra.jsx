@@ -1,9 +1,7 @@
 // COMPONENTE reutilizable — muestra una fila de libro en cualquier vista
 // Se usa en ResumenCompra con editable=true (carrito) o editable=false (checkout/pedido)
-// (PDF: Exposición de experto - Componentes reutilizables)
 
 // PROPS — recibe el item, si es editable y las funciones del padre
-// (PDF: Estados locales y props - ¿Qué son las props?)
 function ItemCompra({ item, editable, cambiarCantidad, eliminarDelCarrito }) {
 
   return (
@@ -21,8 +19,7 @@ function ItemCompra({ item, editable, cambiarCantidad, eliminarDelCarrito }) {
           <p className="text-xs text-gray-400">{item.autor}</p>
 
           {/* RENDERIZADO CONDICIONAL con &&
-              Solo muestra precio original tachado si tiene descuento
-              (PDF: Renderizado condicional - Operador &&) */}
+              Solo muestra precio original tachado si tiene descuento  */}
           {item.precioOriginal && item.descuento && (
             <p className="text-xs text-gray-400 line-through">
               ${item.precioOriginal.toLocaleString()}
@@ -30,8 +27,7 @@ function ItemCompra({ item, editable, cambiarCantidad, eliminarDelCarrito }) {
           )}
 
           {/* RENDERIZADO CONDICIONAL con &&
-              Solo muestra el botón eliminar si es editable
-              (PDF: Renderizado condicional - Operador &&) */}
+              Solo muestra el botón eliminar si es editable  */}
           {editable && (
             <button
               onClick={() => eliminarDelCarrito(item.id)}
@@ -44,12 +40,10 @@ function ItemCompra({ item, editable, cambiarCantidad, eliminarDelCarrito }) {
       </div>
 
       {/* RENDERIZADO CONDICIONAL con ternario
-          Si es editable muestra botones de cantidad, sino solo el número
-          (PDF: Renderizado condicional - Operador ternario) */}
+          Si es editable muestra botones de cantidad, sino solo el número  */}
       {editable ? (
         <div className="flex items-center gap-3">
-          {/* EVENTO onClick — reduce la cantidad
-              (PDF: Estados locales y props - Eventos) */}
+          {/* EVENTO onClick — reduce la cantidad  */}
           <button
             onClick={() => cambiarCantidad(item.id, item.cantidad - 1)}
             className="w-7 h-7 border border-gray-300 flex items-center justify-center hover:bg-gray-100"
@@ -78,5 +72,4 @@ function ItemCompra({ item, editable, cambiarCantidad, eliminarDelCarrito }) {
 }
 
 // EXPORTACIÓN del componente
-// (PDF: Exposición de experto - Estructura de un componente)
 export default ItemCompra

@@ -1,5 +1,4 @@
 // VISTA — gestión de géneros del panel admin
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import HeaderAdmin from "../../components/HeaderAdmin"
@@ -27,7 +26,6 @@ const inputClass = "w-full border border-purple-400 rounded-lg px-3 py-2 text-sm
 function GestionGeneros() {
 
   // HOOK useState — estados locales del componente
-  // (PDF: Estados locales y props - useState)
   const [lista, setLista]       = useState(generosIniciales)
   const [pagina, setPagina]     = useState(1)
   const [modal, setModal]       = useState(null)
@@ -43,7 +41,6 @@ function GestionGeneros() {
   const cerrarModal = () => { setModal(null); setDeleteId(null) }
 
   // EVENTO — crea o edita un género
-  // (PDF: Estados locales y props - Eventos)
   const handleAceptar = () => {
     if (!nombre.trim()) return
     if (modal === 'editar' && editItem) {
@@ -67,8 +64,7 @@ function GestionGeneros() {
         <HeaderAdmin />
         <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título y botón
-              (PDF: Exposición de experto - Componentes reutilizables) */}
+          {/* COMPONENTE reutilizable — título y botón  */}
           <EncabezadoSeccion
             titulo="Gestión de géneros"
             textBoton="Nuevo Género"
@@ -86,8 +82,7 @@ function GestionGeneros() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {/* RENDERIZADO DE LISTA con .map()
-                      (PDF: Renderizado condicional - Listas) */}
+                  {/* RENDERIZADO DE LISTA con .map()  */}
                   {paginados.map(genero => (
                     <tr key={genero.id} className="hover:bg-purple-50/30 transition-colors">
                       <td className="px-6 py-4 text-xs text-gray-500 font-mono">{genero.id}</td>
@@ -115,8 +110,7 @@ function GestionGeneros() {
             <Pagination currentPage={pagina} totalPages={totalPaginas} totalItems={lista.length} itemsPerPage={POR_PAGINA} itemLabel="géneros" onPageChange={setPagina} />
           </div>
 
-          {/* RENDERIZADO CONDICIONAL con &&
-              (PDF: Renderizado condicional - Operador &&) */}
+          {/* RENDERIZADO CONDICIONAL con &&  */}
           {modal && (
             <ModalFormulario
               titulo={modal === 'editar' ? 'Editar Género' : 'Nuevo Género'}

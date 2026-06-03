@@ -1,5 +1,4 @@
 // VISTA — gestión de usuarios del panel admin
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { useState } from 'react'
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
@@ -40,13 +39,11 @@ const AVATAR_BG = "bg-[#CBAAE9]"
 export default function GestionUsuarios() {
 
   // HOOK useState — estados locales del componente
-  // (PDF: Estados locales y props - useState)
   const [usuarios, setUsuarios]       = useState(USUARIOS)
   const [currentPage, setCurrentPage] = useState(1)
   const [filtroActivo, setFiltroActivo] = useState("Todos")
 
   // RENDERIZADO CONDICIONAL — filtra según el estado activo
-  // (PDF: Renderizado condicional)
   const usuariosFiltrados = usuarios.filter(u => {
     if (filtroActivo === "Todos") return true
     if (filtroActivo === "Activo") return u.activo === true
@@ -76,14 +73,12 @@ export default function GestionUsuarios() {
         <HeaderAdmin />
         <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título sin botón
-              (PDF: Exposición de experto - Componentes reutilizables) */}
+          {/* COMPONENTE reutilizable — título sin botón  */}
           <EncabezadoSeccion titulo="Gestión de usuarios" />
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-gray-100">
-              {/* COMPONENTE reutilizable — botones de filtro
-                  (PDF: Exposición de experto - Componentes reutilizables) */}
+              {/* COMPONENTE reutilizable — botones de filtro  */}
               <FiltrosBotones
                 opciones={["Todos", "Activo", "Inactivo"]}
                 activo={filtroActivo}
@@ -101,8 +96,7 @@ export default function GestionUsuarios() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {/* RENDERIZADO DE LISTA con .map()
-                      (PDF: Renderizado condicional - Listas) */}
+                  {/* RENDERIZADO DE LISTA con .map()  */}
                   {usuariosPagina.map(usuario => (
                     <tr key={usuario.id} className="hover:bg-purple-50/30 transition-colors">
                       <td className="px-6 py-4">
@@ -120,8 +114,7 @@ export default function GestionUsuarios() {
                         <span className={`text-xs font-semibold px-3 py-1 rounded-full ${rolStyle(usuario.rol)}`}>{usuario.rol}</span>
                       </td>
                       <td className="px-6 py-4">
-                        {/* EVENTO onClick — cambia el estado del usuario
-                            (PDF: Estados locales y props - Eventos) */}
+                        {/* EVENTO onClick — cambia el estado del usuario  */}
                         <button onClick={() => cambiarEstadoUsuario(usuario.id)} className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${estadoStyle(usuario.activo)}`}>
                           {usuario.activo ? "Activo" : "Inactivo"}
                         </button>

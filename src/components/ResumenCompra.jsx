@@ -1,6 +1,5 @@
 // COMPONENTE reutilizable — cuadro de resumen de compra
 // Se usa en Carrito, Checkout y ConfirmacionPedido
-// (PDF: Exposición de experto - Componentes reutilizables)
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Alerta from './Alerta'
@@ -19,7 +18,6 @@ function ResumenCompra({
 }) {
 
   // HOOK useState — controla la visibilidad del banner de confirmación
-  // (PDF: Estados locales y props - useState)
   const [bannerVisible, setBannerVisible] = useState(confirmado)
 
   // Calcula el subtotal — item.precio ya viene con descuento aplicado
@@ -35,7 +33,6 @@ function ResumenCompra({
   const envio = 2400
 
   // RENDERIZADO CONDICIONAL — total con o sin envío según la vista
-  // (PDF: Renderizado condicional - Operador ternario)
   const total = mostrarEnvio ? subtotal + envio : subtotal
 
   return (
@@ -49,8 +46,7 @@ function ResumenCompra({
       </h2>
 
       {/* RENDERIZADO CONDICIONAL con &&
-          Solo muestra el banner si la compra fue confirmada
-          (PDF: Renderizado condicional - Operador &&) */}
+          Solo muestra el banner si la compra fue confirmada  */}
       {bannerVisible && (
         <Alerta
           texto="Compra confirmada. En breve recibirás un mail con el detalle del envío."
@@ -60,8 +56,7 @@ function ResumenCompra({
 
       {/* RENDERIZADO DE LISTA con .map()
           Cada item se renderiza como ItemCompra
-          Se pasan datos como PROPS al hijo
-          (PDF: Renderizado condicional - Listas / Estados locales y props - Props) */}
+          Se pasan datos como PROPS al hijo  */}
       {carrito.map(item => (
         <ItemCompra
           key={item.id}
@@ -80,8 +75,7 @@ function ResumenCompra({
         </div>
 
         {/* RENDERIZADO CONDICIONAL con &&
-            Solo muestra envío en Checkout y Pedido
-            (PDF: Renderizado condicional - Operador &&) */}
+            Solo muestra envío en Checkout y Pedido  */}
         {mostrarEnvio && (
           <div className="flex justify-between">
             <span>ENVÍO</span>
@@ -90,8 +84,7 @@ function ResumenCompra({
         )}
 
         {/* RENDERIZADO CONDICIONAL con &&
-            Solo muestra el descuento si hubo alguno
-            (PDF: Renderizado condicional - Operador &&) */}
+            Solo muestra el descuento si hubo alguno  */}
         {descuentoTotal > 0 && (
           <div className="flex justify-between text-[#7B5B98]">
             <span>DESCUENTO APLICADO</span>
@@ -108,8 +101,7 @@ function ResumenCompra({
       </div>
 
       {/* RENDERIZADO CONDICIONAL con &&
-          Solo muestra botones en Checkout
-          (PDF: Renderizado condicional - Operador &&) */}
+          Solo muestra botones en Checkout  */}
       {mostrarBoton && (
         <>
           <button

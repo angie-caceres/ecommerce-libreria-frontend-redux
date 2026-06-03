@@ -1,9 +1,9 @@
 // COMPONENTE reutilizable — se puede usar en Novedades, Catalogo, etc.
-// Nombre en PascalCase, archivo propio (PDF: Exposición de experto - Componentes)
+// Nombre en PascalCase, archivo propio
 import { Link } from 'react-router-dom'
 
 // PROPS — recibe los datos del libro desde el componente padre
-// Son de solo lectura (PDF: Estados locales y props - ¿Qué son las props?)
+// Son de solo lectura
 function LibroCard({ id, categoria, titulo, precio, precioOriginal, descuento, imagen, tieneDetalle }) {
   return (
     <div className="flex flex-col">
@@ -11,8 +11,7 @@ function LibroCard({ id, categoria, titulo, precio, precioOriginal, descuento, i
       <div className="relative">
 
         {/* RENDERIZADO CONDICIONAL con ternario
-            Si tiene detalle la imagen es clickeable, sino no
-            (PDF: Renderizado condicional - Operador ternario) */}
+            Si tiene detalle la imagen es clickeable, sino no  */}
         {tieneDetalle ? (
           <Link to={`/libro/${id}`}>
             <img
@@ -30,8 +29,7 @@ function LibroCard({ id, categoria, titulo, precio, precioOriginal, descuento, i
         )}
 
         {/* RENDERIZADO CONDICIONAL con &&
-            Solo muestra el badge si existe descuento
-            (PDF: Renderizado condicional - Operador &&) */}
+            Solo muestra el badge si existe descuento  */}
         {descuento && (
           <span className="absolute top-3 right-3 bg-[#7B5B98] text-white text-xs px-2 py-1">
             {descuento}
@@ -50,8 +48,7 @@ function LibroCard({ id, categoria, titulo, precio, precioOriginal, descuento, i
         <div className="flex items-center gap-2">
           <span className="text-sm text-[#2d2640]">${precio}</span>
           {/* RENDERIZADO CONDICIONAL con &&
-              Solo muestra precio original si existe
-              (PDF: Renderizado condicional - Operador &&) */}
+              Solo muestra precio original si existe  */}
           {precioOriginal && (
             <span className="text-xs text-gray-400 line-through">${precioOriginal}</span>
           )}
@@ -63,5 +60,4 @@ function LibroCard({ id, categoria, titulo, precio, precioOriginal, descuento, i
 }
 
 // EXPORTACIÓN del componente reutilizable
-// (PDF: Exposición de experto - Estructura de un componente)
 export default LibroCard

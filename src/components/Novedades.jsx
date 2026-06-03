@@ -1,5 +1,4 @@
 // COMPONENTE — importa LibroCard desde su propio archivo
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { Link } from 'react-router-dom'
 import LibroCard from './LibroCard'
 
@@ -59,8 +58,7 @@ function Novedades() {
 
       {/* RENDERIZADO DE LISTA con .map()
           Cada libro se renderiza como LibroCard
-          Se pasan los datos como PROPS al componente hijo
-          (PDF: Renderizado condicional - Listas / Estados locales y props - Props) */}
+          Se pasan los datos como PROPS al componente hijo  */}
       <div className="grid grid-cols-4 gap-6">
         {libros.map((libro) => (
           <LibroCard

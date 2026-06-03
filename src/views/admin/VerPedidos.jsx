@@ -1,5 +1,4 @@
 // VISTA — gestión de pedidos del panel admin
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { useState } from 'react'
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
@@ -26,7 +25,6 @@ const AVATAR_COLORS = ["#CBAAE9"]
 export default function VerPedidos() {
 
   // HOOK useState — estados locales del componente
-  // (PDF: Estados locales y props - useState)
   const [currentPage, setCurrentPage] = useState(1)
   const [filtroEstado, setFiltroEstado] = useState("TODOS")
 
@@ -43,14 +41,12 @@ export default function VerPedidos() {
         <HeaderAdmin />
         <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título sin botón
-              (PDF: Exposición de experto - Componentes reutilizables) */}
+          {/* COMPONENTE reutilizable — título sin botón  */}
           <EncabezadoSeccion titulo="Todos los pedidos" />
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-gray-100">
-              {/* COMPONENTE reutilizable — botones de filtro
-                  (PDF: Exposición de experto - Componentes reutilizables) */}
+              {/* COMPONENTE reutilizable — botones de filtro  */}
               <FiltrosBotones
                 opciones={["TODOS", "CONFIRMADO", "PENDIENTE"]}
                 activo={filtroEstado}
@@ -68,8 +64,7 @@ export default function VerPedidos() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {/* RENDERIZADO DE LISTA con .map()
-                      (PDF: Renderizado condicional - Listas) */}
+                  {/* RENDERIZADO DE LISTA con .map()  */}
                   {pedidosPagina.map(pedido => (
                     <tr key={pedido.id} className="hover:bg-purple-50/40 transition-colors">
                       <td className="px-6 py-4 text-xs text-gray-500 font-mono">{pedido.id}</td>
@@ -90,8 +85,7 @@ export default function VerPedidos() {
                         <p className="text-sm font-bold text-gray-800">{pedido.total}</p>
                       </td>
                       <td className="px-6 py-4">
-                        {/* RENDERIZADO CONDICIONAL con ternario
-                            (PDF: Renderizado condicional - Operador ternario) */}
+                        {/* RENDERIZADO CONDICIONAL con ternario  */}
                         <span className={`text-xs font-bold tracking-wide ${pedido.status === "CONFIRMADO" ? "text-emerald-600" : "text-amber-500"}`}>
                           {pedido.status}
                         </span>

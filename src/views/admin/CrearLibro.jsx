@@ -1,5 +1,4 @@
 // VISTA — crear libro del panel admin
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { useState } from "react"
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
@@ -11,7 +10,6 @@ const EDITORIALES_MOCK = ["Planeta", "Sudamericana", "Alfaguara", "Urano", "Sigl
 const AUTORES_MOCK = ["Suzanne Collins", "George Orwell"]
 
 // COMPONENTE reutilizable — campo de formulario con label
-// (PDF: Exposición de experto - Componentes reutilizables)
 function FormField({ label, children, className = "" }) {
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
@@ -31,7 +29,6 @@ const inputClass =
 export default function CrearLibro() {
 
   // HOOK useState — estado local del formulario
-  // (PDF: Estados locales y props - useState)
   const [form, setForm] = useState({
     titulo: "", descripcion: "", paginas: "", precio: "",
     stock: "", genero: "", editorial: "", autores: "", imagenId: "",
@@ -42,7 +39,6 @@ export default function CrearLibro() {
 
   // EVENTO — actualiza el estado al escribir
   // Nunca modifica el estado directamente
-  // (PDF: Estados locales y props - Nunca modifiques el estado directamente)
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
@@ -60,7 +56,6 @@ export default function CrearLibro() {
   }
 
   // EVENTO — procesa el envío del formulario
-  // (PDF: Estados locales y props - Eventos)
   const handleSubmit = () => {
     const newErrors = validate()
     if (Object.keys(newErrors).length > 0) {
@@ -84,13 +79,11 @@ export default function CrearLibro() {
         <HeaderAdmin />
         <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título sin botón
-              (PDF: Exposición de experto - Componentes reutilizables) */}
+          {/* COMPONENTE reutilizable — título sin botón  */}
           <EncabezadoSeccion titulo="Crear Libro" />
 
           {/* RENDERIZADO CONDICIONAL con &&
-              Muestra Alerta reutilizable si el libro fue creado
-              (PDF: Renderizado condicional - Operador &&) */}
+              Muestra Alerta reutilizable si el libro fue creado  */}
           {submitted && (
             <Alerta
               texto="¡Libro creado correctamente! Podés ver el catálogo en Gestión de libros."
@@ -130,8 +123,7 @@ export default function CrearLibro() {
               <FormField label="Género">
                 <select name="genero" value={form.genero} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`}>
                   <option value="">Seleccionar género</option>
-                  {/* RENDERIZADO DE LISTA con .map()
-                      (PDF: Renderizado condicional - Listas) */}
+                  {/* RENDERIZADO DE LISTA con .map()  */}
                   {GENEROS_MOCK.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 {errors.genero && <p className="text-xs text-red-500 mt-0.5">{errors.genero}</p>}

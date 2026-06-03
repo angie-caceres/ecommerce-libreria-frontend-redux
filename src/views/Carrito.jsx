@@ -15,8 +15,7 @@ function Carrito({ carrito, eliminarDelCarrito, cambiarCantidad }) {
         style={{ fontFamily: "'Libre Caslon Text', serif" }}
       >Mi Carrito</h1>
 
-      {/* RENDERIZADO CONDICIONAL con ternario
-          (PDF: Renderizado condicional - Operador ternario) */}
+      {/* RENDERIZADO CONDICIONAL con ternario  */}
       {carrito.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-gray-400 mb-4">Tu carrito está vacío</p>
@@ -29,8 +28,7 @@ function Carrito({ carrito, eliminarDelCarrito, cambiarCantidad }) {
         </div>
       ) : (
         <div className="max-w-2xl mx-auto">
-          {/* COMPONENTE ResumenCompra — editable y sin envío
-              (PDF: Exposición de experto - Renderizando un componente dentro de otro) */}
+          {/* COMPONENTE ResumenCompra — editable y sin envío  */}
           <ResumenCompra
             carrito={carrito}
             titulo="Mi Carrito"

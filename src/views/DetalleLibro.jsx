@@ -1,10 +1,8 @@
 // VISTA — obtiene el libro y lo pasa al componente DetalleLibroCard
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { Link } from 'react-router-dom'
 import DetalleLibroCard from '../components/DetalleLibroCard'
 
 // DATOS hardcodeados — en el futuro vendrían de una API con useEffect y useParams
-// (PDF: useEffect - Llamadas a APIs)
 const libros = [
   {
     id: 1,
@@ -20,7 +18,6 @@ const libros = [
 ]
 
 // PROPS — recibe agregarAlCarrito del padre App.jsx
-// (PDF: Estados locales y props - ¿Qué son las props?)
 function DetalleLibro({ agregarAlCarrito, puedeComprar }) {
 
   // Por ahora mostramos el primer libro
@@ -35,8 +32,7 @@ function DetalleLibro({ agregarAlCarrito, puedeComprar }) {
         ← VOLVER
       </Link>
 
-      {/* COMPONENTE hijo — recibe el libro y la función como props
-          (PDF: Estados locales y props - Flujo unidireccional) */}
+      {/* COMPONENTE hijo — recibe el libro y la función como props  */}
       <DetalleLibroCard
         libro={libro}
         agregarAlCarrito={agregarAlCarrito}

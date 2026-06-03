@@ -1,24 +1,20 @@
 // COMPONENTE reutilizable — muestra el detalle de cualquier libro
 // Se puede usar para todos los libros del catálogo
-// (PDF: Exposición de experto - Componentes reutilizables)
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Alerta from './Alerta'
 import { calcularPrecioFinal } from '../utils/calcularPrecio'
 
 // PROPS — recibe los datos del libro y la función del carrito desde el padre
-// (PDF: Estados locales y props - ¿Qué son las props?)
 function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
 
   // HOOK useState — controla si se muestra el mensaje de éxito
-  // (PDF: Estados locales y props - useState)
   const [agregado, setAgregado] = useState(false)
 
   const precioFinal = calcularPrecioFinal(libro.precioOriginal, libro.descuento)
 
   // EVENTO — agrega el libro al carrito y muestra mensaje
   // Llama a la función del padre pasada como prop
-  // (PDF: Estados locales y props - Flujo unidireccional)
   const handleAgregar = () => {
     agregarAlCarrito({ ...libro, precio: precioFinal })
     setAgregado(true)
@@ -62,8 +58,7 @@ function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
         </h1>
 
         {/* Precio con descuento
-            RENDERIZADO CONDICIONAL con &&
-            (PDF: Renderizado condicional - Operador &&) */}
+            RENDERIZADO CONDICIONAL con &&  */}
         <div className="flex items-center gap-3 mb-6">
           <span className="text-2xl text-[#2d2640]">
             ${precioFinal.toLocaleString()}
@@ -84,8 +79,7 @@ function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
           {libro.descripcion}
         </p>
 
-        {/* EVENTO onClick — dispara handleAgregar
-            (PDF: Estados locales y props - Eventos) */}
+        {/* EVENTO onClick — dispara handleAgregar  */}
         {puedeComprar ? (
           <button
             onClick={handleAgregar}
@@ -99,8 +93,7 @@ function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
           </p>
         )}
 
-        {/* RENDERIZADO CONDICIONAL con &&
-            (PDF: Renderizado condicional - Operador &&) */}
+        {/* RENDERIZADO CONDICIONAL con &&  */}
         {agregado && (
           <Alerta
             texto="¡Libro agregado al Carrito!"

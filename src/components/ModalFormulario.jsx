@@ -1,11 +1,9 @@
 // COMPONENTE reutilizable — modal de crear/editar
 // Se usa en Géneros, Editoriales, Autores y Descuentos
-// (PDF: Exposición de experto - Componentes reutilizables)
 import { X } from 'lucide-react'
 
 // PROPS — recibe titulo, children y funciones del padre
 // children permite pasar cualquier contenido dentro del modal
-// (PDF: Estados locales y props - ¿Qué son las props?)
 function ModalFormulario({ titulo, onCerrar, onAceptar, deshabilitado = false, children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -14,16 +12,14 @@ function ModalFormulario({ titulo, onCerrar, onAceptar, deshabilitado = false, c
 
         <div className="flex items-center justify-between mb-5">
           <span className="font-semibold text-gray-800">{titulo}</span>
-          {/* EVENTO onClick — cierra el modal
-              (PDF: Estados locales y props - Eventos) */}
+          {/* EVENTO onClick — cierra el modal  */}
           <button onClick={onCerrar} className="text-gray-400 hover:text-gray-600">
             <X size={16} />
           </button>
         </div>
 
         {/* children — contenido flexible del formulario
-            Cada vista pasa sus propios campos como children
-            (PDF: Exposición de experto - Componentes reutilizables) */}
+            Cada vista pasa sus propios campos como children  */}
         <div className="space-y-4">
           {children}
 
@@ -34,8 +30,7 @@ function ModalFormulario({ titulo, onCerrar, onAceptar, deshabilitado = false, c
             >
               CANCELAR
             </button>
-            {/* EVENTO onClick — llama a la función del padre
-                (PDF: Estados locales y props - Flujo unidireccional) */}
+            {/* EVENTO onClick — llama a la función del padre  */}
             <button
               onClick={onAceptar}
               disabled={deshabilitado}

@@ -1,6 +1,5 @@
 // VISTA — página de resultados de búsqueda
 // Lee el parámetro ?q= de la URL con useSearchParams
-// (PDF: Routing - Rutas dinámicas)
 import { useSearchParams } from 'react-router-dom'
 import { libros } from '../data/libros'
 import LibroCard from '../components/LibroCard'

@@ -1,14 +1,11 @@
 // COMPONENTE reutilizable — formulario de registro
-// (PDF: Exposición de experto - Componentes reutilizables)
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
 // PROPS — recibe onSubmit del padre Registro.jsx
-// (PDF: Estados locales y props - ¿Qué son las props?)
 function RegistroForm({ onSubmit }) {
 
   // HOOK useState — estado local del formulario
-  // (PDF: Estados locales y props - useState)
   const [nombre, setNombre]                     = useState("")
   const [email, setEmail]                       = useState("")
   const [password, setPassword]                 = useState("")
@@ -16,11 +13,9 @@ function RegistroForm({ onSubmit }) {
 
   // HOOK useState — error de validación
   // Reemplaza alert() — no toca el DOM directamente
-  // (PDF: Estados locales y props - useState)
   const [error, setError] = useState("")
 
   // EVENTO — procesa el submit del formulario
-  // (PDF: Estados locales y props - Eventos)
   const handleSubmit = (e) => {
     e.preventDefault()
 
@@ -36,7 +31,6 @@ function RegistroForm({ onSubmit }) {
 
     // Llama a la función del padre en lugar de navegar directamente
     // Flujo unidireccional — el hijo comunica al padre
-    // (PDF: Estados locales y props - Flujo unidireccional)
     onSubmit(nuevoUsuario)
   }
 
@@ -106,8 +100,7 @@ function RegistroForm({ onSubmit }) {
         </div>
 
         {/* RENDERIZADO CONDICIONAL con &&
-            Muestra error sin tocar el DOM
-            (PDF: Renderizado condicional - Operador &&) */}
+            Muestra error sin tocar el DOM  */}
         {error && (
           <p className="text-red-500 text-sm mb-4">{error}</p>
         )}

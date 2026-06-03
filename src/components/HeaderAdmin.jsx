@@ -11,8 +11,7 @@ function Header() {
 
       {/* Perfil — a la derecha */}
       <div className="flex items-center gap-5 ml-auto">
-        {/* Link a Mi Perfil — navega sin recargar la página
-            (PDF: Routing) */}
+        {/* Link a Mi Perfil — navega sin recargar la página  */}
         <Link
           to="/perfil"
           className="w-9 h-9 rounded-full bg-purple-200 border border-purple-300 flex items-center justify-center text-purple-700 text-xs font-bold hover:bg-purple-300 transition"

@@ -1,5 +1,5 @@
 // COMPONENTE — función JavaScript que devuelve JSX
-// Nombre en PascalCase, archivo propio (PDF: Exposición de experto - Componentes)
+// Nombre en PascalCase, archivo propio
 import { useState } from 'react'
 import { BsTelephone, BsEnvelope } from 'react-icons/bs'
 import { Link } from 'react-router-dom'
@@ -7,11 +7,9 @@ import { Link } from 'react-router-dom'
 function Footer() {
 
   // HOOK useState — guarda el email del newsletter en el estado local
-  // (PDF: Estados locales y props - useState)
   const [email, setEmail] = useState('')
 
   // EVENTO — actualiza el estado cada vez que el usuario escribe
-  // (PDF: Estados locales y props - Eventos)
   const handleChange = (e) => {
     setEmail(e.target.value)
   }
@@ -38,12 +36,11 @@ function Footer() {
         </div>
 
         {/* Columna 2 — ayuda
-            RENDERIZADO DE LISTA con .map()
-            (PDF: Renderizado condicional - Listas) */}
+            RENDERIZADO DE LISTA con .map()  */}
         <div>
           <h4 className="text-xs uppercase tracking-widest text-gray-400 mb-4">Ayuda</h4>
           {['Sobre Nosotros', 'Preguntas frecuentes', 'Devoluciones'].map((item) => (
-            // COMPONENTE Link — navega sin recargar (PDF: Routing - SPA)
+            // COMPONENTE Link — navega sin recargar
             <Link
               key={item}
               to="#"
@@ -72,14 +69,13 @@ function Footer() {
             Suscribite a nuestro newsletter para enterarte de todas las novedades y tener acceso prioritario a nuevas adquisiciones.
           </p>
 
-          {/* Formulario — EVENTO onSubmit (PDF: Estados locales y props - Eventos) */}
+          {/* Formulario — EVENTO onSubmit */}
           <form onSubmit={handleSubmit} className="flex items-center border-b border-gray-500 pb-2">
             <input
               type="email"
               placeholder="Correo electrónico"
               value={email}
               // EVENTO onChange — actualiza el estado con cada tecla
-              // (PDF: Estados locales y props - useState)
               onChange={handleChange}
               className="bg-transparent text-sm text-gray-300 placeholder-gray-500 outline-none flex-1"
             />
@@ -110,5 +106,5 @@ function Footer() {
   )
 }
 
-// EXPORTACIÓN del componente (PDF: Exposición de experto - Estructura de un componente)
+// EXPORTACIÓN del componente
 export default Footer

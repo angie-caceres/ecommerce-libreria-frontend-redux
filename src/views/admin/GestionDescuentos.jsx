@@ -1,5 +1,4 @@
 // VISTA — gestión de descuentos del panel admin
-// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
 import { useState } from 'react'
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
@@ -35,7 +34,6 @@ const inputClass = "w-full border border-purple-400 rounded-lg px-3 py-2 text-sm
 function GestionDescuentos() {
 
   // HOOK useState — estados locales del componente
-  // (PDF: Estados locales y props - useState)
   const [lista, setLista]                         = useState(descuentosIniciales)
   const [pagina, setPagina]                       = useState(1)
   const [modal, setModal]                         = useState(null)
@@ -88,8 +86,7 @@ function GestionDescuentos() {
         <HeaderAdmin />
         <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título y botón
-              (PDF: Exposición de experto - Componentes reutilizables) */}
+          {/* COMPONENTE reutilizable — título y botón  */}
           <EncabezadoSeccion
             titulo="Gestión de descuentos"
             textBoton="Nuevo Descuento"
@@ -107,8 +104,7 @@ function GestionDescuentos() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {/* RENDERIZADO DE LISTA con .map()
-                      (PDF: Renderizado condicional - Listas) */}
+                  {/* RENDERIZADO DE LISTA con .map()  */}
                   {paginados.map(descuento => (
                     <tr key={descuento.id} className="hover:bg-purple-50/30 transition-colors">
                       <td className="px-6 py-4 text-xs text-gray-500 font-mono">{descuento.id}</td>
@@ -120,8 +116,7 @@ function GestionDescuentos() {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">{descuento.porcentaje}</td>
                       <td className="px-6 py-4">
-                        {/* RENDERIZADO CONDICIONAL con ternario
-                            (PDF: Renderizado condicional - Operador ternario) */}
+                        {/* RENDERIZADO CONDICIONAL con ternario  */}
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${descuento.activo ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-50 text-gray-500 border-gray-200'}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${descuento.activo ? 'bg-emerald-500' : 'bg-gray-400'}`} />
                           {descuento.activo ? 'Activo' : 'Inactivo'}
@@ -162,8 +157,7 @@ function GestionDescuentos() {
                   onFocus={() => libro.trim().length > 0 && setMostrarSugerencias(true)}
                   onBlur={() => setTimeout(() => setMostrarSugerencias(false), 200)}
                 />
-                {/* RENDERIZADO CONDICIONAL con &&
-                    (PDF: Renderizado condicional - Operador &&) */}
+                {/* RENDERIZADO CONDICIONAL con &&  */}
                 {mostrarSugerencias && sugerencias.length > 0 && (
                   <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 max-h-40 bg-white border border-gray-200 rounded-lg shadow-lg overflow-y-auto text-sm divide-y divide-gray-50">
                     {sugerencias.map((opcion, index) => (
