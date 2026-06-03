@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import HeaderAdmin from "../../components/HeaderAdmin";
 import Sidebar from "../../components/Sidebar";
+import Alerta from "../../components/Alerta";
 
 import { libros } from "../../data/libros";
 const AUTORES_MOCK = [...new Set(libros.map(libro => libro.autor))].sort();
@@ -102,7 +103,6 @@ export default function EditarLibro() {
     };
 
   const handleSubmit = () => {
-    console.log("Botón actualizar presionado");
     const newErrors = validate();
 
     if (Object.keys(newErrors).length > 0) {
@@ -111,7 +111,6 @@ export default function EditarLibro() {
     }
 
     const payload = { ...form, stock };
-
     console.log("Libro actualizado:", payload);
 
     setUpdated(true);
@@ -166,10 +165,11 @@ const handleCancel = () => {
         </div>
 
           {updated && (
-            <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium">
-              <span>✅</span>
-              <span>¡Libro actualizado correctamente!</span>
-            </div>
+            <Alerta
+              texto="¡Libro actualizado correctamente!"
+              onClose={() => setUpdated(false)}
+              icono={false}
+            />
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 items-start">
