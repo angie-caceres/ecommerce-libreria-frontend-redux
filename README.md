@@ -1,3 +1,49 @@
+# TPO — Librería Online
+
+Aplicación web de e-commerce para una librería. Permite a los usuarios explorar el catálogo de libros, agregar productos al carrito y realizar compras. Incluye un panel de administración para gestionar libros, autores, géneros, editoriales, descuentos, imágenes, usuarios y pedidos.
+
+## Tecnologías
+
+- **React 19** con React Router DOM v6
+- **Vite** como bundler
+- **Tailwind CSS v4** para estilos
+- **Recharts** para gráficos en el dashboard admin
+- **SweetAlert2** y **React Toastify** para notificaciones
+
+## Credenciales de prueba
+
+| Rol | Email | Contraseña |
+|-----|-------|------------|
+| Administrador | administrator@gmail.com | admin123 |
+| Usuario | juan@gmail.com | juan123 |
+
+## Requisitos
+
+- Node.js >= 18
+- npm >= 9
+
+## Instalación y ejecución
+
+```bash
+# 1. Ingresar a la carpeta del cliente
+cd Client
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Iniciar el servidor de desarrollo
+npm run dev
+```
+
+La aplicación quedará disponible en `http://localhost:5173`.
+
+## Script
+
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Inicia el servidor de desarrollo |
+
+-------------------------------------------------------------
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
