@@ -144,7 +144,7 @@ function App() {
           }
         />
 
-        //<Route path="/gestion-libros" element={<GestionLibros />} />
+        {/* <Route path="/gestion-libros" element={<GestionLibros />} /> */}
 
         {/* Confirmacion pedido */}
         <Route 

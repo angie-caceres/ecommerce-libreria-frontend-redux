@@ -61,9 +61,9 @@ export default function VerPedidos() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#EBE5F2]">
-                    {["ID DE PEDIDO", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO"].map(h => (
-                      <th key={h} className="text-left text-xs font-bold text-[#473954] uppercase tracking-wider px-6 py-3.5">{h}</th>
+                  <tr className="border-b border-gray-100">
+                    {["ID", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO"].map(h => (
+                      <th key={h} className="text-left text-xs font-bold text-gray-400 uppercase tracking-wider px-6 py-3.5">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -72,7 +72,7 @@ export default function VerPedidos() {
                       (PDF: Renderizado condicional - Listas) */}
                   {pedidosPagina.map(pedido => (
                     <tr key={pedido.id} className="hover:bg-purple-50/40 transition-colors">
-                      <td className="px-6 py-4"><span className="text-sm font-bold text-gray-700">{pedido.id}</span></td>
+                      <td className="px-6 py-4 text-xs text-gray-500 font-mono">{pedido.id}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: AVATAR_COLORS[0] }}>

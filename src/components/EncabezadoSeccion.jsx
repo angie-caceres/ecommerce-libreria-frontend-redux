@@ -31,4 +31,4 @@ function EncabezadoSeccion({ titulo, textBoton, onAccion }) {
   )
 }
 
-export default Encabez
+export default EncabezadoSeccion
