@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 function Header() {
   return (
     <header className="h-16 bg-[#f7f4ef] border-b border-gray-200 px-10 flex items-center relative">
@@ -9,13 +11,18 @@ function Header() {
 
       {/* Perfil — a la derecha */}
       <div className="flex items-center gap-5 ml-auto">
-        <div className="w-9 h-9 rounded-full bg-purple-200 border border-purple-300 flex items-center justify-center text-purple-700 text-xs font-bold">
+        {/* Link a Mi Perfil — navega sin recargar la página
+            (PDF: Routing) */}
+        <Link
+          to="/perfil"
+          className="w-9 h-9 rounded-full bg-purple-200 border border-purple-300 flex items-center justify-center text-purple-700 text-xs font-bold hover:bg-purple-300 transition"
+        >
           AD
-        </div>
+        </Link>
       </div>
 
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

@@ -44,8 +44,7 @@ function App() {
   // se evalua en qué ruta está parado el navegador actualmente
   const location = useLocation();
 
-  // Si la ruta empieza con "/admin", esta constante va a ser true
-  const esAdmin = location.pathname.startsWith("/admin");
+
   
   // HOOK useState — estado global del carrito
   // Array de objetos, cada uno representa un libro agregado
@@ -53,7 +52,11 @@ function App() {
   const [carrito, setCarrito] = useState([])
   const [usuario, setUsuario] = useState(null)
 
+  // Si la ruta empieza con "/admin", esta constante va a ser true
+  const esAdmin = location.pathname.startsWith("/admin") || 
+                (location.pathname === "/perfil" && usuario?.rol === "admin")
 
+                
   // FUNCIÓN para agregar un libro al carrito
   // Se pasa como PROP a DetalleLibro 
   const agregarAlCarrito = (libro) => {
