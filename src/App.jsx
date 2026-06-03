@@ -1,6 +1,6 @@
 // COMPONENTE raíz — contiene el estado global del carrito
 // El estado vive acá porque es el padre de todos los componentes
-// que necesitan acceder al carrito (PDF: Estados locales y props - Flujo unidireccional)
+// que necesitan acceder al carrito 
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useState } from 'react'
 import Home from './views/Home'
