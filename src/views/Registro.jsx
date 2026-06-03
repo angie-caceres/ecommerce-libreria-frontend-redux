@@ -1,21 +1,41 @@
 // VISTA Registro
+// (PDF: Exposición de experto - Renderizando un componente dentro de otro)
+import { useState } from 'react'
 import RegistroForm from "../components/RegistroForm"
 import { useNavigate } from "react-router-dom"
+import Alerta from '../components/Alerta'
 
 // PROPS — recibe setUsuario del padre App.jsx
+// (PDF: Estados locales y props - ¿Qué son las props?)
 function Registro({ setUsuario }) {
   const navigate = useNavigate()
 
+  // HOOK useState — controla si se muestra la alerta
+  // (PDF: Estados locales y props - useState)
+  const [registrado, setRegistrado] = useState(false)
+
   // EVENTO — recibe los datos del hijo y actualiza el estado global
-  // Flujo unidireccional — hijo comunica al padre
+  // (PDF: Estados locales y props - Flujo unidireccional)
   const handleSubmit = (datosFormulario) => {
     setUsuario({ ...datosFormulario, rol: 'usuario' })
-    navigate("/perfil")
+    setRegistrado(true)
   }
 
   return (
     <main className="bg-[#faf7f5] px-4 py-10">
-      {/* COMPONENTE hijo — recibe onSubmit como prop */}
+
+      {/* RENDERIZADO CONDICIONAL con &&
+          Muestra alerta si el registro fue exitoso
+          (PDF: Renderizado condicional - Operador &&) */}
+      {registrado && (
+        <div className="max-w-6xl mx-auto mb-4">
+          <Alerta
+            texto="¡Te registraste con éxito!"
+            onClose={() => setRegistrado(false)}
+          />
+        </div>
+      )}
+
       <RegistroForm onSubmit={handleSubmit} />
     </main>
   )
