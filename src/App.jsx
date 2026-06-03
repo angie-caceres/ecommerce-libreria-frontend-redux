@@ -14,7 +14,8 @@ import ConfirmacionPedido from './views/ConfirmacionPedido'
 import Busqueda from './views/Busqueda'
 import QuienesSomos from './views/QuienesSomos'
 import Contacto from './views/Contacto'
-
+import Perfil from './views/Perfil'
+import Registro from './views/Registro'
 
 
 import GestionGeneros from './views/admin/GestionGeneros'
@@ -89,6 +90,9 @@ function App() {
 
   // FUNCIÓN para vaciar el carrito al confirmar la compra
   const vaciarCarrito = () => setCarrito([])
+  const cerrarSesion = () => {
+  setUsuario(null)
+  setCarrito([])}
 
   return (
     <>
@@ -164,8 +168,15 @@ function App() {
         <Route path="/admin/usuarios" element={usuario?.rol === 'admin' ? <GestionUsuario /> : <Navigate to="/login" />} />
         <Route path="/admin/pedidos" element={usuario?.rol === 'admin' ? <VerPedidos /> : <Navigate to="/login" />} />
         <Route path="/admin/imagenes" element={usuario?.rol === 'admin'? <GestionImagenes /> : <Navigate to="/login" />}/>
-        <Route path="/mis-ordenes" element={usuario?.rol === 'usuario' ? <MisOrdenes /> : <Navigate to="/login" />} />
+        <Route path="/mis-ordenes" element={usuario?.rol === 'usuario' ? <MisOrdenes /> : <Navigate to="/login" />} />    
+        <Route
+        path="/perfil"
+        element={
+          usuario ? <Perfil usuario={usuario} cerrarSesion={cerrarSesion} /> : <Navigate to="/login" />
+        }
+        />
         <Route path="/quienes-somos" element={<QuienesSomos />} />
+        <Route path="/registro" element={<Registro setUsuario={setUsuario} />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/login" element={<Login setUsuario={setUsuario} />}/>
       </Routes>
