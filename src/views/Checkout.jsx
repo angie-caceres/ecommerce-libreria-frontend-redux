@@ -7,6 +7,7 @@ import ResumenCompra from '../components/ResumenCompra'
 function Checkout({ carrito, vaciarCarrito }) {
 
   const [metodoPago, setMetodoPago] = useState('tarjeta')
+  const [errorPago, setErrorPago] = useState('')
   const navigate = useNavigate()
 
   // --- DIRECCIÓN ---
@@ -39,6 +40,8 @@ function Checkout({ carrito, vaciarCarrito }) {
 
   // Número: solo dígitos, máx 16, formateado en grupos de 4
   const handleNumeroTarjeta = (e) => {
+    setErrorPago('')
+
     const solo = e.target.value.replace(/\D/g, '').slice(0, 16)
     const formateado = solo.replace(/(.{4})/g, '$1 ').trim()
     setTarjeta({ ...tarjeta, numero: formateado })
@@ -46,6 +49,8 @@ function Checkout({ carrito, vaciarCarrito }) {
 
   // Vencimiento: solo dígitos, formato MM / AA, máx 5 chars visibles
   const handleVencimiento = (e) => {
+    setErrorPago('')
+
     const solo = e.target.value.replace(/\D/g, '').slice(0, 4)
     const formateado = solo.length > 2
       ? solo.slice(0, 2) + ' / ' + solo.slice(2)
@@ -55,19 +60,38 @@ function Checkout({ carrito, vaciarCarrito }) {
 
   // CVV: solo dígitos, máx 3
   const handleCVV = (e) => {
+    setErrorPago('')
+
     const solo = e.target.value.replace(/\D/g, '').slice(0, 3)
     setTarjeta({ ...tarjeta, cvv: solo })
   }
 
   // Nombre: solo letras y espacios
   const handleNombre = (e) => {
+    setErrorPago('')
+
     const solo = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')
     setTarjeta({ ...tarjeta, nombre: solo })
   }
 
   const handleConfirmarCompra = () => {
-    navigate('/pedido',  { state: { carrito }}) // Redirige a página de confirmación con el carrito como estado)
-    vaciarCarrito() // Limpia el carrito en App.jsx
+
+    const numeroSinEspacios = tarjeta.numero.replace(/\s/g, '')
+
+    if (
+      !tarjeta.nombre.trim() ||
+      numeroSinEspacios.length !== 16 ||
+      tarjeta.vencimiento.length !== 7 ||
+      tarjeta.cvv.length !== 3
+    ) {
+      setErrorPago('Completá correctamente todos los datos de la tarjeta.')
+      return
+    }
+
+    setErrorPago('')
+
+    navigate('/pedido', { state: { carrito } })
+    vaciarCarrito()
   }
 
   return (
@@ -175,8 +199,13 @@ function Checkout({ carrito, vaciarCarrito }) {
                 className="w-full border border-gray-300 p-3 mt-2 bg-white"
               />
             </div>
-
           </div>
+          
+          {errorPago && (
+          <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 mb-6 rounded">
+          {errorPago}
+          </div>
+          )}
 
           {/* ENVÍO */}
           <div>

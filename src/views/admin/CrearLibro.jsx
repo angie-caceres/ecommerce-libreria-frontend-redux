@@ -86,7 +86,7 @@ export default function CrearLibro() {
               Muestra Alerta reutilizable si el libro fue creado  */}
           {submitted && (
             <Alerta
-              texto="¡Libro creado correctamente! Podés ver el catálogo en Gestión de libros."
+              texto="¡Libro creado correctamente!"
               onClose={handleCancel}
             />
           )}
