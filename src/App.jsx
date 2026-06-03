@@ -35,6 +35,7 @@ import GestionImagenes from './views/admin/GestionImagenes'
 
 import Login from "./views/Login";
 import MisOrdenes from "./views/MisOrdenes";
+import DetalleOrden from "./views/DetalleOrden";
 
 
 
@@ -171,7 +172,8 @@ function App() {
         <Route path="/admin/usuarios" element={usuario?.rol === 'admin' ? <GestionUsuario /> : <Navigate to="/login" />} />
         <Route path="/admin/pedidos" element={usuario?.rol === 'admin' ? <VerPedidos /> : <Navigate to="/login" />} />
         <Route path="/admin/imagenes" element={usuario?.rol === 'admin'? <GestionImagenes /> : <Navigate to="/login" />}/>
-        <Route path="/mis-ordenes" element={usuario?.rol === 'usuario' ? <MisOrdenes /> : <Navigate to="/login" />} />    
+        <Route path="/mis-ordenes" element={usuario?.rol === 'usuario'? <MisOrdenes usuario={usuario} /> : <Navigate to="/login" />}/>
+        <Route path="/mis-ordenes/:id" element={<DetalleOrden />} />
         <Route
         path="/perfil"
         element={

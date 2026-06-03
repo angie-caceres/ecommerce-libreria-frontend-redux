@@ -1,101 +1,64 @@
 import OrdenCard from "../components/OrdenCard";
 import Quote from "../components/Quote";
+import { useNavigate } from "react-router-dom";
 
-function MisOrdenes() {
+function MisOrdenes({ usuario }) {
+  const navigate = useNavigate();
 
- // Simulación.
- // Más adelante esto vendrá del backend.
+  const ordenes = usuario?.ordenes || [];
 
- const ordenes = [
+  return (
+    <main className="bg-[#FCF9F8] px-4 py-10">
 
-   {
-     id: 1,
-     codigo: "#149",
-     fecha: "14 de Octubre, 2023",
-     estado: "ENTREGADO",
+      <section className="max-w-6xl mx-auto">
 
-     libros: [
-       {
-         id: 1,
-         titulo: "Principia Mathematica",
-         autor: "Isaac Newton",
-         imagen: "/principia.jpg"
-       },
+        <h1 className="font-serif text-6xl text-[#351118]">
+          Mis Órdenes
+        </h1>
 
-       {
-         id: 2,
-         titulo: "Meditaciones",
-         autor: "Marco Aurelio",
-         imagen: "/meditaciones.jpg"
-       }
-     ]
-   },
+        <p className="text-gray-500 mt-4 mb-10 max-w-2xl">
+          Explore la crónica de sus adquisiciones literarias.
+        </p>
 
-   {
-     id: 2,
-     codigo: "#BM-811023",
-     fecha: "28 de Octubre, 2023",
-     estado: "EN CAMINO",
+        {ordenes.length === 0 ? (
+          <div className="bg-white border border-gray-200 p-8 text-center">
+            <p className="text-gray-600 text-lg">
+              Todavía no has realizado ninguna compra.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {ordenes.map((orden) => (
+              <OrdenCard
+                key={orden.id}
+                codigo={orden.codigo}
+                fecha={orden.fecha}
+                estado={orden.estado}
+                libros={orden.libros}
+                boton={
+                  <button
+                    onClick={() => navigate(`/mis-ordenes/${orden.id}`)}
+                    className="bg-[#4b385c] text-white px-6 py-3 hover:bg-[#382943] transition"
+                  >
+                    Ver detalles
+                  </button>
+                }
+              />
+            ))}
+          </div>
+        )}
 
-     libros: [
-       {
-         id: 3,
-         titulo: "La Divina Comedia",
-         autor: "Dante Alighieri",
-         imagen: "/divina.jpg"
-       }
-     ]
-   }
- ];
+        <div className="my-16">
+          <Quote
+            texto="Una casa sin libros es como un cuerpo sin alma."
+            autor="Cicerón"
+          />
+        </div>
 
- return (
+      </section>
 
-   <main className="bg-[#FCF9F8] px-4 py-10">
-
-     <section className="max-w-6xl mx-auto">
-
-       <h1 className="font-serif text-6xl text-[#351118]">
-         Mis Ordenes
-       </h1>
-
-       <p className="text-gray-500 mt-4 mb-10 max-w-2xl">
-         Explore la crónica de sus adquisiciones literarias.
-       </p>
-
-       <div className="space-y-8">
-
-         {ordenes.map((orden) => (
-
-           <OrdenCard
-             key={orden.id}
-             codigo={orden.codigo}
-             fecha={orden.fecha}
-             estado={orden.estado}
-             libros={orden.libros}
-             boton={
-               <button className="bg-[#4b385c] text-white px-6 py-2">
-                 Ver detalles
-               </button>
-             }
-           />
-
-         ))}
-
-       </div>
-
-       <div className="my-16">
-
-         <Quote
-           texto="Una casa sin libros es como un cuerpo sin alma."
-           autor="Cicerón"
-         />
-
-       </div>
-
-     </section>
-
-   </main>
- );
+    </main>
+  );
 }
 
 export default MisOrdenes;

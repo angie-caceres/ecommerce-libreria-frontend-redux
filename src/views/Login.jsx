@@ -12,14 +12,69 @@ function Login({ setUsuario }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email === "administrator@gmail.com") {
-      setUsuario({ email, rol: "admin" });
-      navigate("/admin/generos");
-    } else if (email === "juan@gmail.com") {
-      setUsuario({ email, rol: "usuario" });
-      navigate("/");
+
+    if (
+      email === "administrator@gmail.com" &&
+      password === "admin123"
+    ) {
+      setUsuario({
+        email,
+        password,
+        rol: "admin"
+      });
+
+      navigate("/admin");
+
+    } else if (
+        email === "juan@gmail.com" &&
+        password === "juan123"
+      ) {
+        setUsuario({
+          email,
+          password,
+          rol: "usuario",
+          ordenes: [
+            {
+              id: 1,
+              codigo: "#149",
+              fecha: "14 de mayo, 2026",
+              estado: "ENTREGADO",
+              libros: [
+                {
+                  id: 1,
+                  titulo: "Principia Mathematica",
+                  autor: "Isaac Newton",
+                  imagen: "/principia.jpg"
+                },
+                {
+                  id: 2,
+                  titulo: "Meditaciones",
+                  autor: "Marco Aurelio",
+                  imagen: "/meditaciones.jpg"
+                }
+              ]
+            },
+            {
+              id: 2,
+              codigo: "#105",
+              fecha: "28 de mayo, 2026",
+              estado: "EN CAMINO",
+              libros: [
+                {
+                  id: 3,
+                  titulo: "La Divina Comedia",
+                  autor: "Dante Alighieri",
+                  imagen: "/divina.jpg"
+                }
+              ]
+            }
+          ]
+        });
+
+        navigate("/");
+
     } else {
-      setError("Correo no reconocido.");
+      setError("Correo o contraseña incorrectos.");
     }
   };
 

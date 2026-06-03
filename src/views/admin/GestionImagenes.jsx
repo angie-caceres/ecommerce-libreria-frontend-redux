@@ -54,7 +54,7 @@ export default function GestionImagenes() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f4ef] flex font-sans">
+    <div className="min-h-screen bg-[#f7f4ef] flex font-serif">
       <Sidebar />
 
       <main className="flex-1 ml-56">
@@ -112,7 +112,8 @@ export default function GestionImagenes() {
             </form>
 
             {/* RENDERIZADO CONDICIONAL con &&
-                Solo muestra el mensaje si existe  */}
+                Solo muestra el mensaje si existe
+  */}
             {mensaje && (
               <p className="mt-4 text-sm font-semibold text-[#7b5b99]">
                 {mensaje}
@@ -129,14 +130,16 @@ export default function GestionImagenes() {
 
             {/* RENDERIZADO DE LISTA con .map()
                 Cada imagen se renderiza como una tarjeta
-                Siempre con key única  */}
+                Siempre con key única
+  */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6">
               {imagenes.map((imagen) => (
                 <div key={imagen.id} className="border border-gray-100 rounded-xl p-4 shadow-sm">
 
                   <div className="h-40 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden mb-4">
                     {/* RENDERIZADO CONDICIONAL con ternario
-                        Si tiene URL muestra la imagen, sino muestra ícono placeholder  */}
+                        Si tiene URL muestra la imagen, sino muestra ícono placeholder
+  */}
                     {imagen.url ? (
                       <img
                         src={imagen.url}
@@ -150,7 +153,8 @@ export default function GestionImagenes() {
 
                   <h3 className="font-bold text-gray-800 text-sm">{imagen.nombre}</h3>
 
-                  {/* EVENTO onClick — elimina la imagen del estado  */}
+                  {/* EVENTO onClick — elimina la imagen del estado
+  */}
                   <button
                     onClick={() => handleEliminar(imagen.id)}
                     className="flex items-center gap-2 text-red-500 text-xs font-semibold hover:underline"

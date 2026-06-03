@@ -13,7 +13,7 @@ function Perfil({ usuario, cerrarSesion }) {
   const [form, setForm] = useState({
     nombre: usuario?.nombre || '',
     email: usuario?.email || '',
-    password: '',
+    password: usuario?.password || '',
   })
 
   // HOOK useState — controla qué campo está siendo editado
@@ -59,6 +59,12 @@ function Perfil({ usuario, cerrarSesion }) {
     navigate(usuario?.rol === 'admin' ? '/admin/generos' : '/')
   }
 
+  // Cerrar sesión
+  const handleCerrarSesion = () => {
+    cerrarSesion()
+    navigate('/')
+  }
+
   // Verifica si hay algún campo siendo editado
   const hayEdicion = Object.values(editando).some(v => v === true)
 
@@ -78,7 +84,8 @@ function Perfil({ usuario, cerrarSesion }) {
             </label>
             <div className="flex items-center gap-3 border-b border-[#cbbfc2] pb-3">
               {/* RENDERIZADO CONDICIONAL con ternario
-                  Muestra input o texto según si está editando  */}
+                  Muestra input o texto según si está editando
+  */}
               {editando.nombre ? (
                 <input
                   autoFocus
@@ -90,10 +97,11 @@ function Perfil({ usuario, cerrarSesion }) {
                 />
               ) : (
                 <p className="flex-1 text-gray-700 text-sm">
-                  {form.nombre || '—'}
+                  {form.nombre || "—"}
                 </p>
               )}
-              {/* EVENTO onClick — activa edición del campo  */}
+              {/* EVENTO onClick — activa edición del campo
+  */}
               {!editando.nombre && (
                 <button onClick={() => handleEditar('nombre')} className="text-gray-400 hover:text-purple-600 transition">
                   <Pencil size={14} />
@@ -145,7 +153,9 @@ function Perfil({ usuario, cerrarSesion }) {
                   className="flex-1 bg-transparent outline-none text-gray-700 text-sm"
                 />
               ) : (
-                <p className="flex-1 text-gray-700 text-sm">••••••••</p>
+                <p className="flex-1 text-gray-700 text-sm">
+                  {"•".repeat(form.password.length)}
+                </p>
               )}
               {!editando.password && (
                 <button onClick={() => handleEditar('password')} className="text-gray-400 hover:text-purple-600 transition">
@@ -161,7 +171,8 @@ function Perfil({ usuario, cerrarSesion }) {
         <div className="flex flex-col gap-3 mt-10">
 
           {/* RENDERIZADO CONDICIONAL con &&
-              Solo muestra el botón guardar si hay algún campo editado  */}
+              Solo muestra el botón guardar si hay algún campo editado
+  */}
           {hayEdicion && (
             <button
               onClick={handleGuardar}
@@ -176,6 +187,11 @@ function Perfil({ usuario, cerrarSesion }) {
             className="w-full border border-gray-300 text-gray-500 py-3 text-sm tracking-widest hover:bg-gray-50 transition"
           >
             VOLVER
+          </button>
+          <button
+            onClick={handleCerrarSesion}
+            className="w-full bg-[#382943] text-white py-3 text-sm tracking-widest hover:bg-[#2b1f35] transition">
+            CERRAR SESIÓN
           </button>
 
         </div>

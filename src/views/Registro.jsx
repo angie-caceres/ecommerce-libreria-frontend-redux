@@ -13,15 +13,21 @@ function Registro({ setUsuario }) {
 
   // EVENTO — recibe los datos del hijo y actualiza el estado global
   const handleSubmit = (datosFormulario) => {
-    setUsuario({ ...datosFormulario, rol: 'usuario' })
-    setRegistrado(true)
-  }
+    setUsuario({ ...datosFormulario, rol: "usuario", ordenes: [] });
+
+    setRegistrado(true);
+
+    setTimeout(() => {
+      navigate("/");
+    }, 2000); // 2 segundos
+  };
 
   return (
     <main className="bg-[#faf7f5] px-4 py-10">
 
       {/* RENDERIZADO CONDICIONAL con &&
-          Muestra alerta si el registro fue exitoso  */}
+          Muestra alerta si el registro fue exitoso
+  */}
       {registrado && (
         <div className="max-w-6xl mx-auto mb-4">
           <Alerta
