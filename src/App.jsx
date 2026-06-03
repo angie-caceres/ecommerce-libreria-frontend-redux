@@ -11,7 +11,7 @@ import Footer from './components/Footer'
 import Catalogo from './views/Catalogo'
 import Checkout from './views/Checkout'
 import ConfirmacionPedido from './views/ConfirmacionPedido'
-
+import Busqueda from './views/Busqueda'
 import QuienesSomos from './views/QuienesSomos'
 import Contacto from './views/Contacto'
 
@@ -40,7 +40,7 @@ import MisOrdenes from "./views/MisOrdenes";
 
 function App() {
 
-  // Evaluamos en qué ruta está parado el navegador actualmente
+  // se evalua en qué ruta está parado el navegador actualmente
   const location = useLocation();
 
   // Si la ruta empieza con "/admin", esta constante va a ser true
@@ -48,13 +48,13 @@ function App() {
   
   // HOOK useState — estado global del carrito
   // Array de objetos, cada uno representa un libro agregado
-  // (PDF: Estados locales y props - useState)
+
   const [carrito, setCarrito] = useState([])
   const [usuario, setUsuario] = useState(null)
 
 
   // FUNCIÓN para agregar un libro al carrito
-  // Se pasa como PROP a DetalleLibro (PDF: Estados locales y props - Props)
+  // Se pasa como PROP a DetalleLibro 
   const agregarAlCarrito = (libro) => {
     const existe = carrito.find(item => item.id === libro.id)
     if (existe) {
@@ -71,7 +71,7 @@ function App() {
   }
 
   // FUNCIÓN para eliminar un libro del carrito
-  // Se pasa como PROP a Carrito (PDF: Estados locales y props - Props)
+  // Se pasa como PROP a Carrito 
   const eliminarDelCarrito = (id) => {
     setCarrito(carrito.filter(item => item.id !== id))
   }
@@ -93,8 +93,7 @@ function App() {
   return (
     <>
 
-      {/* Navbar recibe carrito como prop para mostrar el badge
-          (PDF: Estados locales y props - Flujo unidireccional) */}
+      {/* Navbar recibe carrito como prop para mostrar el badge*/}
       
       {/*RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
       {!esAdmin && <Navbar carrito={carrito} usuario={usuario} />}
@@ -133,6 +132,9 @@ function App() {
           path="/catalogo"
           element={<Catalogo />}
         />
+
+        {/* Búsqueda */}
+        <Route path="/busqueda" element={<Busqueda />} />
 
         {/* Checkout — solo usuarios */}
         <Route

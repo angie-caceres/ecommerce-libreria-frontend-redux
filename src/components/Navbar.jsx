@@ -1,11 +1,16 @@
 // COMPONENTE — función JavaScript que devuelve JSX
 // Cada componente es un archivo propio, nombre en PascalCase (PDF: Exposición de experto - Componentes)
-import { Link, NavLink } from 'react-router-dom'
+
+import { useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { libros } from '../data/libros'
 
 // PROPS — recibe carrito y usuario del padre App.jsx 
 // Son de solo lectura, no se pueden modificar desde acá
 // (PDF: Estados locales y props - ¿Qué son las props?)
 function Navbar({ carrito, usuario }) {
+
+    const navigate = useNavigate()
 
   // ARRAY de links del menú — dato estático definido dentro del componente
   // Se usa .map() para renderizar la lista (PDF: Renderizado condicional - Listas)
@@ -16,11 +21,48 @@ function Navbar({ carrito, usuario }) {
     { label: 'QUIÉNES SOMOS', to: '/quienes-somos' },
     { label: 'CONTACTO', to: '/contacto' },
   ]
+  // HOOK useState — estado local del buscador
+  // (PDF: Estados locales y props - useState)
+  const [query, setQuery]                         = useState('')
+  const [sugerencias, setSugerencias]             = useState([])
+  const [mostrarSugerencias, setMostrarSugerencias] = useState(false)
 
   // Calcula el total de items en el carrito
   // reduce() suma todas las cantidades del array
   // (PDF: Estados locales y props - Estado)
   const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0)
+// EVENTO — filtra libros mientras el usuario escribe
+  const handleQueryChange = (val) => {
+    setQuery(val)
+    if (val.trim().length > 0) {
+      const filtrados = libros.filter(libro =>
+        libro.titulo.toLowerCase().includes(val.toLowerCase()) ||
+        libro.autor.toLowerCase().includes(val.toLowerCase())
+      )
+      setSugerencias(filtrados)
+      setMostrarSugerencias(true)
+    } else {
+      setSugerencias([])
+      setMostrarSugerencias(false)
+    }
+  }
+
+  // EVENTO — navega al detalle del libro seleccionado
+  const seleccionarSugerencia = (libro) => {
+    setQuery('')
+    setSugerencias([])
+    setMostrarSugerencias(false)
+    navigate(`/libro/${libro.id}`)
+  }
+
+  // EVENTO — navega a la página de búsqueda al hacer click en la lupa
+  const handleBuscar = () => {
+    if (query.trim()) {
+      navigate(`/busqueda?q=${encodeURIComponent(query.trim())}`)
+      setQuery('')
+      setMostrarSugerencias(false)
+    }
+  }
 
   return (
     <header>
@@ -38,19 +80,58 @@ function Navbar({ carrito, usuario }) {
           <img src="/logo.png" alt="Entre Letras" className="h-14 w-auto object-contain" />
         </Link>
 
-        {/* Buscador */}
-        <div className="flex items-center bg-[#EBE5F2] rounded-full px-4 py-2 w-1/2">
-          <input
-            type="text"
-            placeholder="¿Qué estás buscando?"
-            className="bg-transparent outline-none w-full text-sm text-gray-500"
-          />
-          {/* EVENTO onClick — el botón dispara una acción al hacer click (PDF: Estados locales y props) */}
-          <button>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-            </svg>
-          </button>
+        {/* Buscador con sugerencias */}
+        <div className="relative w-1/2">
+          <div className="flex items-center bg-[#EBE5F2] rounded-full px-4 py-2">
+            <input
+              type="text"
+              placeholder="¿Qué estás buscando?"
+              value={query}
+              onChange={e => handleQueryChange(e.target.value)}
+              onFocus={() => query.trim().length > 0 && setMostrarSugerencias(true)}
+              onBlur={() => setTimeout(() => setMostrarSugerencias(false), 200)}
+              className="bg-transparent outline-none w-full text-sm text-gray-500"
+            />
+            {/* EVENTO onClick — busca al hacer click en la lupa
+                (PDF: Estados locales y props - Eventos) */}
+            <button onClick={handleBuscar}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+            </button>
+          </div>
+
+          {/* RENDERIZADO CONDICIONAL con &&
+              Solo muestra sugerencias si hay resultados
+              (PDF: Renderizado condicional - Operador &&) */}
+          {mostrarSugerencias && sugerencias.length > 0 && (
+            <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 max-h-60 bg-white border border-gray-200 rounded-xl shadow-lg overflow-y-auto divide-y divide-gray-50">
+              {/* RENDERIZADO DE LISTA con .map()
+                  (PDF: Renderizado condicional - Listas) */}
+              {sugerencias.map(libro => (
+                <li
+                  key={libro.id}
+                  onClick={() => seleccionarSugerencia(libro)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 cursor-pointer"
+                >
+                  <img src={libro.imagen} alt={libro.titulo} className="h-10 w-7 object-cover rounded" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">{libro.titulo}</p>
+                    <p className="text-xs text-gray-400">{libro.autor}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* RENDERIZADO CONDICIONAL con &&
+              Muestra mensaje si no hay resultados
+              (PDF: Renderizado condicional - Operador &&) */}
+          {mostrarSugerencias && sugerencias.length === 0 && query.trim().length > 0 && (
+            <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3">
+              <p className="text-sm text-gray-400">No se encontraron resultados.</p>
+            </div>
+          )}
         </div>
 
         {/* Iconos de usuario */}
