@@ -16,7 +16,6 @@ function Navbar({ carrito, usuario }) {
   const navLinks = [
     { label: 'INICIO', to: '/' },
     { label: 'CATÁLOGO', to: '/catalogo' },
-    { label: 'LIBROS RECIENTES', to: '/libros-recientes' },
     { label: 'QUIÉNES SOMOS', to: '/quienes-somos' },
     { label: 'CONTACTO', to: '/contacto' },
   ]

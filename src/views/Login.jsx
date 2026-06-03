@@ -58,12 +58,6 @@ function Login({ setUsuario }) {
                 Contraseña
               </label>
 
-              <Link
-                to="/recuperar-password"
-                className="text-sm text-[#4b385c] hover:underline"
-              >
-                Olvidé mi contraseña
-              </Link>
             </div>
 
             <input
