@@ -36,6 +36,7 @@ import GestionImagenes from './views/admin/GestionImagenes'
 import Login from "./views/Login";
 import MisOrdenes from "./views/MisOrdenes";
 import DetalleOrden from "./views/DetalleOrden";
+import NotFound from "./views/NotFound";
 
 
 
@@ -184,6 +185,7 @@ function App() {
         <Route path="/registro" element={<Registro setUsuario={setUsuario} />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/login" element={<Login setUsuario={setUsuario} />}/>
+        <Route path="*" element={<NotFound />} />
       </Routes>
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Footer si NO es admin */}
       {!esAdmin && <Footer />}
