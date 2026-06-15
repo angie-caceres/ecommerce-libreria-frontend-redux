@@ -57,7 +57,7 @@ function LibroCard({ id, categoria, titulo, precio, precioOriginal, descuento, i
           <span className="text-sm text-[#2d2640]">${precio}</span>
           {/* RENDERIZADO CONDICIONAL con &&
               Solo muestra precio original si existe  */}
-          {precioOriginal && (
+          {descuento && precioOriginal && (
             <span className="text-xs text-gray-400 line-through">${precioOriginal}</span>
           )}
         </div>

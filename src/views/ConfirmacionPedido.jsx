@@ -9,7 +9,8 @@ import Quote from '../components/Quote'
 function ConfirmacionPedido({}) {
 
   const { state } = useLocation()
-  const carrito = state?.carrito ?? []
+   
+  const carrito = state?.items ?? []
 
   return (
     <div className="bg-[#FCF9F8] min-h-screen">

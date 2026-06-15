@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import LibroCard from '../components/LibroCard'
 import { apiFetch } from '../services/api'
+import { calcularPrecioFinal } from '../utils/calcularPrecio'
 
 function Catalogo() {
 
@@ -48,19 +49,22 @@ function Catalogo() {
 
     apiFetch(url)
       .then(data => {
-        const librosFormateados = data.map(libro => ({
-          id: libro.idLibro,
-          titulo: libro.titulo,
-          autor: libro.autores?.join(', '),
-          editorial: libro.editorial,
-          genero: libro.genero,
-          precio: libro.precio,
-          precioOriginal: libro.precio,
-          descuento: libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null,
-          imagen: libro.imagen
-            ? `data:image/jpeg;base64,${libro.imagen}`
-            : '/libros/juegos.png',
-        }))
+        const librosFormateados = data.map(libro => {
+          const descuento = libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null
+          return {
+            id: libro.idLibro,
+            titulo: libro.titulo,
+            autor: libro.autores?.join(', '),
+            editorial: libro.editorial,
+            genero: libro.genero,
+            precio: calcularPrecioFinal(libro.precio, descuento),
+            precioOriginal: libro.precio,
+            descuento,
+            imagen: libro.imagen
+              ? `data:image/jpeg;base64,${libro.imagen}`
+              : '/libros/juegos.png',
+          }
+        })
         setLibros(librosFormateados)
       })
       .catch(err => setError('No se pudieron cargar los libros.'))

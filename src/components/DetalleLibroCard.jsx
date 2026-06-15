@@ -27,10 +27,10 @@ function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar, token }) {
       agregarAlCarrito({ ...libro, precio: precioFinal })
       setAgregado(true)
     } catch (err) {
-      setError('No se pudo agregar al carrito.')
+      setError(err.message)
     }
   }
-
+ 
   return (
     <div className="flex gap-16 max-w-5xl mx-auto">
 

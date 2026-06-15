@@ -25,6 +25,8 @@ function Login({ setUsuario, setToken }) {
 
       // Guarda el token en el estado de App.jsx
       setToken(data.access_token)
+      // Guarda el token en localStorage para persistir entre recargas
+      localStorage.setItem('jwtToken', data.access_token)
 
       // GET /api/v1/users/me — obtiene los datos del usuario logueado
       const usuario = await apiFetch('/api/v1/users/me', data.access_token)

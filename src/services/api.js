@@ -1,8 +1,5 @@
-// URL base del backend
 const BASE_URL = 'http://localhost:4002'
 
-// Función base para hacer fetch
-// token es opcional — los endpoints públicos no lo necesitan
 export const apiFetch = async (endpoint, token = null, options = {}) => {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
@@ -13,7 +10,12 @@ export const apiFetch = async (endpoint, token = null, options = {}) => {
     },
   })
 
-  if (!response.ok) throw new Error(`Error ${response.status}`)
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null)
+    const mensaje = errorData?.message || `Error ${response.status}`
+    throw new Error(mensaje)
+  }
+
   if (response.status === 204) return null
   return response.json()
 }

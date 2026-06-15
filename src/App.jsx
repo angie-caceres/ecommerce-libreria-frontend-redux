@@ -1,8 +1,9 @@
 // COMPONENTE raíz — contiene el estado global del carrito
 // El estado vive acá porque es el padre de todos los componentes
-// que necesitan acceder al carrito 
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
-import { useState } from 'react'
+// que necesitan acceder al carrito
+import { Routes, Route, useLocation, Navigate} from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { apiFetch } from './services/api'
 import Home from './views/Home'
 import Carrito from './views/Carrito'
 import DetalleLibro from './views/DetalleLibro'
@@ -16,51 +17,80 @@ import QuienesSomos from './views/QuienesSomos'
 import Contacto from './views/Contacto'
 import Perfil from './views/Perfil'
 import Registro from './views/Registro'
-
-
 import GestionGeneros from './views/admin/GestionGeneros'
 import GestionEditoriales from './views/admin/GestionEditoriales'
 import GestionAutores from './views/admin/GestionAutores'
 import GestionDescuentos from './views/admin/GestionDescuentos'
 import GestionLibros from './views/admin/GestionLibros'
-import HeaderAdmin from './components/HeaderAdmin'
-import Sidebar from './components/Sidebar'
-import Pagination from './components/Pagination'
 import AdminDashboard from './views/admin/AdminDashboard'
 import CrearLibro from './views/admin/CrearLibro'
 import EditarLibro from './views/admin/EditarLibro'
 import GestionUsuario from './views/admin/GestionUsuario'
 import VerPedidos from './views/admin/VerPedidos'
 import GestionImagenes from './views/admin/GestionImagenes'
-
-import Login from "./views/Login";
-import MisOrdenes from "./views/MisOrdenes";
-import DetalleOrden from "./views/DetalleOrden";
-import NotFound from "./views/NotFound";
-
-
-
+import Login from "./views/Login"
+import MisOrdenes from "./views/MisOrdenes"
+import DetalleOrden from "./views/DetalleOrden"
+import NotFound from "./views/NotFound"
 
 function App() {
 
   // se evalua en qué ruta está parado el navegador actualmente
-  const location = useLocation();
+  const location = useLocation()
 
-  const [token, setToken] = useState(null)
-  
+  // Lee el token de localStorage al arrancar — persiste entre recargas
+  const [token, setToken] = useState(localStorage.getItem('jwtToken'))
+
   // HOOK useState — estado global del carrito
-  // Array de objetos, cada uno representa un libro agregado
-
+  // Solo se usa para el badge del Navbar — el carrito real vive en el backend
   const [carrito, setCarrito] = useState([])
+
+  // HOOK useState — estado global del usuario logueado
   const [usuario, setUsuario] = useState(null)
 
-  // Si la ruta empieza con "/admin", esta constante va a ser true
-  const esAdmin = location.pathname.startsWith("/admin") || 
-                (location.pathname === "/perfil" && usuario?.rol === "admin")
+  // true mientras se verifica el token al arrancar — evita redirigir a /login antes de tiempo
+  const [cargandoUsuario, setCargandoUsuario] = useState(!!localStorage.getItem('jwtToken'))
 
-                
+  // HOOK useEffect — recupera el usuario al recargar la página
+  // si hay un token guardado en localStorage
+  useEffect(() => {
+    const tokenGuardado = localStorage.getItem('jwtToken')
+    if (tokenGuardado) {
+      apiFetch('/api/v1/users/me', tokenGuardado)
+        .then(data => {
+          setUsuario({
+            email: data.email,
+            nombre: data.firstname,
+            rol: data.role === 'ADMINISTRADOR' ? 'admin' : 'usuario'
+          })
+          return apiFetch('/carrito', tokenGuardado)
+        })
+        .then(carritoData => {
+          if (carritoData?.items) {
+            const itemsFormateados = carritoData.items.map(item => ({
+              id: item.idLibro,
+              cantidad: item.cantidad
+            }))
+            setCarrito(itemsFormateados)
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('jwtToken')
+          setToken(null)
+        })
+        .finally(() => setCargandoUsuario(false))
+    } else {
+      setCargandoUsuario(false)
+    }
+  }, [])
+
+
+  // Si la ruta empieza con "/admin", esta constante va a ser true
+  const esAdmin = location.pathname.startsWith("/admin") ||
+    (location.pathname === "/perfil" && usuario?.rol === "admin")
+
   // FUNCIÓN para agregar un libro al carrito
-  // Se pasa como PROP a DetalleLibro 
+  // Solo actualiza el badge del Navbar — el POST al backend lo hace DetalleLibroCard
   const agregarAlCarrito = (libro) => {
     const existe = carrito.find(item => item.id === libro.id)
     if (existe) {
@@ -77,41 +107,34 @@ function App() {
   }
 
   // FUNCIÓN para eliminar un libro del carrito
-  // Se pasa como PROP a Carrito 
+  // Solo actualiza el badge del Navbar — el DELETE al backend lo hace Carrito.jsx
   const eliminarDelCarrito = (id) => {
     setCarrito(carrito.filter(item => item.id !== id))
   }
 
-  // FUNCIÓN para cambiar cantidad
-  const cambiarCantidad = (id, cantidad) => {
-    if (cantidad === 0) {
-      eliminarDelCarrito(id)
-    } else {
-      setCarrito(carrito.map(item =>
-        item.id === id ? { ...item, cantidad } : item
-      ))
-    }
-  }
-
-  // FUNCIÓN para vaciar el carrito al confirmar la compra
+  // FUNCIÓN para vaciar el carrito
+  // Limpia el badge del Navbar después del checkout
   const vaciarCarrito = () => setCarrito([])
+
+  // FUNCIÓN para cerrar sesión — limpia usuario, carrito y token
   const cerrarSesion = () => {
   setUsuario(null)
-  setCarrito([])}
+  setCarrito([])
+  setToken(null)
+  localStorage.removeItem('jwtToken')  // ← limpia el token
+}
 
   return (
     <>
-
-      {/* Navbar recibe carrito como prop para mostrar el badge*/}
-      
-      {/*RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
+      {/* Navbar recibe carrito como prop para mostrar el badge */}
+      {/* RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
       {!esAdmin && <Navbar carrito={carrito} usuario={usuario} />}
 
-      <Routes>
+      {!cargandoUsuario && <Routes>
 
         <Route path="/" element={<Home />} />
 
-        {/* DetalleLibro recibe agregarAlCarrito como prop */}
+        {/* DetalleLibro recibe agregarAlCarrito y token como props */}
         <Route
           path="/libro/:id"
           element={
@@ -123,25 +146,22 @@ function App() {
           }
         />
 
-        {/* Carrito — solo usuarios */}
+        {/* Carrito — solo usuarios logueados */}
         <Route
           path="/carrito"
           element={
             usuario?.rol === 'usuario' ? (
               <Carrito
-                carrito={carrito}
                 eliminarDelCarrito={eliminarDelCarrito}
-                cambiarCantidad={cambiarCantidad}
+                vaciarCarrito={vaciarCarrito}
+                token={token}
               />
             ) : <Navigate to="/login" />
           }
         />
 
         {/* Catálogo */}
-        <Route
-          path="/catalogo"
-          element={<Catalogo />}
-        />
+        <Route path="/catalogo" element={<Catalogo />} />
 
         {/* Búsqueda */}
         <Route path="/busqueda" element={<Busqueda />} />
@@ -151,18 +171,18 @@ function App() {
           path="/checkout"
           element={
             usuario?.rol === 'usuario' ? (
-              <Checkout carrito={carrito} vaciarCarrito={vaciarCarrito} />
+              <Checkout
+                vaciarCarrito={vaciarCarrito}
+                token={token}
+              />
             ) : <Navigate to="/login" />
           }
         />
 
-        {/* <Route path="/gestion-libros" element={<GestionLibros />} /> */}
+        {/* Confirmación pedido */}
+        <Route path="/pedido" element={<ConfirmacionPedido />} />
 
-        {/* Confirmacion pedido */}
-        <Route 
-          path="/pedido" 
-          element={<ConfirmacionPedido/>} 
-        />
+        {/* Rutas admin — solo administradores */}
         <Route path="/admin/generos" element={usuario?.rol === 'admin' ? <GestionGeneros /> : <Navigate to="/login" />} />
         <Route path="/admin/editoriales" element={usuario?.rol === 'admin' ? <GestionEditoriales /> : <Navigate to="/login" />} />
         <Route path="/admin/autores" element={usuario?.rol === 'admin' ? <GestionAutores /> : <Navigate to="/login" />} />
@@ -173,21 +193,26 @@ function App() {
         <Route path="/admin/libros/editar/:id" element={usuario?.rol === 'admin' ? <EditarLibro /> : <Navigate to="/login" />} />
         <Route path="/admin/usuarios" element={usuario?.rol === 'admin' ? <GestionUsuario /> : <Navigate to="/login" />} />
         <Route path="/admin/pedidos" element={usuario?.rol === 'admin' ? <VerPedidos /> : <Navigate to="/login" />} />
-        <Route path="/admin/imagenes" element={usuario?.rol === 'admin'? <GestionImagenes /> : <Navigate to="/login" />}/>
-        <Route path="/mis-ordenes" element={usuario?.rol === 'usuario'? <MisOrdenes usuario={usuario} /> : <Navigate to="/login" />}/>
+        <Route path="/admin/imagenes" element={usuario?.rol === 'admin' ? <GestionImagenes /> : <Navigate to="/login" />} />
+
+        {/* Mis órdenes — solo usuarios */}
+        <Route path="/mis-ordenes" element={usuario?.rol === 'usuario' ? <MisOrdenes usuario={usuario} /> : <Navigate to="/login" />} />
         <Route path="/mis-ordenes/:id" element={<DetalleOrden />} />
+
+        {/* Perfil — cualquier rol logueado */}
         <Route
-        path="/perfil"
-        element={
-          usuario ? <Perfil usuario={usuario} cerrarSesion={cerrarSesion} /> : <Navigate to="/login" />
-        }
+          path="/perfil"
+          element={usuario ? <Perfil usuario={usuario} cerrarSesion={cerrarSesion} /> : <Navigate to="/login" />}
         />
+
         <Route path="/quienes-somos" element={<QuienesSomos />} />
         <Route path="/registro" element={<Registro setUsuario={setUsuario} />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/login" element={<Login setUsuario={setUsuario} setToken={setToken} />} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
+
+      </Routes>}
+
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Footer si NO es admin */}
       {!esAdmin && <Footer />}
     </>
