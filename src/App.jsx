@@ -46,7 +46,7 @@ function App() {
   // se evalua en qué ruta está parado el navegador actualmente
   const location = useLocation();
 
-
+  const [token, setToken] = useState(null)
   
   // HOOK useState — estado global del carrito
   // Array de objetos, cada uno representa un libro agregado
@@ -184,7 +184,7 @@ function App() {
         <Route path="/quienes-somos" element={<QuienesSomos />} />
         <Route path="/registro" element={<Registro setUsuario={setUsuario} />} />
         <Route path="/contacto" element={<Contacto />} />
-        <Route path="/login" element={<Login setUsuario={setUsuario} />}/>
+        <Route path="/login" element={<Login setUsuario={setUsuario} setToken={setToken} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Footer si NO es admin */}

@@ -1,82 +1,54 @@
 // COMPONENTE Login
-// Un componente en React es una función JavaScript que devuelve JSX.
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { apiFetch } from "../services/api"
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+function Login({ setUsuario, setToken }) {
+  const navigate = useNavigate()
 
-function Login({ setUsuario }) {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [cargando, setCargando] = useState(false)
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError("")
+    setCargando(true)
 
-    if (
-      email === "administrator@gmail.com" &&
-      password === "admin123"
-    ) {
+    try {
+      // POST /api/v1/auth/authenticate — obtiene el token
+      const data = await apiFetch('/api/v1/auth/authenticate', null, {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+
+      // Guarda el token en el estado de App.jsx
+      setToken(data.access_token)
+
+      // GET /api/v1/users/me — obtiene los datos del usuario logueado
+      const usuario = await apiFetch('/api/v1/users/me', data.access_token)
+
+      // Actualiza el estado global con el rol
       setUsuario({
-        email,
-        password,
-        rol: "admin"
-      });
+        email: usuario.email,
+        nombre: usuario.firstname,
+        rol: usuario.role === 'ADMINISTRADOR' ? 'admin' : 'usuario'
+      })
 
-      navigate("/admin");
+      // Navega según el rol
+      if (usuario.role === 'ADMINISTRADOR') {
+        navigate('/admin')
+      } else {
+        navigate('/')
+      }
 
-    } else if (
-        email === "juan@gmail.com" &&
-        password === "juan123"
-      ) {
-        setUsuario({
-          email,
-          password,
-          rol: "usuario",
-          ordenes: [
-            {
-              id: 1,
-              codigo: "#149",
-              fecha: "14 de mayo, 2026",
-              estado: "ENTREGADO",
-              libros: [
-                {
-                  id: 1,
-                  titulo: "Principia Mathematica",
-                  autor: "Isaac Newton",
-                  imagen: "/principia.jpg"
-                },
-                {
-                  id: 2,
-                  titulo: "Meditaciones",
-                  autor: "Marco Aurelio",
-                  imagen: "/meditaciones.jpg"
-                }
-              ]
-            },
-            {
-              id: 2,
-              codigo: "#105",
-              fecha: "28 de mayo, 2026",
-              estado: "EN CAMINO",
-              libros: [
-                {
-                  id: 3,
-                  titulo: "La Divina Comedia",
-                  autor: "Dante Alighieri",
-                  imagen: "/divina.jpg"
-                }
-              ]
-            }
-          ]
-        });
-
-        navigate("/");
-
-    } else {
-      setError("Correo o contraseña incorrectos.");
+    } catch (err) {
+      setError('Correo o contraseña incorrectos.')
+    } finally {
+      setCargando(false)
     }
-  };
+  }
 
   return (
     <main className="bg-[#faf7f5] py-10 px-4">
@@ -85,7 +57,6 @@ function Login({ setUsuario }) {
           <h1 className="text-4xl font-serif text-[#351118] mb-3">
             Bienvenido
           </h1>
-
           <p className="text-gray-500">
             Accede a tu santuario literario personal.
           </p>
@@ -96,7 +67,6 @@ function Login({ setUsuario }) {
             <label className="block font-serif text-2xl text-[#351118] mb-4">
               Correo electrónico
             </label>
-
             <input
               type="email"
               placeholder="ejemplo@libros.com"
@@ -108,13 +78,9 @@ function Login({ setUsuario }) {
           </div>
 
           <div className="mb-8">
-            <div className="flex justify-between items-center mb-4">
-              <label className="font-serif text-2xl text-[#351118]">
-                Contraseña
-              </label>
-
-            </div>
-
+            <label className="font-serif text-2xl text-[#351118]">
+              Contraseña
+            </label>
             <input
               type="password"
               placeholder="••••••••"
@@ -131,9 +97,10 @@ function Login({ setUsuario }) {
 
           <button
             type="submit"
-            className="w-full bg-[#4b385c] text-white py-4 text-sm tracking-widest font-semibold hover:bg-[#382943] transition"
+            disabled={cargando}
+            className="w-full bg-[#4b385c] text-white py-4 text-sm tracking-widest font-semibold hover:bg-[#382943] transition disabled:opacity-50"
           >
-            INICIAR SESIÓN
+            {cargando ? 'INGRESANDO...' : 'INICIAR SESIÓN'}
           </button>
         </form>
 
@@ -154,12 +121,11 @@ function Login({ setUsuario }) {
           <p className="font-serif italic text-xl text-[#351118]">
             "Un hogar sin libros es como un cuerpo sin alma."
           </p>
-
           <p className="text-xs text-gray-400 mt-3">— CICERÓN</p>
         </div>
       </section>
     </main>
-  );
+  )
 }
 
-export default Login;
+export default Login
