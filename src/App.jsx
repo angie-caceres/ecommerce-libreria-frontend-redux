@@ -51,7 +51,10 @@ function App() {
   // Array de objetos, cada uno representa un libro agregado
 
   const [carrito, setCarrito] = useState([])
-  const [usuario, setUsuario] = useState(null)
+  const [usuario, setUsuario] = useState(() => {
+    const guardado = localStorage.getItem("usuario")
+    return guardado ? JSON.parse(guardado) : null
+  })
 
   // Si la ruta empieza con "/admin", esta constante va a ser true
   const esAdmin = location.pathname.startsWith("/admin") || 
@@ -95,8 +98,11 @@ function App() {
   // FUNCIÓN para vaciar el carrito al confirmar la compra
   const vaciarCarrito = () => setCarrito([])
   const cerrarSesion = () => {
-  setUsuario(null)
-  setCarrito([])}
+    localStorage.removeItem("usuario")
+    localStorage.removeItem("token")
+    setUsuario(null)
+    setCarrito([])
+  }
 
   return (
     <>

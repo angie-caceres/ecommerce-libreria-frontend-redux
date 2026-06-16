@@ -26,11 +26,15 @@ function RegistroForm({ onSubmit }) {
     }
 
     setError("")
+    const partesNombre = nombre.trim().split(" ")
 
-    const nuevoUsuario = { nombre, email, password }
-
-    // Llama a la función del padre en lugar de navegar directamente
-    // Flujo unidireccional — el hijo comunica al padre
+    const nuevoUsuario = {
+      firstname: partesNombre[0],
+      lastname: partesNombre.slice(1).join(" ") || "",
+      email,
+      password,
+      role: "USER"
+    }
     onSubmit(nuevoUsuario)
   }
 
@@ -100,7 +104,8 @@ function RegistroForm({ onSubmit }) {
         </div>
 
         {/* RENDERIZADO CONDICIONAL con &&
-            Muestra error sin tocar el DOM  */}
+            Muestra error sin tocar el DOM
+  */}
         {error && (
           <p className="text-red-500 text-sm mb-4">{error}</p>
         )}

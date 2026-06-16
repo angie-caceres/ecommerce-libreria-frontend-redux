@@ -1,11 +1,29 @@
 import OrdenCard from "../components/OrdenCard";
 import Quote from "../components/Quote";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function MisOrdenes({ usuario }) {
   const navigate = useNavigate();
+  const [ordenes, setOrdenes] = useState([]);
+  useEffect(() => {
+    const obtenerOrdenes = async () => {
+      const token = localStorage.getItem("token");
 
-  const ordenes = usuario?.ordenes || [];
+      const response = await fetch("http://localhost:4002/ordenes/usuario/me", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setOrdenes(data);
+      }
+    };
+
+    obtenerOrdenes();
+  }, []);
 
   return (
     <main className="bg-[#FCF9F8] px-4 py-10">

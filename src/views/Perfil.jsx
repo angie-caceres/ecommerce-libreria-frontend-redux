@@ -36,23 +36,38 @@ function Perfil({ usuario, cerrarSesion }) {
 
   // EVENTO — guarda los cambios y pide que vuelva a loguearse
   const handleGuardar = () => {
-    Swal.fire({
-      title: '¿Guardar cambios?',
-      text: 'Para aplicar los cambios vas a tener que volver a iniciar sesión.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#4b385c',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, guardar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Con backend: fetch PUT /api/usuarios con form
-        cerrarSesion()
-        navigate('/login')
+  Swal.fire({
+    title: '¿Guardar cambios?',
+    text: 'Para aplicar los cambios vas a tener que volver a iniciar sesión.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#4b385c',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, guardar',
+    cancelButtonText: 'Cancelar'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      const token = localStorage.getItem("token")
+
+      const response = await fetch("http://localhost:4002/api/v1/users/me", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(form)
+      })
+      if (!response.ok) {
+        Swal.fire("Error", "No se pudieron guardar los cambios", "error")
+        return
       }
-    })
-  }
+
+      Swal.fire("Guardado", "Tus datos fueron actualizados", "success")
+      cerrarSesion()
+      navigate('/login')
+    }
+  })
+}
 
   const handleVolver = () => {
     // RENDERIZADO CONDICIONAL — vuelve según el rol
