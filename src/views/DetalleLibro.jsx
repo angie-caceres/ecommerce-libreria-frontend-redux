@@ -1,29 +1,44 @@
-// VISTA — obtiene el libro y lo pasa al componente DetalleLibroCard
-import { Link } from 'react-router-dom'
+// VISTA — obtiene el libro por ID desde el backend
+// (PDF: useEffect - Llamadas a APIs)
+import { useState, useEffect } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import DetalleLibroCard from '../components/DetalleLibroCard'
+import { apiFetch } from '../services/api'
 
-// DATOS hardcodeados — en el futuro vendrían de una API con useEffect y useParams
-const libros = [
-  {
-    id: 1,
-    titulo: 'Amanecer en la cosecha',
-    autor: 'Suzanne Collins',
-    editorial: 'Planeta',
-    hojas: 460,
-    precioOriginal: 40000,
-    descuento: '-10%',
-    descripcion: 'Una obra maestra definitiva de la filosofía moderna, esta primera edición limitada está encuadernada en cuero de ternera de color burdeos profundo, obtenido de forma ética. Con bordes de pan de oro de 24 quilates dorados a mano y un prólogo del descendiente directo del autor, representa la cumbre de la fabricación artesanal de libros.',
-    imagen: '/libros/juegos.png',
-  },
-]
+function DetalleLibro({ agregarAlCarrito, puedeComprar,token }) {
 
-// PROPS — recibe agregarAlCarrito del padre App.jsx
-function DetalleLibro({ agregarAlCarrito, puedeComprar }) {
+  const { id } = useParams()
 
-  // Por ahora mostramos el primer libro
-  // Con backend usaríamos useParams para obtener el id de la URL
-  // y useEffect para buscar el libro en la API
-  const libro = libros[0]
+  // HOOK useState — estado local del libro y loading
+
+  const [libro, setLibro] = useState(null)
+  const [cargando, setCargando] = useState(true)
+  const [error, setError] = useState(null)
+
+  // HOOK useEffect — se ejecuta al montar el componente
+  // Hace GET /libros/{id} al backend
+
+  useEffect(() => {
+    setCargando(true)
+    apiFetch(`/libros/${id}`)
+      .then(data => {
+        setLibro({
+          id: data.idLibro,
+          titulo: data.titulo,
+          descripcion: data.descripcion,
+          precioOriginal: data.precio,
+          descuento: data.porcentajeDescuento ? `-${data.porcentajeDescuento}%` : null,
+          hojas: data.paginas,
+          editorial: data.editorial,
+          autor: data.autores?.join(', '),
+          imagen: data.imagen
+            ? `data:image/jpeg;base64,${data.imagen}`
+            : '/libros/juegos.png',
+        })
+      })
+      .catch(err => setError('No se pudo cargar el libro.'))
+      .finally(() => setCargando(false))
+  }, [id])
 
   return (
     <div className="bg-[#FCF9F8] min-h-screen px-12 py-8">
@@ -32,12 +47,32 @@ function DetalleLibro({ agregarAlCarrito, puedeComprar }) {
         ← VOLVER
       </Link>
 
-      {/* COMPONENTE hijo — recibe el libro y la función como props  */}
-      <DetalleLibroCard
-        libro={libro}
-        agregarAlCarrito={agregarAlCarrito}
-        puedeComprar={puedeComprar}
-      />
+      {cargando && (
+        <p className="text-center text-gray-400 mt-24 text-sm uppercase tracking-widest">
+          Cargando...
+        </p>
+      )}
+
+      {error && (
+        <p className="text-center text-red-400 mt-24 text-sm uppercase tracking-widest">
+          {error}
+        </p>
+      )}
+
+      {!cargando && !error && libro && (
+        <DetalleLibroCard
+          libro={libro}
+          agregarAlCarrito={agregarAlCarrito}
+          puedeComprar={puedeComprar}
+          token={token}
+        />
+      )}
+
+      {!cargando && !error && !libro && (
+        <p className="text-center text-gray-400 mt-24 text-sm uppercase tracking-widest">
+          Libro no encontrado.
+        </p>
+      )}
 
     </div>
   )

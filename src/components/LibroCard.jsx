@@ -42,14 +42,22 @@ function LibroCard({ id, categoria, titulo, precio, precioOriginal, descuento, i
         <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
           {categoria}
         </p>
-        <h3 className="text-sm font-medium text-[#2d2640] mb-1">
-          {titulo}
-        </h3>
+        {tieneDetalle ? (
+          <Link to={`/libro/${id}`}>
+            <h3 className="text-sm font-medium text-[#2d2640] mb-1 hover:text-purple-700 transition">
+              {titulo}
+            </h3>
+          </Link>
+        ) : (
+          <h3 className="text-sm font-medium text-[#2d2640] mb-1">
+            {titulo}
+          </h3>
+        )}
         <div className="flex items-center gap-2">
           <span className="text-sm text-[#2d2640]">${precio}</span>
           {/* RENDERIZADO CONDICIONAL con &&
               Solo muestra precio original si existe  */}
-          {precioOriginal && (
+          {descuento && precioOriginal && (
             <span className="text-xs text-gray-400 line-through">${precioOriginal}</span>
           )}
         </div>

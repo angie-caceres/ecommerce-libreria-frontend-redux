@@ -8,7 +8,7 @@ function MisOrdenes({ usuario }) {
   const [ordenes, setOrdenes] = useState([]);
   useEffect(() => {
     const obtenerOrdenes = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("jwtToken") || localStorage.getItem("token");
 
       const response = await fetch("http://localhost:4002/ordenes/usuario/me", {
         headers: {
@@ -18,6 +18,9 @@ function MisOrdenes({ usuario }) {
 
       if (response.ok) {
         const data = await response.json();
+
+        console.log("ORDENES:", data);
+
         setOrdenes(data);
       }
     };
@@ -46,23 +49,37 @@ function MisOrdenes({ usuario }) {
           </div>
         ) : (
           <div className="space-y-8">
-            {ordenes.map((orden) => (
-              <OrdenCard
-                key={orden.id}
-                codigo={orden.codigo}
-                fecha={orden.fecha}
-                estado={orden.estado}
-                libros={orden.libros}
-                boton={
-                  <button
-                    onClick={() => navigate(`/mis-ordenes/${orden.id}`)}
-                    className="bg-[#4b385c] text-white px-6 py-3 hover:bg-[#382943] transition"
-                  >
-                    Ver detalles
-                  </button>
-                }
-              />
-            ))}
+            {ordenes.map((orden) => {
+              console.log("ORDEN:", orden)
+
+              return (
+                <OrdenCard
+                  key={orden.idOrden}
+                  codigo={`#${orden.idOrden}`}
+                  fecha={new Date(orden.fechaVenta).toLocaleDateString("es-AR")}
+                  estado={orden.estado}
+                  libros={(orden.items || []).map(item => ({
+                    id: item.idLibro,
+                    titulo: item.tituloLibro,
+                    imagen: item.imagen
+                      ? `data:image/jpeg;base64,${item.imagen}`
+                      : null,
+                    autor: item.autor || ""
+                  }))}
+                  boton={
+                    <button
+                      onClick={() => {
+                        console.log("ID ORDEN:", orden.idOrden)
+                        navigate(`/mis-ordenes/${orden.idOrden}`)
+                      }}
+                      className="bg-[#4b385c] text-white px-6 py-3 hover:bg-[#382943] transition"
+                    >
+                      Ver detalles
+                    </button>
+                  }
+                />
+              )
+            })}
           </div>
         )}
 

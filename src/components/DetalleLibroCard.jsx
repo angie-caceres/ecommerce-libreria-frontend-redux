@@ -1,25 +1,36 @@
 // COMPONENTE reutilizable — muestra el detalle de cualquier libro
-// Se puede usar para todos los libros del catálogo
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import Alerta from './Alerta'
 import { calcularPrecioFinal } from '../utils/calcularPrecio'
+import { apiFetch } from '../services/api'
 
 // PROPS — recibe los datos del libro y la función del carrito desde el padre
-function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
+function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar, token }) {
 
   // HOOK useState — controla si se muestra el mensaje de éxito
   const [agregado, setAgregado] = useState(false)
+  const [error, setError] = useState(null)
 
   const precioFinal = calcularPrecioFinal(libro.precioOriginal, libro.descuento)
 
-  // EVENTO — agrega el libro al carrito y muestra mensaje
-  // Llama a la función del padre pasada como prop
-  const handleAgregar = () => {
-    agregarAlCarrito({ ...libro, precio: precioFinal })
-    setAgregado(true)
+  // EVENTO — agrega el libro al carrito del backend
+  const handleAgregar = async () => {
+    try {
+      await apiFetch('/carrito/items', token, {
+        method: 'POST',
+        body: JSON.stringify({
+          libroId: libro.id,
+          cantidad: 1
+        })
+      })
+      // Actualiza el badge del Navbar
+      agregarAlCarrito({ ...libro, precio: precioFinal })
+      setAgregado(true)
+    } catch (err) {
+      setError(err.message)
+    }
   }
-
+ 
   return (
     <div className="flex gap-16 max-w-5xl mx-auto">
 
@@ -57,8 +68,6 @@ function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
           {libro.titulo}
         </h1>
 
-        {/* Precio con descuento
-            RENDERIZADO CONDICIONAL con &&  */}
         <div className="flex items-center gap-3 mb-6">
           <span className="text-2xl text-[#2d2640]">
             ${precioFinal.toLocaleString()}
@@ -79,7 +88,6 @@ function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
           {libro.descripcion}
         </p>
 
-        {/* EVENTO onClick — dispara handleAgregar  */}
         {puedeComprar ? (
           <button
             onClick={handleAgregar}
@@ -93,13 +101,16 @@ function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
           </p>
         )}
 
-        {/* RENDERIZADO CONDICIONAL con &&  */}
         {agregado && (
           <Alerta
             texto="¡Libro agregado al Carrito!"
             linkTexto="Ver Carrito"
             linkRuta="/carrito"
           />
+        )}
+
+        {error && (
+          <p className="text-red-500 text-sm mt-4">{error}</p>
         )}
 
       </div>

@@ -1,48 +1,37 @@
-// COMPONENTE — importa LibroCard desde su propio archivo
+// COMPONENTE — muestra las novedades del home
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import LibroCard from './LibroCard'
-
-const libros = [
-  {
-    id: 1,
-    categoria: 'DISTOPIA',
-    titulo: 'Amanecer en la cosecha',
-    precio: 36000,
-    precioOriginal: 40000,
-    descuento: '-10%',
-    imagen: '/libros/juegos.png',
-    tieneDetalle: true,
-  },
-  {
-    id: 2,
-    categoria: 'POESÍA',
-    titulo: 'Estrofas de Silencio',
-    precio: 64000,
-    precioOriginal: null,
-    descuento: null,
-    imagen: '/libros/estrofas-silencio.png',
-  },
-  {
-    id: 3,
-    categoria: 'FILOSOFÍA',
-    titulo: 'Ecos de la Razón',
-    precio: 120000,
-    precioOriginal: 150000,
-    descuento: '-20%',
-    imagen: '/libros/ecos-razon.png',
-  },
-  {
-    id: 4,
-    categoria: 'CURADURÍAS',
-    titulo: 'El Folio del Vagabundo',
-    precio: 92000,
-    precioOriginal: null,
-    descuento: null,
-    imagen: '/libros/folio-vagabundo.png',
-  },
-]
+import { apiFetch } from '../services/api'
 
 function Novedades() {
+
+  // HOOK useState — libros traídos del backend
+  const [libros, setLibros] = useState([])
+
+  // HOOK useEffect — trae los libros al montar el componente
+  // Array vacío = solo se ejecuta al montar (Montaje)
+  useEffect(() => {
+    apiFetch('/libros')
+      .then(data => {
+        // Toma solo los primeros 4 libros para mostrar en el home
+        const primerosCuatro = data.slice(0, 4).map(libro => ({
+          id: libro.idLibro,
+          titulo: libro.titulo,
+          categoria: libro.genero,
+          precio: libro.precio,
+          precioOriginal: libro.precio,
+          descuento: libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null,
+          imagen: libro.imagen
+            ? `data:image/jpeg;base64,${libro.imagen}`
+            : '/libros/juegos.png',
+          tieneDetalle: true,
+        }))
+        setLibros(primerosCuatro)
+      })
+      .catch(err => console.error('Error cargando novedades:', err))
+  }, [])
+
   return (
     <div className="px-12 py-12 bg-[#FCF9F8]">
 
@@ -56,9 +45,7 @@ function Novedades() {
         </Link>
       </div>
 
-      {/* RENDERIZADO DE LISTA con .map()
-          Cada libro se renderiza como LibroCard
-          Se pasan los datos como PROPS al componente hijo  */}
+      {/* RENDERIZADO DE LISTA con .map() */}
       <div className="grid grid-cols-4 gap-6">
         {libros.map((libro) => (
           <LibroCard

@@ -10,7 +10,7 @@ export const libros = [
     precioOriginal: 40000,
     descuento: '-10%',
     categoria: 'CLÁSICOS MODERNOS',
-    descripcion: 'Una obra maestra definitiva de la filosofía moderna...',
+    descripcion: 'Una obra maestra definitiva de la literatura distópica moderna, esta primera edición limitada está encuadernada en cuero de ternera de color burdeos profundo, obtenido de forma ética. Con bordes de pan de oro de 24 quilates dorados a mano y un prólogo del descendiente directo del autor, representa la cumbre de la fabricación artesanal de libros.',
     imagen: '/libros/juegos.png',
   },
   {
@@ -22,8 +22,8 @@ export const libros = [
     precioOriginal: 18000,
     descuento: null,
     categoria: 'DISTOPÍA',
-    descripcion: 'Una novela distópica sobre un mundo totalitario.',
-    imagen: '/libros/1984.jpg',
+    descripcion: 'La novela más influyente del siglo XX, esta edición especial de George Orwell está encuadernada en tela negra con letras plateadas en relieve. En un mundo donde el Gran Hermano lo vigila todo y el Ministerio de la Verdad reescribe la historia, Winston Smith se atreve a pensar en libertad. Una advertencia atemporal sobre el totalitarismo, la vigilancia y el poder del lenguaje para moldear la realidad.',
+    imagen: '/libros/1984.png',
   },
   {
     id: 3,
@@ -70,7 +70,7 @@ export const libros = [
     precioOriginal: 21000,
     descuento: null,
     categoria: 'ROMANCE',
-    descripcion: 'La historia de amor entre Elizabeth Bennet y Mr. Darcy.',
+    descripcion: 'Una joya de la literatura inglesa que ha resistido el paso del tiempo, esta edición especial de la obra cumbre de Jane Austen está encuadernada en tela de lino color marfil con grabados dorados a mano. La historia de Elizabeth Bennet y el altivo Sr. Darcy es el retrato más agudo y delicioso del amor y los prejuicios de clase en la Inglaterra de la Regencia. Incluye un prólogo literario y notas históricas sobre la sociedad de la época.',
     imagen: '/libros/orgullo.jpg',
   },
   {

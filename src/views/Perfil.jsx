@@ -13,7 +13,7 @@ function Perfil({ usuario, cerrarSesion }) {
   const [form, setForm] = useState({
     nombre: usuario?.nombre || '',
     email: usuario?.email || '',
-    password: usuario?.password || '',
+    password: '',
   })
 
   // HOOK useState — controla qué campo está siendo editado
@@ -47,7 +47,7 @@ function Perfil({ usuario, cerrarSesion }) {
     cancelButtonText: 'Cancelar'
   }).then(async (result) => {
     if (result.isConfirmed) {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("jwtToken") || localStorage.getItem("token")
 
       const response = await fetch("http://localhost:4002/api/v1/users/me", {
         method: "PATCH",

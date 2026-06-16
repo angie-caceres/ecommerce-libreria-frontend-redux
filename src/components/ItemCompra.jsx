@@ -16,8 +16,6 @@ function ItemCompra({ item, editable, cambiarCantidad, eliminarDelCarrito }) {
         />
         <div>
           <p className="text-sm font-medium text-[#2d2640]">{item.titulo}</p>
-          <p className="text-xs text-gray-400">{item.autor}</p>
-
           {/* RENDERIZADO CONDICIONAL con &&
               Solo muestra precio original tachado si tiene descuento  */}
           {item.precioOriginal && item.descuento && (

@@ -29,7 +29,7 @@ function Registro({ setUsuario }) {
 
       const usuarioLogueado = {
         email: nuevoUsuario.email,
-        nombre: `${nuevoUsuario.firstname} ${nuevoUsuario.lastname}`,
+        nombre: `${nuevoUsuario.firstname} ${nuevoUsuario.lastname}`.trim(),
         rol: nuevoUsuario.role === "ADMINISTRADOR" ? "admin" : "usuario",
         token: data.token
       }

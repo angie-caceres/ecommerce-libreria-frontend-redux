@@ -1,25 +1,9 @@
 // COMPONENTE — función JavaScript que devuelve JSX
 // Nombre en PascalCase, archivo propio
-import { useState } from 'react'
-import { BsTelephone, BsEnvelope } from 'react-icons/bs'
+import { BsTelephone, BsEnvelope, BsInstagram, BsTiktok } from 'react-icons/bs'
 import { Link } from 'react-router-dom'
 
 function Footer() {
-
-  // HOOK useState — guarda el email del newsletter en el estado local
-  const [email, setEmail] = useState('')
-
-  // EVENTO — actualiza el estado cada vez que el usuario escribe
-  const handleChange = (e) => {
-    setEmail(e.target.value)
-  }
-
-  // EVENTO — maneja el envío del formulario
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // acá iría la lógica de suscripción
-    setEmail('')
-  }
 
   return (
     <footer className="bg-[#2d2640] text-white">
@@ -62,30 +46,20 @@ function Footer() {
         </p>
         </div>
 
-        {/* Columna 4 — newsletter */}
+        {/* Columna 4 — redes sociales */}
         <div>
-          <h4 className="text-xs uppercase tracking-widest text-gray-400 mb-4">Suscripción al newsletter</h4>
+          <h4 className="text-xs uppercase tracking-widest text-gray-400 mb-4">Seguinos</h4>
           <p className="text-sm text-gray-400 mb-4 leading-relaxed">
-            Suscribite a nuestro newsletter para enterarte de todas las novedades y tener acceso prioritario a nuevas adquisiciones.
+            Seguinos en nuestras redes para estar al tanto de novedades, recomendaciones y nuevas adquisiciones.
           </p>
-
-          {/* Formulario — EVENTO onSubmit */}
-          <form onSubmit={handleSubmit} className="flex items-center border-b border-gray-500 pb-2">
-            <input
-              type="email"
-              placeholder="Correo electrónico"
-              value={email}
-              // EVENTO onChange — actualiza el estado con cada tecla
-              onChange={handleChange}
-              className="bg-transparent text-sm text-gray-300 placeholder-gray-500 outline-none flex-1"
-            />
-            <button
-              type="submit"
-              className="text-gray-400 hover:text-white ml-2"
-            >
-              →
-            </button>
-          </form>
+          <div className="flex gap-4">
+            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white text-xl">
+              <BsInstagram />
+            </a>
+            <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white text-xl">
+              <BsTiktok />
+            </a>
+          </div>
         </div>
 
       </div>

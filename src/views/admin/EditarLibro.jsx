@@ -1,22 +1,35 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import HeaderAdmin from "../../components/HeaderAdmin";
 import Sidebar from "../../components/Sidebar";
+import Alerta from "../../components/Alerta";
 
-const LIBROS_MOCK = [
-  { id: 1, titulo: "Amanecer en la cosecha", autor: "Suzanne Collins", genero: "Distopía", precioOriginal: 40000, descuento: "-10%" },
-  { id: 2, titulo: "1984", autor: "George Orwell", genero: "Distopía", precioOriginal: 18000, descuento: "0%"},
-  { id: 3, titulo: "El Hobbit", autor: "J.R.R. Tolkien", genero: "Fantasía", precioOriginal: 25000, descuento: "0%" },
-];
-const IMAGENES_MOCK = [
+import { libros } from "../../data/libros";
+const AUTORES_MOCK = [...new Set(libros.map(libro => libro.autor))].sort();
+const GENEROS_MOCK = [...new Set(libros.map(libro => libro.categoria))].sort();
+
+// 2. EDITORIALES: Extrae las editoriales, elimina duplicados y las ordena
+const EDITORIALES_MOCK = [...new Set(libros.map(libro => libro.editorial))].sort();
+
+// 3. PORTADAS 
+const IMAGENES_MOCK = [...new Set(libros.map(libro => libro.imagen))].map((ruta, index) => {
+  const nombreLimpio = ruta.split('/').pop(); 
+  return {
+    id: ruta, 
+    nombre: `Portada ${nombreLimpio.split('.')[0]}` 
+  };
+});
+
+
+{/*const IMAGENES_MOCK = [
   { id: 1, nombre: "Portada 1984" },
   { id: 2, nombre: "Portada El Hobbit" },
   { id: 3, nombre: "Portada Amanecer en la cosecha" },
-];
+];*/}
 
-const GENEROS_MOCK     = ["Fantasía", "Ciencia Ficción", "Romance", "Terror", "Historia", "Biografía", "Ensayo", "Clásicos Literarios"];
-const EDITORIALES_MOCK = ["Planeta", "Sudamericana", "Alfaguara", "Urano", "Siglo XXI", "FCE", "L'Atelier Press"];
-const AUTORES_MOCK     = ["Suzanne Collins", "George Orwell"];
+//const GENEROS_MOCK     = ["Fantasía", "Ciencia Ficción", "Romance", "Terror", "Historia", "Biografía", "Ensayo", "Clásicos Literarios", "CLÁSICOS MODERNOS", "DISTOPÍA", "FANTASÍA", "CLÁSICO", "INFANTIL"];
+//const EDITORIALES_MOCK = ["Planeta", "Sudamericana", "Alfaguara", "Urano", "Siglo XXI", "FCE", "L'Atelier Press", "Penguin", "Minotauro", "Salamandra"];
+//const AUTORES_MOCK     = ["Suzanne Collins", "George Orwell"];
 
 function FormField({ label, children, className = "" }) {
   return (
@@ -40,19 +53,20 @@ const inputClass =
 // ─────────────────────────────────────────────────────────────
 export default function EditarLibro() {
   const { id } = useParams();
-  const libroActual = LIBROS_MOCK.find(
+  const navigate = useNavigate();
+  const libroActual = libros.find(
     (libro) => libro.id === Number(id)
   );
 
   const [form, setForm] = useState({
     titulo: libroActual?.titulo || "",
-    descripcion: "",
-    paginas: "",
+    descripcion: libroActual?.descripcion || "", 
+    paginas: libroActual?.hojas || "",         
     precio: libroActual?.precioOriginal || "",
-    genero: libroActual?.genero || "",
-    editorial: "",
+    genero: libroActual?.categoria || "",       
+    editorial: libroActual?.editorial || "",    
     autores: libroActual?.autor || "",
-    imagenId: "",
+    imagenId: libroActual?.imagen || "",
   });
 
   const [stock, setStock] = useState(0);
@@ -77,7 +91,7 @@ export default function EditarLibro() {
         if (!form.titulo.trim())
             e.titulo = "El título es obligatorio";
 
-        if (!form.precio.trim())
+        if (!String(form.precio).trim())
             e.precio = "Ingresá un precio";
 
         if (!form.genero)
@@ -90,7 +104,6 @@ export default function EditarLibro() {
     };
 
   const handleSubmit = () => {
-    console.log("Botón actualizar presionado");
     const newErrors = validate();
 
     if (Object.keys(newErrors).length > 0) {
@@ -99,7 +112,6 @@ export default function EditarLibro() {
     }
 
     const payload = { ...form, stock };
-
     console.log("Libro actualizado:", payload);
 
     setUpdated(true);
@@ -107,19 +119,8 @@ export default function EditarLibro() {
   };
 
 const handleCancel = () => {
-  setForm({
-    titulo: libroActual?.titulo || "",
-    descripcion: "",
-    paginas: "",
-    precio: libroActual?.precioOriginal || "",
-    genero: libroActual?.genero || "",
-    editorial: "",
-    imagenId: "",
-  });
-
-  setStock(0);
-  setErrors({});
-};
+    navigate("/admin/libros");
+  };
 
   const estadoInventario = stock > 0 ? "EN CATÁLOGO" : "SIN STOCK";
   const estadoColor      = stock > 0
@@ -154,10 +155,11 @@ const handleCancel = () => {
         </div>
 
           {updated && (
-            <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium">
-              <span>✅</span>
-              <span>¡Libro actualizado correctamente!</span>
-            </div>
+            <Alerta
+              texto="¡Libro actualizado correctamente!"
+              onClose={() => setUpdated(false)}
+              icono={false}
+            />
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 items-start">
@@ -229,6 +231,7 @@ const handleCancel = () => {
                 <FormField label="Género">
                   <select name="genero" value={form.genero} onChange={handleChange}
                     className={`${inputClass} appearance-none cursor-pointer`}>
+                      <option value="">Seleccionar género</option>
                     {GENEROS_MOCK.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                   {errors.genero && <p className="text-xs text-red-500">{errors.genero}</p>}
@@ -237,6 +240,7 @@ const handleCancel = () => {
                 <FormField label="Editorial">
                   <select name="editorial" value={form.editorial} onChange={handleChange}
                     className={`${inputClass} appearance-none cursor-pointer`}>
+                    <option value="">Seleccionar editorial</option>
                     {EDITORIALES_MOCK.map(e => <option key={e} value={e}>{e}</option>)}
                   </select>
                   {errors.editorial && <p className="text-xs text-red-500">{errors.editorial}</p>}

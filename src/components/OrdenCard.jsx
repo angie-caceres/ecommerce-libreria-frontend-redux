@@ -64,11 +64,13 @@ function OrdenCard({
              className="bg-[#faf7f5] p-3 flex gap-4"
            >
 
-             <img
-               src={libro.imagen}
-               alt={libro.titulo}
-               className="w-14 h-20 object-cover"
-             />
+             {libro.imagen && (
+                <img
+                  src={libro.imagen}
+                  alt={libro.titulo}
+                  className="w-14 h-20 object-cover"
+                />
+              )}
 
              <div>
 
