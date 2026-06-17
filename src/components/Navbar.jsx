@@ -67,7 +67,7 @@ function Navbar({ carrito, usuario }) {
 
       {/* Barra superior púrpura */}
       <div className="bg-[#7B5B98] text-white text-center text-sm py-2">
-        ENVÍO GRATIS EN PEDIDOS SUPERIORES A $100.000
+        HASTA TRES CUOTAS SIN INTERÉS
       </div>
 
       {/* Barra media: logo, buscador, iconos */}
@@ -133,7 +133,8 @@ function Navbar({ carrito, usuario }) {
 
           {/* RENDERIZADO CONDICIONAL con ternario
               Si el usuario está logueado muestra MIS ÓRDENES y MI PERFIL
-              Si no está logueado muestra solo MI CUENTA que lleva al login  */}
+              Si no está logueado muestra solo MI CUENTA que lleva al login
+  */}
           {usuario?.rol === 'usuario' ? (
             <>
               {/* Mis Órdenes — solo visible cuando está logueado */}
@@ -153,7 +154,8 @@ function Navbar({ carrito, usuario }) {
               </Link>
             </>
           ) : (
-            /* Sin login — MI CUENTA lleva al login  */
+            /* Sin login — MI CUENTA lleva al login
+  */
             <Link to="/login" className="flex flex-col items-center gap-1 hover:text-purple-600">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -163,7 +165,8 @@ function Navbar({ carrito, usuario }) {
           )}
 
           {/* Carrito — siempre visible
-              Si está logueado va a /carrito, sino va a /login  */}
+              Si está logueado va a /carrito, sino va a /login
+  */}
           <Link
             to={usuario?.rol === 'usuario' ? '/carrito' : '/login'}
             className="flex flex-col items-center gap-1 hover:text-purple-600 relative"
@@ -172,7 +175,8 @@ function Navbar({ carrito, usuario }) {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              {/* Badge — solo si hay items en el carrito  */}
+              {/* Badge — solo si hay items en el carrito
+  */}
               {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {totalItems}
@@ -189,7 +193,8 @@ function Navbar({ carrito, usuario }) {
       <nav className="bg-[#473954] flex justify-center gap-10 py-3 text-sm">
 
         {/* RENDERIZADO DE LISTA con .map() — itera el array navLinks
-            Siempre se usa key única para que React identifique cada elemento  */}
+            Siempre se usa key única para que React identifique cada elemento
+  */}
         {navLinks.map((item) => (
 
           // NavLink es igual a Link pero detecta si la ruta está activa
