@@ -46,8 +46,10 @@ function App() {
   const [carrito, setCarrito] = useState([])
 
   // HOOK useState — estado global del usuario logueado
-  const [usuario, setUsuario] = useState(null)
-
+  const [usuario, setUsuario] = useState(() => {
+    const guardado = localStorage.getItem("usuario")
+    return guardado ? JSON.parse(guardado) : null
+  })
   // true mientras se verifica el token al arrancar — evita redirigir a /login antes de tiempo
   const [cargandoUsuario, setCargandoUsuario] = useState(!!localStorage.getItem('jwtToken'))
 
@@ -56,7 +58,7 @@ function App() {
   useEffect(() => {
     const tokenGuardado = localStorage.getItem('jwtToken')
     if (tokenGuardado) {
-      apiFetch('/api/v1/users/me', tokenGuardado)
+      apiFetch('/usuarios/me', tokenGuardado)
         .then(data => {
           setUsuario({
             email: data.email,
@@ -118,12 +120,13 @@ function App() {
 
   // FUNCIÓN para cerrar sesión — limpia usuario, carrito y token
   const cerrarSesion = () => {
-  setUsuario(null)
-  setCarrito([])
-  setToken(null)
-  localStorage.removeItem('jwtToken')  // ← limpia el token
-}
-
+    localStorage.removeItem("usuario")
+    localStorage.removeItem("token")
+    localStorage.removeItem("jwtToken")
+    setUsuario(null)
+    setCarrito([])
+    setToken(null)
+  }
   return (
     <>
       {/* Navbar recibe carrito como prop para mostrar el badge */}

@@ -1,23 +1,11 @@
 // VISTA — gestión de pedidos del panel admin
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
 import Pagination from "../../components/Pagination"
 import FiltrosBotones from "../../components/FiltrosBotones"
 import EncabezadoSeccion from "../../components/EncabezadoSeccion"
-
-const TODOS_LOS_PEDIDOS = [
-  { id: "#ORD-8821", num: 1,  cliente: "Usuario #8821", productos: "Don Quijote de la Mancha, +2 más",   total: "1.240,00",  status: "CONFIRMADO" },
-  { id: "#ORD-8819", num: 2,  cliente: "Usuario #8819", productos: "Rayuela (Edición Conmemorativa)",     total: "45.000,00", status: "CONFIRMADO" },
-  { id: "#ORD-8815", num: 3,  cliente: "Usuario #8815", productos: "La Divina Comedia (Ilustrado)",       total: "32.000,00", status: "PENDIENTE"  },
-  { id: "#ORD-8812", num: 4,  cliente: "Usuario #8812", productos: "Cien Años de Soledad (Ed. Especial)", total: "89.000,00", status: "CONFIRMADO" },
-  { id: "#ORD-8810", num: 5,  cliente: "Usuario #8810", productos: "Ficciones - Jorge Luis Borges",       total: "11.250,00", status: "PENDIENTE"  },
-  { id: "#ORD-8808", num: 6,  cliente: "Usuario #8808", productos: "El Aleph",                            total: "15.600,00", status: "CONFIRMADO" },
-  { id: "#ORD-8805", num: 7,  cliente: "Usuario #8805", productos: "Crónica de una muerte anunciada",     total: "12.000,00", status: "PENDIENTE"  },
-  { id: "#ORD-8801", num: 8,  cliente: "Usuario #8801", productos: "Pedro Páramo",                        total: "9.800,00",  status: "CONFIRMADO" },
-  { id: "#ORD-8798", num: 9,  cliente: "Usuario #8798", productos: "Antología Poética - Neruda",          total: "22.400,00", status: "CONFIRMADO" },
-  { id: "#ORD-8795", num: 10, cliente: "Usuario #8795", productos: "La tregua - Mario Benedetti",         total: "18.000,00", status: "PENDIENTE"  },
-]
+import Swal from "sweetalert2";
 
 const ITEMS_POR_PAGINA = 15
 const AVATAR_COLORS = ["#CBAAE9"]
@@ -25,14 +13,83 @@ const AVATAR_COLORS = ["#CBAAE9"]
 export default function VerPedidos() {
 
   // HOOK useState — estados locales del componente
+  const [pedidos, setPedidos] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [filtroEstado, setFiltroEstado] = useState("TODOS")
+  const cancelarOrden = async (idOrden) => {
+    const resultado = await Swal.fire({
+      title: "¿Cancelar compra?",
+      text: "¿Estás seguro de que querés cancelar esta compra?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, cancelar",
+      cancelButtonText: "No, volver",
+      confirmButtonColor: "#7B5B99",
+      cancelButtonColor: "#aaa",
+    });
 
-  const pedidosFiltrados = TODOS_LOS_PEDIDOS.filter(p => filtroEstado === "TODOS" || p.status === filtroEstado)
+    if (!resultado.isConfirmed) return;
+
+    const token = localStorage.getItem("jwtToken") || localStorage.getItem("token");
+
+    const response = await fetch(
+      `http://localhost:4002/ordenes/${idOrden}/cancelar`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.ok) {
+      setPedidos((prev) =>
+        prev.map((pedido) =>
+          pedido.idOrden === idOrden
+            ? { ...pedido, estado: "CANCELADA" }
+            : pedido
+        )
+      );
+
+      Swal.fire({
+        title: "Cancelada",
+        text: "La compra fue cancelada correctamente",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#7B5B99",
+      });
+    }
+  };
+  useEffect(() => {
+    const obtenerPedidos = async () => {
+      const token = localStorage.getItem("jwtToken") || localStorage.getItem("token")
+
+      const response = await fetch("http://localhost:4002/ordenes", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      console.log("STATUS PEDIDOS:", response.status)
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log("PEDIDOS BACKEND:", data)
+        setPedidos(data)
+      }
+    }
+
+    obtenerPedidos()
+  }, [])
+
+  const pedidosFiltrados = pedidos.filter(p =>
+    filtroEstado === "TODOS" || p.estado === filtroEstado
+  )
   const totalPages = Math.max(1, Math.ceil(pedidosFiltrados.length / ITEMS_POR_PAGINA))
   const pedidosPagina = pedidosFiltrados.slice((currentPage - 1) * ITEMS_POR_PAGINA, currentPage * ITEMS_POR_PAGINA)
 
   const handleFiltro = (estado) => { setFiltroEstado(estado); setCurrentPage(1) }
+
 
   return (
     <div className="min-h-screen bg-[#f7f4ef] font-serif">
@@ -41,14 +98,16 @@ export default function VerPedidos() {
         <HeaderAdmin />
         <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título sin botón  */}
+          {/* COMPONENTE reutilizable — título sin botón
+  */}
           <EncabezadoSeccion titulo="Todos los pedidos" />
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-gray-100">
-              {/* COMPONENTE reutilizable — botones de filtro  */}
+              {/* COMPONENTE reutilizable — botones de filtro
+  */}
               <FiltrosBotones
-                opciones={["TODOS", "CONFIRMADO", "PENDIENTE"]}
+                opciones={["TODOS", "CONFIRMADA", "CANCELADA"]}
                 activo={filtroEstado}
                 onChange={handleFiltro}
               />
@@ -58,42 +117,89 @@ export default function VerPedidos() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    {["ID", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO"].map(h => (
+                    {["ID", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO", "ACCIONES"].map(h => (
                       <th key={h} className="text-left text-xs font-bold text-gray-400 uppercase tracking-wider px-6 py-3.5">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {/* RENDERIZADO DE LISTA con .map()  */}
-                  {pedidosPagina.map(pedido => (
-                    <tr key={pedido.id} className="hover:bg-purple-50/40 transition-colors">
-                      <td className="px-6 py-4 text-xs text-gray-500 font-mono">{pedido.id}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: AVATAR_COLORS[0] }}>
-                            {pedido.num <= 9 ? `U${pedido.num}` : pedido.num}
+                  {/* RENDERIZADO DE LISTA con .map()
+  */}
+                  {pedidosPagina.map(pedido => {
+                    const iniciales = pedido.nombreUsuario
+                      ? pedido.nombreUsuario
+                          .split(" ")
+                          .map(nombre => nombre[0])
+                          .join("")
+                          .toUpperCase()
+                      : "U"
+
+                    return (
+                      <tr key={pedido.idOrden} className="hover:bg-purple-50/40 transition-colors">
+                        <td className="px-6 py-4 text-xs text-gray-500 font-mono">
+                          #{pedido.idOrden}
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                              style={{ backgroundColor: AVATAR_COLORS[0] }}
+                            >
+                              {iniciales}
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-700">
+                                {pedido.nombreUsuario}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {pedido.emailUsuario}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-700">{pedido.cliente.split(" ")[0]}</p>
-                            <p className="text-xs text-gray-400">{pedido.cliente.split(" ")[1]}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4"><span className="text-sm text-gray-600">{pedido.productos}</span></td>
-                      <td className="px-6 py-4">
-                        <p className="text-xs text-gray-400 font-medium">ARS</p>
-                        <p className="text-sm font-bold text-gray-800">{pedido.total}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        {/* RENDERIZADO CONDICIONAL con ternario  */}
-                        <span className={`text-xs font-bold tracking-wide ${pedido.status === "CONFIRMADO" ? "text-emerald-600" : "text-amber-500"}`}>
-                          {pedido.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className="text-sm text-gray-600">
+                            {pedido.productos}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <p className="text-xs text-gray-400 font-medium">ARS</p>
+                          <p className="text-sm font-bold text-gray-800">
+                            {pedido.total}
+                          </p>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span
+                            className={`text-xs font-bold tracking-wide ${
+                              pedido.estado === "CONFIRMADA"
+                                ? "text-emerald-600"
+                                : pedido.estado === "CANCELADA"
+                                ? "text-red-500"
+                                : "text-amber-500"
+                            }`}
+                          >
+                            {pedido.estado}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          {pedido.estado === "CONFIRMADA" && (
+                            <button
+                              onClick={() => cancelarOrden(pedido.idOrden)}
+                              className="text-xs font-bold text-red-500 hover:text-red-700"
+                            >
+                              Cancelar
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
                   {pedidosPagina.length === 0 && (
-                    <tr><td colSpan={5} className="px-6 py-16 text-center text-gray-400 text-sm">No se encontraron pedidos.</td></tr>
+                    <tr><td colSpan={6} className="px-6 py-16 text-center text-gray-400 text-sm">No se encontraron pedidos.</td></tr>
                   )}
                 </tbody>
               </table>

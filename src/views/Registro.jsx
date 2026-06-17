@@ -12,15 +12,40 @@ function Registro({ setUsuario }) {
   const [registrado, setRegistrado] = useState(false)
 
   // EVENTO — recibe los datos del hijo y actualiza el estado global
-  const handleSubmit = (datosFormulario) => {
-    setUsuario({ ...datosFormulario, rol: "usuario", ordenes: [] });
+  const handleSubmit = async (nuevoUsuario) => {
+  try {
+    const response = await fetch("http://localhost:4002/api/v1/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(nuevoUsuario)
+    });
 
-    setRegistrado(true);
+    const data = await response.json();
 
-    setTimeout(() => {
-      navigate("/");
-    }, 2000); // 2 segundos
-  };
+    if (response.ok) {
+      localStorage.setItem("token", data.token)
+
+      const usuarioLogueado = {
+        email: nuevoUsuario.email,
+        nombre: `${nuevoUsuario.firstname} ${nuevoUsuario.lastname}`.trim(),
+        rol: nuevoUsuario.role === "ADMINISTRADOR" ? "admin" : "usuario",
+        token: data.token
+      }
+
+      localStorage.setItem("usuario", JSON.stringify(usuarioLogueado))
+      setUsuario(usuarioLogueado)
+
+      setRegistrado(true)
+      setTimeout(() => navigate("/"), 2000)
+    } else {
+      console.log(data);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <main className="bg-[#faf7f5] px-4 py-10">
