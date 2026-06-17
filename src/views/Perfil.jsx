@@ -11,14 +11,16 @@ function Perfil({ usuario, cerrarSesion }) {
 
   // HOOK useState — estado local del formulario
   const [form, setForm] = useState({
-    nombre: usuario?.nombre || '',
+    firstName: usuario?.firstName || usuario?.nombre || '',
+    lastName: usuario?.lastName || usuario?.apellido || '',
     email: usuario?.email || '',
     password: '',
   })
 
   // HOOK useState — controla qué campo está siendo editado
   const [editando, setEditando] = useState({
-    nombre: false,
+  firstName: false,
+    lastName: false,
     email: false,
     password: false,
   })
@@ -49,13 +51,23 @@ function Perfil({ usuario, cerrarSesion }) {
     if (result.isConfirmed) {
       const token = localStorage.getItem("jwtToken") || localStorage.getItem("token")
 
+      const datosActualizados = {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email
+      }
+
+      if (form.password.trim() !== '') {
+        datosActualizados.password = form.password
+      }
+
       const response = await fetch("http://localhost:4002/usuarios/me", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify(datosActualizados)
       })
       if (!response.ok) {
         Swal.fire("Error", "No se pudieron guardar los cambios", "error")
@@ -98,27 +110,57 @@ function Perfil({ usuario, cerrarSesion }) {
               Nombre
             </label>
             <div className="flex items-center gap-3 border-b border-[#cbbfc2] pb-3">
-              {/* RENDERIZADO CONDICIONAL con ternario
-                  Muestra input o texto según si está editando
-  */}
-              {editando.nombre ? (
+              {editando.firstName ? (
                 <input
                   autoFocus
                   type="text"
-                  name="nombre"
-                  value={form.nombre}
+                  name="firstName"
+                  value={form.firstName}
                   onChange={handleChange}
                   className="flex-1 bg-transparent outline-none text-gray-700 text-sm"
                 />
               ) : (
                 <p className="flex-1 text-gray-700 text-sm">
-                  {form.nombre || "—"}
+                  {form.firstName || "—"}
                 </p>
               )}
-              {/* EVENTO onClick — activa edición del campo
-  */}
-              {!editando.nombre && (
-                <button onClick={() => handleEditar('nombre')} className="text-gray-400 hover:text-purple-600 transition">
+
+              {!editando.firstName && (
+                <button
+                  onClick={() => handleEditar('firstName')}
+                  className="text-gray-400 hover:text-purple-600 transition"
+                >
+                  <Pencil size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+          {/* Campo Apellido */}
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-gray-400 mb-2">
+              Apellido
+            </label>
+            <div className="flex items-center gap-3 border-b border-[#cbbfc2] pb-3">
+              {editando.lastName ? (
+                <input
+                  autoFocus
+                  type="text"
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  className="flex-1 bg-transparent outline-none text-gray-700 text-sm"
+                />
+              ) : (
+                <p className="flex-1 text-gray-700 text-sm">
+                  {form.lastName || "—"}
+                </p>
+              )}
+
+              {!editando.lastName && (
+                <button
+                  onClick={() => handleEditar('lastName')}
+                  className="text-gray-400 hover:text-purple-600 transition"
+                >
                   <Pencil size={14} />
                 </button>
               )}

@@ -6,7 +6,8 @@ import { Link } from "react-router-dom"
 function RegistroForm({ onSubmit }) {
 
   // HOOK useState — estado local del formulario
-  const [nombre, setNombre]                     = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
   const [email, setEmail]                       = useState("")
   const [password, setPassword]                 = useState("")
   const [confirmarPassword, setConfirmarPassword] = useState("")
@@ -26,16 +27,13 @@ function RegistroForm({ onSubmit }) {
     }
 
     setError("")
-    const partesNombre = nombre.trim().split(" ")
-
     const nuevoUsuario = {
-      firstname: partesNombre[0],
-      lastname: partesNombre.slice(1).join(" ") || "",
+      firstname: firstName,
+      lastname: lastName,
       email,
       password,
       role: "USER"
     }
-    onSubmit(nuevoUsuario)
   }
 
   return (
@@ -47,16 +45,29 @@ function RegistroForm({ onSubmit }) {
       </div>
 
       <form onSubmit={handleSubmit}>
-
         <div className="mb-7">
           <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-[#5c4b51]">
-            Nombre completo
+            Nombre
           </label>
           <input
             type="text"
-            placeholder="p. ej. Miguel de Cervantes"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            placeholder="p. ej. Miguel"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+            className="w-full border-b border-[#8c7a80] bg-transparent px-3 py-3 outline-none placeholder:text-gray-400"
+          />
+        </div>
+
+        <div className="mb-7">
+          <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-[#5c4b51]">
+            Apellido
+          </label>
+          <input
+            type="text"
+            placeholder="p. ej. Cervantes"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
             required
             className="w-full border-b border-[#8c7a80] bg-transparent px-3 py-3 outline-none placeholder:text-gray-400"
           />

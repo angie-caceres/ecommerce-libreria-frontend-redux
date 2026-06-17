@@ -5,6 +5,7 @@ import Sidebar from "../../components/Sidebar"
 import Pagination from "../../components/Pagination"
 import FiltrosBotones from "../../components/FiltrosBotones"
 import EncabezadoSeccion from "../../components/EncabezadoSeccion"
+import Swal from "sweetalert2";
 
 const ITEMS_POR_PAGINA = 15
 const AVATAR_COLORS = ["#CBAAE9"]
@@ -15,6 +16,50 @@ export default function VerPedidos() {
   const [pedidos, setPedidos] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [filtroEstado, setFiltroEstado] = useState("TODOS")
+  const cancelarOrden = async (idOrden) => {
+    const resultado = await Swal.fire({
+      title: "¿Cancelar compra?",
+      text: "¿Estás seguro de que querés cancelar esta compra?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, cancelar",
+      cancelButtonText: "No, volver",
+      confirmButtonColor: "#7B5B99",
+      cancelButtonColor: "#aaa",
+    });
+
+    if (!resultado.isConfirmed) return;
+
+    const token = localStorage.getItem("jwtToken") || localStorage.getItem("token");
+
+    const response = await fetch(
+      `http://localhost:4002/ordenes/${idOrden}/cancelar`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.ok) {
+      setPedidos((prev) =>
+        prev.map((pedido) =>
+          pedido.idOrden === idOrden
+            ? { ...pedido, estado: "CANCELADA" }
+            : pedido
+        )
+      );
+
+      Swal.fire({
+        title: "Cancelada",
+        text: "La compra fue cancelada correctamente",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#7B5B99",
+      });
+    }
+  };
   useEffect(() => {
     const obtenerPedidos = async () => {
       const token = localStorage.getItem("jwtToken") || localStorage.getItem("token")
@@ -45,6 +90,7 @@ export default function VerPedidos() {
 
   const handleFiltro = (estado) => { setFiltroEstado(estado); setCurrentPage(1) }
 
+
   return (
     <div className="min-h-screen bg-[#f7f4ef] font-serif">
       <Sidebar />
@@ -61,7 +107,7 @@ export default function VerPedidos() {
               {/* COMPONENTE reutilizable — botones de filtro
   */}
               <FiltrosBotones
-                opciones={["TODOS", "CONFIRMADA", "PENDIENTE"]}
+                opciones={["TODOS", "CONFIRMADA", "CANCELADA"]}
                 activo={filtroEstado}
                 onChange={handleFiltro}
               />
@@ -71,7 +117,7 @@ export default function VerPedidos() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    {["ID", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO"].map(h => (
+                    {["ID", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO", "ACCIONES"].map(h => (
                       <th key={h} className="text-left text-xs font-bold text-gray-400 uppercase tracking-wider px-6 py-3.5">{h}</th>
                     ))}
                   </tr>
@@ -127,15 +173,33 @@ export default function VerPedidos() {
                         </td>
 
                         <td className="px-6 py-4">
-                          <span className={`text-xs font-bold tracking-wide ${pedido.estado === "CONFIRMADA" ? "text-emerald-600" : "text-amber-500"}`}>
+                          <span
+                            className={`text-xs font-bold tracking-wide ${
+                              pedido.estado === "CONFIRMADA"
+                                ? "text-emerald-600"
+                                : pedido.estado === "CANCELADA"
+                                ? "text-red-500"
+                                : "text-amber-500"
+                            }`}
+                          >
                             {pedido.estado}
                           </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          {pedido.estado === "CONFIRMADA" && (
+                            <button
+                              onClick={() => cancelarOrden(pedido.idOrden)}
+                              className="text-xs font-bold text-red-500 hover:text-red-700"
+                            >
+                              Cancelar
+                            </button>
+                          )}
                         </td>
                       </tr>
                     )
                   })}
                   {pedidosPagina.length === 0 && (
-                    <tr><td colSpan={5} className="px-6 py-16 text-center text-gray-400 text-sm">No se encontraron pedidos.</td></tr>
+                    <tr><td colSpan={6} className="px-6 py-16 text-center text-gray-400 text-sm">No se encontraron pedidos.</td></tr>
                   )}
                 </tbody>
               </table>
