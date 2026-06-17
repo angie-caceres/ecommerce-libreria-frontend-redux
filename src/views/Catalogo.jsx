@@ -1,76 +1,54 @@
 // VISTA — página que muestra todos los libros disponibles
+// Los libros se obtienen del backend al montar el componente
+
 import { useState, useEffect } from 'react'
 import LibroCard from '../components/LibroCard'
-import { apiFetch } from '../services/api'
-import { calcularPrecioFinal } from '../utils/calcularPrecio'
+
+const BASE_URL = 'http://localhost:4002'
 
 function Catalogo() {
 
-  const [libros, setLibros] = useState([])
+  // HOOK useState — lista de libros que viene del back
+  const [libros, setLibros]     = useState([])
   const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError]       = useState(false)
 
-  const [precioMax, setPrecioMax] = useState(200000)
-  const [autorSeleccionado, setAutorSeleccionado] = useState('')
+  // HOOK useState — filtros
+  const [precioMax, setPrecioMax]                         = useState(0)
+  const [precioMaximo, setPrecioMaximo]                   = useState(0)
+  const [autorSeleccionado, setAutorSeleccionado]         = useState('')
   const [editorialSeleccionada, setEditorialSeleccionada] = useState('')
-  const [generosSeleccionados, setGenerosSeleccionados] = useState([])
+  const [generosSeleccionados, setGenerosSeleccionados]   = useState([])
 
-  const [generos, setGeneros] = useState([])
-  const [autores, setAutores] = useState([])
-  const [editoriales, setEditoriales] = useState([])
-
+  // HOOK useEffect — trae los libros del back al montar
   useEffect(() => {
-    apiFetch('/libros')
-      .then(data => {
-        const librosFormateados = data.map(libro => ({
-          id: libro.idLibro,
-          titulo: libro.titulo,
-          autor: libro.autores?.join(', '),
-          editorial: libro.editorial,
-          genero: libro.genero,
-          precio: libro.precio,
-        }))
-        setGeneros([...new Set(librosFormateados.map(l => l.genero).filter(Boolean))])
-        setAutores([...new Set(librosFormateados.map(l => l.autor).filter(Boolean))])
-        setEditoriales([...new Set(librosFormateados.map(l => l.editorial).filter(Boolean))])
-      })
-      .catch(err => setError('No se pudieron cargar los filtros.'))
+    const fetchLibros = async () => {
+      setCargando(true)
+      setError(false)
+      try {
+        const res = await fetch(`${BASE_URL}/libros`)
+        if (!res.ok) throw new Error('Error del servidor')
+        const data = await res.json()
+        setLibros(data)
+
+        // Precio máximo = precio más alto del catálogo real
+        // Se usa para el tope del slider y para que arranque mostrando todo
+        const maxPrecio = Math.max(...data.map(l => l.precio ?? 0))
+        setPrecioMaximo(maxPrecio)
+        setPrecioMax(maxPrecio)
+      } catch (e) {
+        setError(true)
+      } finally {
+        setCargando(false)
+      }
+    }
+    fetchLibros()
   }, [])
 
-  useEffect(() => {
-    setCargando(true)
-
-    const params = new URLSearchParams()
-    if (editorialSeleccionada) params.append('editorial', editorialSeleccionada)
-    if (generosSeleccionados.length === 1) params.append('genero', generosSeleccionados[0])
-    if (precioMax < 200000) params.append('precioMax', precioMax)
-
-    const url = `/libros${params.toString() ? `?${params.toString()}` : ''}`
-
-    apiFetch(url)
-      .then(data => {
-        const librosFormateados = data.map(libro => {
-          const descuento = libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null
-          return {
-            id: libro.idLibro,
-            titulo: libro.titulo,
-            autor: libro.autores?.join(', '),
-            editorial: libro.editorial,
-            genero: libro.genero,
-            precio: calcularPrecioFinal(libro.precio, descuento),
-            precioOriginal: libro.precio,
-            descuento,
-            imagen: libro.imagen
-              ? `data:image/jpeg;base64,${libro.imagen}`
-              : '/libros/juegos.png',
-          }
-        })
-        setLibros(librosFormateados)
-      })
-      .catch(err => setError('No se pudieron cargar los libros.'))
-      .finally(() => setCargando(false))
-
-  }, [editorialSeleccionada, generosSeleccionados, precioMax])
+  // Listas únicas para los filtros — calculadas desde los datos del back
+  const generos     = [...new Set(libros.map(l => l.genero).filter(Boolean))]
+  const autores     = [...new Set(libros.flatMap(l => l.autores ?? []).filter(Boolean))]
+  const editoriales = [...new Set(libros.map(l => l.editorial).filter(Boolean))]
 
   const handleGenero = (genero) => {
     if (generosSeleccionados.includes(genero)) {
@@ -80,9 +58,28 @@ function Catalogo() {
     }
   }
 
-  const librosFiltrados = autorSeleccionado
-    ? libros.filter(libro => libro.autor === autorSeleccionado)
-    : libros
+  // FILTRADO en el front sobre los datos del back
+  const librosFiltrados = libros.filter(libro => {
+    const cumplePrecio    = (libro.precio ?? 0) <= precioMax
+    const cumpleAutor     = autorSeleccionado === '' || (libro.autores ?? []).includes(autorSeleccionado)
+    const cumpleEditorial = editorialSeleccionada === '' || libro.editorial === editorialSeleccionada
+    const cumpleGenero    = generosSeleccionados.length === 0 || generosSeleccionados.includes(libro.genero)
+    return cumplePrecio && cumpleAutor && cumpleEditorial && cumpleGenero
+  })
+
+  // Mapea el libro del back al formato que espera LibroCard
+  const mapearLibro = (libro) => ({
+    id:             libro.idLibro,
+    titulo:         libro.titulo,
+    autor:          libro.autores?.join(', ') ?? '',
+    editorial:      libro.editorial,
+    genero:         libro.genero,
+    precioOriginal: libro.precio,
+    descuento:      libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null,
+    descripcion:    libro.descripcion,
+    imagen:         libro.imagen ? `data:image/jpeg;base64,${libro.imagen}` : null,
+    tieneDetalle:   true,
+  })
 
   return (
     <div className="bg-[#FCF9F8] min-h-screen px-12 py-10">
@@ -95,19 +92,30 @@ function Catalogo() {
         Tu próxima obsesión literaria podría estar a una página de distancia.
       </p>
 
-      {error && (
-        <p className="text-center text-red-400 text-sm uppercase tracking-widest mt-20">
-          {error}
-        </p>
+      {/* Estado de carga */}
+      {cargando && (
+        <div className="flex justify-center items-center py-32">
+          <p className="text-gray-400 text-sm">Cargando catálogo...</p>
+        </div>
       )}
 
-      {!error && (
+      {/* Error de conexión */}
+      {error && (
+        <div className="flex justify-center items-center py-32">
+          <p className="text-gray-400 text-sm">No se pudo conectar con el servidor. Intentá de nuevo más tarde.</p>
+        </div>
+      )}
+
+      {/* Contenido */}
+      {!cargando && !error && (
         <div className="flex gap-12">
 
+          {/* PANEL DE FILTROS */}
           <aside className="w-72 bg-white p-6 shadow-sm rounded">
 
             <h2 className="text-xl text-[#2d2640] mb-6">Filtrar por</h2>
 
+            {/* FILTRO POR GÉNERO */}
             <div className="mb-8">
               <h3 className="font-medium mb-3">Géneros</h3>
               {generos.map(genero => (
@@ -122,15 +130,16 @@ function Catalogo() {
               ))}
             </div>
 
+            {/* FILTRO POR PRECIO */}
             <div className="mb-8">
               <h3 className="font-medium mb-3">Precio máximo</h3>
               <input
                 type="range"
                 min="0"
-                max="200000"
+                max={precioMaximo}
                 step="1000"
                 value={precioMax}
-                onChange={(e) => setPrecioMax(Number(e.target.value))}
+                onChange={e => setPrecioMax(Number(e.target.value))}
                 className="w-full"
               />
               <p className="text-sm text-gray-500 mt-2">
@@ -138,11 +147,12 @@ function Catalogo() {
               </p>
             </div>
 
+            {/* FILTRO POR AUTOR */}
             <div className="mb-8">
               <h3 className="font-medium mb-3">Autor</h3>
               <select
                 value={autorSeleccionado}
-                onChange={(e) => setAutorSeleccionado(e.target.value)}
+                onChange={e => setAutorSeleccionado(e.target.value)}
                 className="w-full border border-gray-300 rounded p-2"
               >
                 <option value="">Todos</option>
@@ -152,6 +162,7 @@ function Catalogo() {
               </select>
             </div>
 
+            {/* FILTRO POR EDITORIAL */}
             <div>
               <h3 className="font-medium mb-3">Editorial</h3>
               <div className="flex flex-wrap gap-2">
@@ -175,32 +186,22 @@ function Catalogo() {
 
           </aside>
 
+          {/* GRID DE LIBROS */}
           <section className="flex-1">
-
-            {cargando && (
-              <p className="text-center text-gray-400 text-sm uppercase tracking-widest mt-20">
-                Cargando libros...
+            {librosFiltrados.length === 0 ? (
+              <p className="text-gray-400 text-sm py-16 text-center">
+                No se encontraron libros con los filtros seleccionados.
               </p>
-            )}
-
-            {!cargando && librosFiltrados.length === 0 && (
-              <p className="text-center text-gray-400 text-sm uppercase tracking-widest mt-20">
-                No se encontraron libros con esos filtros.
-              </p>
-            )}
-
-            {!cargando && (
+            ) : (
               <div className="grid grid-cols-4 gap-8">
                 {librosFiltrados.map(libro => (
                   <LibroCard
-                    key={libro.id}
-                    {...libro}
-                    tieneDetalle={true}
+                    key={libro.idLibro}
+                    {...mapearLibro(libro)}
                   />
                 ))}
               </div>
             )}
-
           </section>
 
         </div>

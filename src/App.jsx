@@ -28,10 +28,15 @@ import EditarLibro from './views/admin/EditarLibro'
 import GestionUsuario from './views/admin/GestionUsuario'
 import VerPedidos from './views/admin/VerPedidos'
 import GestionImagenes from './views/admin/GestionImagenes'
-import Login from "./views/Login"
-import MisOrdenes from "./views/MisOrdenes"
-import DetalleOrden from "./views/DetalleOrden"
-import NotFound from "./views/NotFound"
+
+import Login from "./views/Login";
+import MisOrdenes from "./views/MisOrdenes";
+import DetalleOrden from "./views/DetalleOrden";
+
+import ScrollArriba from "./components/ScrollArriba";
+
+
+
 
 function App() {
 
@@ -129,6 +134,10 @@ function App() {
   }
   return (
     <>
+      <ScrollArriba /> 
+      {/* Navbar recibe carrito como prop para mostrar el badge*/}
+      
+      {/*RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
       {/* Navbar recibe carrito como prop para mostrar el badge */}
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
       {!esAdmin && <Navbar carrito={carrito} usuario={usuario} />}
