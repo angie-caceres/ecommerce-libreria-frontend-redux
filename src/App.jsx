@@ -32,7 +32,7 @@ import GestionImagenes from './views/admin/GestionImagenes'
 import Login from "./views/Login";
 import MisOrdenes from "./views/MisOrdenes";
 import DetalleOrden from "./views/DetalleOrden";
-
+import NotFound from "./views/NotFound"
 import ScrollArriba from "./components/ScrollArriba";
 
 
