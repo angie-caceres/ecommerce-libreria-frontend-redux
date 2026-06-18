@@ -60,37 +60,45 @@ function App() {
 
   // HOOK useEffect — recupera el usuario al recargar la página
   // si hay un token guardado en localStorage
-  useEffect(() => {
-    const tokenGuardado = localStorage.getItem('jwtToken')
-    if (tokenGuardado) {
-      apiFetch('/usuarios/me', tokenGuardado)
-        .then(data => {
-          setUsuario({
-            email: data.email,
-            nombre: data.firstname,
-            rol: data.role === 'ADMINISTRADOR' ? 'admin' : 'usuario'
-          })
-          return apiFetch('/carrito', tokenGuardado)
+useEffect(() => {
+  const tokenGuardado = localStorage.getItem('jwtToken')
+  if (tokenGuardado) {
+    apiFetch('/usuarios/me', tokenGuardado)
+      .then(data => {
+        setUsuario({
+          email: data.email,
+          nombre: data.firstname,
+          rol: data.role === 'ADMINISTRADOR' ? 'admin' : 'usuario'
         })
-        .then(carritoData => {
-          if (carritoData?.items) {
-            const itemsFormateados = carritoData.items.map(item => ({
-              id: item.idLibro,
-              cantidad: item.cantidad
-            }))
-            setCarrito(itemsFormateados)
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem('jwtToken')
-          setToken(null)
-        })
-        .finally(() => setCargandoUsuario(false))
-    } else {
-      setCargandoUsuario(false)
-    }
-  }, [])
 
+        // El carrito es solo para usuarios — si falla (ej: admin sin carrito),
+        // no debe afectar el token ya válido
+        if (data.role !== 'ADMINISTRADOR') {
+          apiFetch('/carrito', tokenGuardado)
+            .then(carritoData => {
+              if (carritoData?.items) {
+                const itemsFormateados = carritoData.items.map(item => ({
+                  id: item.idLibro,
+                  cantidad: item.cantidad
+                }))
+                setCarrito(itemsFormateados)
+              }
+            })
+            .catch(() => {
+              // si falla el carrito, no pasa nada grave — se ignora
+            })
+        }
+      })
+      .catch(() => {
+        // Solo si /usuarios/me falla (token inválido o expirado) se borra el token
+        localStorage.removeItem('jwtToken')
+        setToken(null)
+      })
+      .finally(() => setCargandoUsuario(false))
+  } else {
+    setCargandoUsuario(false)
+  }
+}, [])
 
   // Si la ruta empieza con "/admin", esta constante va a ser true
   const esAdmin = location.pathname.startsWith("/admin") ||
@@ -132,6 +140,8 @@ function App() {
     setCarrito([])
     setToken(null)
   }
+  console.log('App.jsx render - token:', token, 'usuario:', usuario, 'cargandoUsuario:', cargandoUsuario)
+
   return (
     <>
       <ScrollArriba /> 
@@ -200,9 +210,9 @@ function App() {
         <Route path="/admin/autores" element={usuario?.rol === 'admin' ? <GestionAutores /> : <Navigate to="/login" />} />
         <Route path="/admin/descuentos" element={usuario?.rol === 'admin' ? <GestionDescuentos /> : <Navigate to="/login" />} />
         <Route path="/admin" element={usuario?.rol === 'admin' ? <AdminDashboard /> : <Navigate to="/login" />} />
-        <Route path="/admin/libros" element={usuario?.rol === 'admin' ? <GestionLibros /> : <Navigate to="/login" />} />
-        <Route path="/admin/libros/crear" element={usuario?.rol === 'admin' ? <CrearLibro /> : <Navigate to="/login" />} />
-        <Route path="/admin/libros/editar/:id" element={usuario?.rol === 'admin' ? <EditarLibro /> : <Navigate to="/login" />} />
+        <Route path="/admin/libros" element={usuario?.rol === 'admin' ? <GestionLibros token={token} /> : <Navigate to="/login" />} />
+        <Route path="/admin/libros/crear" element={usuario?.rol === 'admin' ? <CrearLibro token={token} /> : <Navigate to="/login" />} />
+        <Route path="/admin/libros/editar/:id" element={usuario?.rol === 'admin' ? <EditarLibro token={token} /> : <Navigate to="/login" />} />
         <Route path="/admin/usuarios" element={usuario?.rol === 'admin' ? <GestionUsuario /> : <Navigate to="/login" />} />
         <Route path="/admin/pedidos" element={usuario?.rol === 'admin' ? <VerPedidos /> : <Navigate to="/login" />} />
         <Route path="/admin/imagenes" element={usuario?.rol === 'admin' ? <GestionImagenes /> : <Navigate to="/login" />} />

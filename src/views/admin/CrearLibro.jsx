@@ -26,7 +26,7 @@ export default function CrearLibro({ token }) {
   // HOOK useState — estado local del formulario
   const [form, setForm] = useState({
     titulo: "", descripcion: "", paginas: "", precio: "",
-    stock: "", genero: "", editorial: "", autores: "", imagenId: "",
+    stock: "", genero: "", editorial: "", autores: "", imagenId: "", descuento: "",
   })
 
   const [submitted, setSubmitted] = useState(false)
@@ -38,24 +38,28 @@ export default function CrearLibro({ token }) {
   const [editoriales, setEditoriales] = useState([])
   const [autores, setAutores] = useState([])
   const [imagenes, setImagenes] = useState([])
+  const [descuentos, setDescuentos] = useState([])
 
   useEffect(() => {
     const cargarSelectores = async () => {
       setCargando(true)
       setError(null)
       try {
-        // Corrección: Agregada dataImagenes a la destructuración para recibir la respuesta
-        const [dataGeneros, dataEditoriales, dataAutores, dataImagenes] = await Promise.all([
+        const [dataGeneros, dataEditoriales, dataAutores, dataImagenes, dataDescuentos] = await Promise.all([
           apiFetch("/generos", token),
           apiFetch("/editoriales", token),
           apiFetch("/autores", token),
-          apiFetch("/imagenes/todas", token)
+          apiFetch("/imagenes/todas", token),
+          apiFetch("/descuentos?page=0&size=100", token),
         ])
-        
+
         setGeneros(dataGeneros)
         setEditoriales(dataEditoriales)
         setAutores(dataAutores)
         setImagenes(dataImagenes || [])
+        // Page<Descuento> trae la lista real dentro de "content"
+        // Solo mostramos los descuentos activos
+        setDescuentos((dataDescuentos?.content || []).filter(d => d.activo))
       } catch (err) {
         console.error(err)
         setError("No se pudieron cargar los selectores desde la base de datos.")
@@ -82,6 +86,7 @@ export default function CrearLibro({ token }) {
     if (!form.stock.trim()) newErrors.stock = "Ingresá el stock"
     if (!form.genero) newErrors.genero = "Seleccioná un género"
     if (!form.editorial) newErrors.editorial = "Seleccioná una editorial"
+    if (!form.descuento) newErrors.descuento = "Seleccioná un descuento"
     return newErrors
   }
 
@@ -94,34 +99,31 @@ export default function CrearLibro({ token }) {
 
     setCargando(true)
     setError(null)
-  
-    const idGenero = form.genero ? parseInt(form.genero) : null
-    const idEditorial = form.editorial ? parseInt(form.editorial) : null
-    const idAutor = form.autores ? parseInt(form.autores) : null
-    const idImagen = form.imagenId ? parseInt(form.imagenId) : null
 
     const libroBody = {
       titulo: form.titulo.trim(),
       descripcion: form.descripcion.trim(),
-      paginas: parseInt(form.paginas),
+      paginas: parseInt(form.paginas) || 0,
       precio: parseFloat(form.precio),
       stock: parseInt(form.stock),
-
       idGenero: parseInt(form.genero),
       idEditorial: parseInt(form.editorial),
-
-      idAutores: form.autores
-        ? [parseInt(form.autores)]
-        : [],
-
-      idDescuento: null
+      idAutores: form.autores ? [parseInt(form.autores)] : [],
+      idDescuento: parseInt(form.descuento),
     }
 
     try {
-      await apiFetch("/libros", token, {
+      const libroCreado = await apiFetch("/libros", token, {
         method: "POST",
-        body: JSON.stringify(libroBody)
+        body: JSON.stringify(libroBody),
       })
+
+      if (form.imagenId && libroCreado?.idLibro) {
+        await apiFetch(`/libros/${libroCreado.idLibro}/imagen/${form.imagenId}`, token, {
+          method: "PATCH",
+        })
+      }
+
       setSubmitted(true)
     } catch (err) {
       setError(err.message || "No se pudo crear el libro en el servidor.")
@@ -131,7 +133,7 @@ export default function CrearLibro({ token }) {
   }
 
   const handleCancel = () => {
-    setForm({ titulo: "", descripcion: "", paginas: "", precio: "", stock: "", genero: "", editorial: "", autores: "", imagenId: "" })
+    setForm({ titulo: "", descripcion: "", paginas: "", precio: "", stock: "", genero: "", editorial: "", autores: "", imagenId: "", descuento: "" })
     setErrors({})
     setSubmitted(false)
     setError(null)
@@ -214,7 +216,6 @@ export default function CrearLibro({ token }) {
                 <option value="">Seleccionar autor</option>
                 {autores.map(a => (
                   <option key={a.idAutor} value={a.idAutor}>
-                    {/* Concatenamos nombre y apellido mapeado de tu BD */}
                     {`${a.nombre} ${a.apellido || ''}`.trim()}
                   </option>
                 ))}
@@ -226,10 +227,22 @@ export default function CrearLibro({ token }) {
                 <option value="">Seleccionar portada</option>
                 {imagenes.map(img => (
                   <option key={img.id} value={img.id}>
-                    {img.nombreArchivo || `Portada ID: ${img.id}`}
+                    {img.name || `Portada: ${img.id}`}
                   </option>
                 ))}
               </select>
+            </FormField>
+
+            <FormField label="Descuento" className="mt-5">
+              <select name="descuento" value={form.descuento} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`} disabled={cargando}>
+                <option value="">Seleccionar descuento</option>
+                {descuentos.map(d => (
+                  <option key={d.id} value={d.id}>
+                    {d.porcentaje}%
+                  </option>
+                ))}
+              </select>
+              {errors.descuento && <p className="text-xs text-red-500 mt-0.5">{errors.descuento}</p>}
             </FormField>
           </div>
 
