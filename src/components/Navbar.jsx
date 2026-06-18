@@ -90,7 +90,7 @@ function Navbar({ carrito, usuario }) {
 
       {/* Barra superior púrpura */}
       <div className="bg-[#7B5B98] text-white text-center text-sm py-2">
-        ENVÍO GRATIS EN PEDIDOS SUPERIORES A $100.000
+        HASTA 3 CUOTAS SIN INTERÉS
       </div>
 
       {/* Barra media: logo, buscador, iconos */}
