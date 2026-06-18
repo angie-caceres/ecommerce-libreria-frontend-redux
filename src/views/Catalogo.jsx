@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import LibroCard from '../components/LibroCard'
+import { calcularPrecioFinal } from '../utils/calcularPrecio'
 
 const BASE_URL = 'http://localhost:4002'
 
@@ -68,19 +69,22 @@ function Catalogo() {
   })
 
   // Mapea el libro del back al formato que espera LibroCard
-  const mapearLibro = (libro) => ({
+  const mapearLibro = (libro) => {
+  const descuento = libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null
+  return {
     id:             libro.idLibro,
     titulo:         libro.titulo,
     autor:          libro.autores?.join(', ') ?? '',
     editorial:      libro.editorial,
     genero:         libro.genero,
     precioOriginal: libro.precio,
-    descuento:      libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null,
+    precio:         calcularPrecioFinal(libro.precio, descuento),
+    descuento,
     descripcion:    libro.descripcion,
     imagen:         libro.imagen ? `data:image/jpeg;base64,${libro.imagen}` : null,
     tieneDetalle:   true,
-  })
-
+  }
+}
   return (
     <div className="bg-[#FCF9F8] min-h-screen px-12 py-10">
 
