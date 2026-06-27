@@ -98,7 +98,7 @@ useEffect(() => {
   } else {
     setCargandoUsuario(false)
   }
-}, [])
+}, [token])
 
   // Si la ruta empieza con "/admin", esta constante va a ser true
   const esAdmin = location.pathname.startsWith("/admin") ||
@@ -228,7 +228,7 @@ useEffect(() => {
         />
 
         <Route path="/quienes-somos" element={<QuienesSomos />} />
-        <Route path="/registro" element={<Registro setUsuario={setUsuario} />} />
+        <Route path="/registro" element={<Registro setUsuario={setUsuario} setToken={setToken} />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/login" element={<Login setUsuario={setUsuario} setToken={setToken} />} />
         <Route path="*" element={<NotFound />} />

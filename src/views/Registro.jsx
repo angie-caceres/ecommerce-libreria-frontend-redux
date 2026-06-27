@@ -3,9 +3,10 @@ import { useState } from 'react'
 import RegistroForm from "../components/RegistroForm"
 import { useNavigate } from "react-router-dom"
 import Alerta from '../components/Alerta'
+import { apiFetch } from '../services/api'
 
 // PROPS — recibe setUsuario del padre App.jsx
-function Registro({ setUsuario }) {
+function Registro({ setUsuario, setToken }) {
   const navigate = useNavigate()
 
   // HOOK useState — controla si se muestra la alerta
@@ -14,24 +15,20 @@ function Registro({ setUsuario }) {
   // EVENTO — recibe los datos del hijo y actualiza el estado global
   const handleSubmit = async (nuevoUsuario) => {
   try {
-    const response = await fetch("http://localhost:4002/api/v1/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+    const data = await apiFetch('/api/v1/auth/register', null, {
+      method: 'POST',
       body: JSON.stringify(nuevoUsuario)
-    });
+    })
 
-    const data = await response.json();
-
-    if (response.ok) {
-      localStorage.setItem("token", data.token)
+    if (data) {
+      localStorage.setItem("jwtToken", data.access_token)
+      setToken(data.access_token)
 
       const usuarioLogueado = {
         email: nuevoUsuario.email,
         nombre: `${nuevoUsuario.firstname} ${nuevoUsuario.lastname}`.trim(),
         rol: nuevoUsuario.role === "ADMINISTRADOR" ? "admin" : "usuario",
-        token: data.token
+        token: data.access_token
       }
 
       localStorage.setItem("usuario", JSON.stringify(usuarioLogueado))
@@ -39,8 +36,6 @@ function Registro({ setUsuario }) {
 
       setRegistrado(true)
       setTimeout(() => navigate("/"), 2000)
-    } else {
-      console.log(data);
     }
   } catch (error) {
     console.error(error);

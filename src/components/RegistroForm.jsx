@@ -34,6 +34,7 @@ function RegistroForm({ onSubmit }) {
       password,
       role: "USER"
     }
+    onSubmit(nuevoUsuario)
   }
 
   return (
