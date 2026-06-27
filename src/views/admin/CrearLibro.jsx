@@ -113,6 +113,7 @@ export default function CrearLibro({ token }) {
     }
 
     try {
+      
       const libroCreado = await apiFetch("/libros", token, {
         method: "POST",
         body: JSON.stringify(libroBody),
