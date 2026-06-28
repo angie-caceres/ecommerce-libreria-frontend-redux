@@ -33,11 +33,14 @@ export default function EditarLibro({ token }) {
   const [form, setForm] = useState({
     titulo: "", descripcion: "", paginas: "", precio: "",
     stock: "", genero: "", editorial: "", autores: "",
+    imagenId: "", descuento: "",
   })
 
   const [generos, setGeneros] = useState([])
   const [editoriales, setEditoriales] = useState([])
   const [autores, setAutores] = useState([])
+  const [imagenes, setImagenes] = useState([])
+  const [descuentos, setDescuentos] = useState([])
 
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(false)
@@ -54,16 +57,23 @@ export default function EditarLibro({ token }) {
       setCargando(true)
       setError(null)
       try {
-        const [libro, dataGeneros, dataEditoriales, dataAutores] = await Promise.all([
+        const [libro, dataGeneros, dataEditoriales, dataAutores, dataImagenes, dataDescuentos] = await Promise.all([
           apiFetch(`/libros/${id}/admin`, token),
           apiFetch("/generos", token),
           apiFetch("/editoriales", token),
           apiFetch("/autores", token),
+          apiFetch("/imagenes/todas", token),
+          apiFetch("/descuentos?page=0&size=100", token),
         ])
 
         setGeneros(dataGeneros)
         setEditoriales(dataEditoriales)
         setAutores(dataAutores)
+        setImagenes(dataImagenes || [])
+
+        const descuentosActivos = (dataDescuentos?.content || []).filter(d => d.activo)
+        setDescuentos(descuentosActivos)
+
         setLibroOriginal(libro)
 
         // Busca el id del género y editorial actuales comparando por nombre
@@ -73,16 +83,24 @@ export default function EditarLibro({ token }) {
         const autorActual = dataAutores.find(a =>
           libro.autores?.[0] === `${a.nombre} ${a.apellido}`.trim()
         )
-
+        const descuentoActual = descuentosActivos.find(d => d.porcentaje === libro.porcentajeDescuento)
+        
+        const imagenActual = (dataImagenes || []).find(img => 
+          img.file === libro.imagen || 
+          (img.file && libro.imagen && img.file.substring(0, 30) === libro.imagen.substring(0, 30))
+        );
+        
         setForm({
           titulo: libro.titulo || "",
           descripcion: libro.descripcion || "",
-          paginas: libro.paginas || "",
+          paginas: libro.paginas !== undefined && libro.paginas !== null ? libro.paginas.toString() : "0",
           precio: libro.precio || "",
-          stock: libro.stock || "",
+          stock: "0",
           genero: generoActual?.idGenero?.toString() || "",
           editorial: editorialActual?.id?.toString() || "",
           autores: autorActual?.idAutor?.toString() || "",
+          imagenId: imagenActual?.id?.toString() || "",
+          descuento: descuentoActual?.idDescuento?.toString() || descuentoActual?.id?.toString() || "",
         })
 
       } catch (err) {
@@ -107,6 +125,7 @@ export default function EditarLibro({ token }) {
     if (!String(form.precio).trim()) e.precio = "Ingresá un precio"
     if (!form.genero) e.genero = "Seleccioná un género"
     if (!form.editorial) e.editorial = "Seleccioná una editorial"
+    if (!form.descuento) e.descuento = "Seleccioná un descuento"
     return e
   }
 
@@ -162,6 +181,16 @@ export default function EditarLibro({ token }) {
       const stockNum = parseInt(form.stock)
       if (stockNum > 0) {
         await apiFetch(`/libros/${id}/stock?cantidad=${stockNum}`, token, { method: "PATCH" })
+      }
+
+      // 6. PATCH imagen — solo si cambió respecto a la original
+      if (form.imagenId && form.imagenId !== libroOriginal.imagen?.id?.toString()) {
+        await apiFetch(`/libros/${id}/imagen/${form.imagenId}`, token, { method: "PATCH" })
+      }
+
+      // 7. PATCH descuento — aplicando el ID de descuento seleccionado
+      if (form.descuento) {
+        await apiFetch(`/libros/${id}/descuento/${form.descuento}`, token, { method: "PATCH" })
       }
 
       setUpdated(true)
@@ -273,6 +302,29 @@ export default function EditarLibro({ token }) {
                   </option>
                 ))}
               </select>
+            </FormField>
+
+            <FormField label="Portada">
+              <select name="imagenId" value={form.imagenId} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`} disabled={guardando}>
+                <option value="">Seleccionar portada</option>
+                {imagenes.map(img => (
+                  <option key={img.id} value={img.id}>
+                    {img.name || `Portada: ${img.id}`}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+
+            <FormField label="Descuento">
+              <select name="descuento" value={form.descuento} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`} disabled={guardando}>
+                <option value="">Seleccionar descuento</option>
+                {descuentos.map(d => (
+                  <option key={d.id} value={d.id}>
+                    {d.porcentaje}%
+                  </option>
+                ))}
+              </select>
+              {errors.descuento && <p className="text-xs text-red-500 mt-0.5">{errors.descuento}</p>}
             </FormField>
 
           </div>
