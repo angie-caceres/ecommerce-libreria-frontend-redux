@@ -2,7 +2,7 @@
 // Se usa en todas las vistas de gestión admin
 
 // PROPS — recibe titulo, mensaje y funciones del padre
-function ModalConfirmacion({ titulo, mensaje, onCancelar, onConfirmar }) {
+function ModalConfirmacion({ titulo, mensaje, onCancelar, onConfirmar, textoConfirmar = 'ELIMINAR', variante = 'danger' }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 backdrop-blur-sm bg-[#2d1f5e]/70" onClick={onCancelar} />
@@ -26,9 +26,13 @@ function ModalConfirmacion({ titulo, mensaje, onCancelar, onConfirmar }) {
           {/* EVENTO onClick — confirma la acción del padre  */}
           <button
             onClick={onConfirmar}
-            className="px-5 py-2 rounded-lg text-white text-xs font-semibold uppercase bg-red-500 hover:bg-red-600 transition-colors"
+            className={`px-5 py-2 rounded-lg text-white text-xs font-semibold uppercase transition-colors ${
+              variante === 'danger'
+                ? 'bg-red-500 hover:bg-red-600'
+                : 'bg-[#7B5B98] hover:bg-[#6a4d85]'
+            }`}
           >
-            ELIMINAR
+            {textoConfirmar}
           </button>
         </div>
 

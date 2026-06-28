@@ -1,6 +1,6 @@
 // VISTA — gestión de libros del panel admin
 import { useState, useEffect } from 'react'
-import { Trash2, Pencil } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
 import Pagination from "../../components/Pagination"
@@ -9,7 +9,6 @@ import EncabezadoSeccion from "../../components/EncabezadoSeccion"
 import { useNavigate } from "react-router-dom"
 import { apiFetch } from "../../services/api"
 
-// Paleta de colores disponibles — se asignan dinámicamente a cada género/autor
 const PALETA_COLORES = [
   'bg-purple-100 text-purple-700',
   'bg-blue-100 text-blue-700',
@@ -23,26 +22,18 @@ const PALETA_COLORES = [
   'bg-teal-100 text-teal-700',
 ]
 
-// FUNCIÓN — genera un color consistente para cada género según su nombre
 const getColorGenero = (genero) => {
   if (!genero) return 'bg-gray-100 text-gray-600'
   let hash = 0
-  for (let i = 0; i < genero.length; i++) {
-    hash = genero.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  const index = Math.abs(hash) % PALETA_COLORES.length
-  return PALETA_COLORES[index]
+  for (let i = 0; i < genero.length; i++) hash = genero.charCodeAt(i) + ((hash << 5) - hash)
+  return PALETA_COLORES[Math.abs(hash) % PALETA_COLORES.length]
 }
 
-// FUNCIÓN — genera un color consistente para cada autor según su nombre
 const getColorAutor = (autor) => {
   if (!autor) return 'bg-gray-100 text-gray-600'
   let hash = 0
-  for (let i = 0; i < autor.length; i++) {
-    hash = autor.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  const index = Math.abs(hash) % PALETA_COLORES.length
-  return PALETA_COLORES[index]
+  for (let i = 0; i < autor.length; i++) hash = autor.charCodeAt(i) + ((hash << 5) - hash)
+  return PALETA_COLORES[Math.abs(hash) % PALETA_COLORES.length]
 }
 
 const POR_PAGINA = 9
@@ -51,47 +42,48 @@ function GestionLibros({ token }) {
 
   const navigate = useNavigate()
 
-  // HOOK useState — libros traídos del backend
-  const [lista, setLista] = useState([])
+  const [lista, setLista]       = useState([])
   const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError]       = useState(null)
+  const [pagina, setPagina]     = useState(1)
+  const [toggleId, setToggleId] = useState(null)
 
-  const [pagina, setPagina] = useState(1)
-  const [deleteId, setDeleteId] = useState(null)
-
-  // HOOK useEffect — trae los libros del backend al montar
   useEffect(() => {
-    apiFetch('/libros', token)
+    apiFetch('/libros/todos', token)
       .then(data => {
-        const librosFormateados = data.map(libro => ({
-          id: libro.idLibro,
-          titulo: libro.titulo,
-          autor: libro.autores?.join(', ') || 'Sin autor',
-          genero: libro.genero,
+        setLista(data.map(libro => ({
+          id:             libro.idLibro,
+          titulo:         libro.titulo,
+          autor:          libro.autores?.join(', ') || 'Sin autor',
+          genero:         libro.genero,
           precioOriginal: libro.precio,
-          descuento: libro.porcentajeDescuento ? `${libro.porcentajeDescuento}%` : '0%',
-          stock: libro.stock,
-        }))
-        setLista(librosFormateados)
+          descuento:      libro.porcentajeDescuento ? `${libro.porcentajeDescuento}%` : '0%',
+          stock:          libro.stock,
+          activo:         !!libro.activo,
+        })))
       })
-      .catch(err => setError('No se pudieron cargar los libros.'))
+      .catch(() => setError('No se pudieron cargar los libros.'))
       .finally(() => setCargando(false))
   }, [token])
 
-  const totalPaginas = Math.ceil(lista.length / POR_PAGINA)
-  const paginados = lista.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
+  const totalPaginas    = Math.ceil(lista.length / POR_PAGINA)
+  const paginados       = lista.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
+  const libroSeleccionado = lista.find(l => l.id === toggleId)
 
-  const cerrarModal = () => setDeleteId(null)
-
-  // EVENTO — elimina un libro en el backend
-  const handleEliminar = async () => {
+  const handleToggle = async () => {
+    if (!toggleId || !libroSeleccionado) return
+    setError(null)
     try {
-      await apiFetch(`/libros/${deleteId}`, token, { method: 'DELETE' })
-      setLista(lista.filter(l => l.id !== deleteId))
-    } catch (err) {
-      setError('No se pudo eliminar el libro.')
+      if (libroSeleccionado.activo) {
+        await apiFetch(`/libros/${toggleId}`, token, { method: 'DELETE' })
+      } else {
+        await apiFetch(`/libros/${toggleId}/activar`, token, { method: 'PATCH' })
+      }
+      setLista(prev => prev.map(l => l.id === toggleId ? { ...l, activo: !l.activo } : l))
+    } catch {
+      setError(`No se pudo ${libroSeleccionado.activo ? 'desactivar' : 'activar'} el libro.`)
     } finally {
-      cerrarModal()
+      setToggleId(null)
     }
   }
 
@@ -101,7 +93,7 @@ function GestionLibros({ token }) {
       const final = libro.precioOriginal * (1 - porcentaje / 100)
       return `$${final.toLocaleString()} (-${libro.descuento})`
     }
-    return `$${libro.precioOriginal.toLocaleString()}`
+    return `$${libro.precioOriginal?.toLocaleString()}`
   }
 
   return (
@@ -133,14 +125,21 @@ function GestionLibros({ token }) {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-100">
-                      {['ID', 'TÍTULO', 'AUTOR', 'GÉNERO', 'STOCK', 'PRECIO', 'ACCIONES'].map(h => (
+                      {['ID', 'TÍTULO', 'AUTOR', 'GÉNERO', 'STOCK', 'PRECIO', 'ESTADO', 'ACCIONES'].map(h => (
                         <th key={h} className="text-left text-xs font-bold text-gray-400 uppercase tracking-widest px-6 py-4">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {paginados.map(libro => (
-                      <tr key={libro.id} className="hover:bg-purple-50/30 transition-colors">
+                      <tr
+                        key={libro.id}
+                        className={`transition-colors ${
+                          libro.activo
+                            ? 'hover:bg-purple-50/30'
+                            : 'bg-gray-50/60 opacity-60 hover:opacity-100'
+                        }`}
+                      >
                         <td className="px-6 py-4 text-xs text-gray-500 font-mono">#{libro.id}</td>
                         <td className="px-6 py-4 text-sm font-semibold text-gray-800">{libro.titulo}</td>
                         <td className="px-6 py-4">
@@ -156,33 +155,66 @@ function GestionLibros({ token }) {
                         <td className="px-6 py-4 text-sm text-gray-500">{libro.stock}</td>
                         <td className="px-6 py-4 text-sm text-gray-500">{getPrecio(libro)}</td>
                         <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
+                            libro.activo
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : 'bg-gray-50 text-gray-500 border-gray-200'
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${libro.activo ? 'bg-emerald-500' : 'bg-gray-400'}`} />
+                            {libro.activo ? 'Activo' : 'Inactivo'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
-                            <button onClick={() => navigate(`/admin/libros/editar/${libro.id}`)} className="text-gray-400 hover:text-purple-600 transition-colors">
+                            <button
+                              onClick={() => navigate(`/admin/libros/editar/${libro.id}`)}
+                              className="text-gray-400 hover:text-purple-600 transition-colors"
+                            >
                               <Pencil size={15} />
                             </button>
-                            <button onClick={() => setDeleteId(libro.id)} className="text-gray-400 hover:text-red-500 transition-colors">
-                              <Trash2 size={15} />
+                            <button
+                              onClick={() => setToggleId(libro.id)}
+                              className="text-xs px-3 py-1 rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50 transition-colors"
+                            >
+                              {libro.activo ? 'Desactivar' : 'Activar'}
                             </button>
                           </div>
                         </td>
                       </tr>
                     ))}
                     {paginados.length === 0 && (
-                      <tr><td colSpan={7} className="px-6 py-16 text-center text-gray-400 text-sm">No hay libros registrados.</td></tr>
+                      <tr>
+                        <td colSpan={8} className="px-6 py-16 text-center text-gray-400 text-sm">
+                          No hay libros registrados.
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
               </div>
-              <Pagination currentPage={pagina} totalPages={totalPaginas} totalItems={lista.length} itemsPerPage={POR_PAGINA} itemLabel="libros" onPageChange={setPagina} />
+              <Pagination
+                currentPage={pagina}
+                totalPages={totalPaginas}
+                totalItems={lista.length}
+                itemsPerPage={POR_PAGINA}
+                itemLabel="libros"
+                onPageChange={setPagina}
+              />
             </div>
           )}
 
-          {deleteId && (
+          {toggleId && libroSeleccionado && (
             <ModalConfirmacion
-              titulo="Eliminar libro"
-              mensaje="¿Estás seguro de que querés eliminar este libro? Esta acción no se puede deshacer."
-              onCancelar={cerrarModal}
-              onConfirmar={handleEliminar}
+              titulo={libroSeleccionado.activo ? 'Desactivar libro' : 'Activar libro'}
+              mensaje={
+                libroSeleccionado.activo
+                  ? `¿Desactivar "${libroSeleccionado.titulo}"?`
+                  : `¿Activar "${libroSeleccionado.titulo}"?`
+              }
+              onCancelar={() => setToggleId(null)}
+              onConfirmar={handleToggle}
+              textoConfirmar={libroSeleccionado.activo ? 'DESACTIVAR' : 'ACTIVAR'}
+              variante={libroSeleccionado.activo ? 'danger' : 'primary'}
             />
           )}
 

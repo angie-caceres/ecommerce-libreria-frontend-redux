@@ -55,7 +55,7 @@ export default function EditarLibro({ token }) {
       setError(null)
       try {
         const [libro, dataGeneros, dataEditoriales, dataAutores] = await Promise.all([
-          apiFetch(`/libros/${id}`, token),
+          apiFetch(`/libros/${id}/admin`, token),
           apiFetch("/generos", token),
           apiFetch("/editoriales", token),
           apiFetch("/autores", token),
