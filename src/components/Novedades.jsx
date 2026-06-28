@@ -1,36 +1,33 @@
 // COMPONENTE — muestra las novedades del home
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import LibroCard from './LibroCard'
-import { apiFetch } from '../services/api'
+import { fetchLibros } from '../redux/librosSlice'
 
 function Novedades() {
 
-  // HOOK useState — libros traídos del backend
-  const [libros, setLibros] = useState([])
+  const dispatch = useDispatch()
 
-  // HOOK useEffect — trae los libros al montar el componente
-  // Array vacío = solo se ejecuta al montar (Montaje)
+  // useSelector — lee todos los libros del store global
+  const { items, loading, error } = useSelector((state) => state.libros)
+
+  // Solo hace fetch si el store todavía no tiene datos (evita llamada innecesaria al backend)
   useEffect(() => {
-    apiFetch('/libros')
-      .then(data => {
-        // Toma solo los primeros 4 libros para mostrar en el home
-        const primerosCuatro = data.slice(0, 4).map(libro => ({
-          id: libro.idLibro,
-          titulo: libro.titulo,
-          categoria: libro.genero,
-          precio: libro.precio,
-          precioOriginal: libro.precio,
-          descuento: libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null,
-          imagen: libro.imagen
-            ? `data:image/jpeg;base64,${libro.imagen}`
-            : '/libros/juegos.png',
-          tieneDetalle: true,
-        }))
-        setLibros(primerosCuatro)
-      })
-      .catch(err => console.error('Error cargando novedades:', err))
-  }, [])
+    if (items.length === 0) dispatch(fetchLibros())
+  }, [dispatch, items.length])
+
+  // Toma los primeros 4 para mostrar como novedades
+  const novedades = items.slice(0, 4).map(libro => ({
+    id:             libro.idLibro,
+    titulo:         libro.titulo,
+    categoria:      libro.genero,
+    precio:         libro.precio,
+    precioOriginal: libro.precio,
+    descuento:      libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null,
+    imagen:         libro.imagen ? `data:image/jpeg;base64,${libro.imagen}` : '/libros/juegos.png',
+    tieneDetalle:   true,
+  }))
 
   return (
     <div className="px-12 py-12 bg-[#FCF9F8]">
@@ -46,21 +43,26 @@ function Novedades() {
       </div>
 
       {/* RENDERIZADO DE LISTA con .map() */}
-      <div className="grid grid-cols-4 gap-6">
-        {libros.map((libro) => (
-          <LibroCard
-            key={libro.id}
-            id={libro.id}
-            categoria={libro.categoria}
-            titulo={libro.titulo}
-            precio={libro.precio}
-            precioOriginal={libro.precioOriginal}
-            descuento={libro.descuento}
-            imagen={libro.imagen}
-            tieneDetalle={libro.tieneDetalle}
-          />
-        ))}
-      </div>
+      {loading && <p className="text-gray-400 text-sm">Cargando novedades...</p>}
+      {error   && <p className="text-gray-400 text-sm">No se pudieron cargar las novedades.</p>}
+
+      {!loading && !error && (
+        <div className="grid grid-cols-4 gap-6">
+          {novedades.map((libro) => (
+            <LibroCard
+              key={libro.id}
+              id={libro.id}
+              categoria={libro.categoria}
+              titulo={libro.titulo}
+              precio={libro.precio}
+              precioOriginal={libro.precioOriginal}
+              descuento={libro.descuento}
+              imagen={libro.imagen}
+              tieneDetalle={libro.tieneDetalle}
+            />
+          ))}
+        </div>
+      )}
 
     </div>
   )

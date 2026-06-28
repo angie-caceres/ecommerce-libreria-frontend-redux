@@ -1,50 +1,39 @@
 // VISTA — página que muestra todos los libros disponibles
-// Los libros se obtienen del backend al montar el componente
+// Los libros se obtienen del backend a través del store de Redux
 
 import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import LibroCard from '../components/LibroCard'
 import { calcularPrecioFinal } from '../utils/calcularPrecio'
-
-const BASE_URL = 'http://localhost:4002'
+import { fetchLibros } from '../redux/librosSlice'
 
 function Catalogo() {
 
-  // HOOK useState — lista de libros que viene del back
-  const [libros, setLibros]     = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError]       = useState(false)
+  const dispatch = useDispatch()
 
-  // HOOK useState — filtros
+  // useSelector — lee del store: datos que vienen del backend
+  const { items: libros, loading: cargando, error } = useSelector((state) => state.libros)
+
+  // useState — filtros: estado local de UI, solo lo usa este componente
   const [precioMax, setPrecioMax]                         = useState(0)
   const [precioMaximo, setPrecioMaximo]                   = useState(0)
   const [autorSeleccionado, setAutorSeleccionado]         = useState('')
   const [editorialSeleccionada, setEditorialSeleccionada] = useState('')
   const [generosSeleccionados, setGenerosSeleccionados]   = useState([])
 
-  // HOOK useEffect — trae los libros del back al montar
+  // useEffect — dispara la acción asíncrona al montar el componente
   useEffect(() => {
-    const fetchLibros = async () => {
-      setCargando(true)
-      setError(false)
-      try {
-        const res = await fetch(`${BASE_URL}/libros`)
-        if (!res.ok) throw new Error('Error del servidor')
-        const data = await res.json()
-        setLibros(data)
+    dispatch(fetchLibros())
+  }, [dispatch])
 
-        // Precio máximo = precio más alto del catálogo real
-        // Se usa para el tope del slider y para que arranque mostrando todo
-        const maxPrecio = Math.max(...data.map(l => l.precio ?? 0))
-        setPrecioMaximo(maxPrecio)
-        setPrecioMax(maxPrecio)
-      } catch (e) {
-        setError(true)
-      } finally {
-        setCargando(false)
-      }
+  // useEffect — actualiza el slider de precio cuando llegan los datos del store
+  useEffect(() => {
+    if (libros.length > 0) {
+      const maxPrecio = Math.max(...libros.map(l => l.precio ?? 0))
+      setPrecioMaximo(maxPrecio)
+      setPrecioMax(maxPrecio)
     }
-    fetchLibros()
-  }, [])
+  }, [libros])
 
   // Listas únicas para los filtros — calculadas desde los datos del back
   const generos     = [...new Set(libros.map(l => l.genero).filter(Boolean))]
