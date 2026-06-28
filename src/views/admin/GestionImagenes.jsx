@@ -119,10 +119,14 @@ export default function GestionImagenes() {
       });
 
     } catch (err) {
+      const estaEnUso = err.message?.toLowerCase().includes('asociada a un libro')
+
       Swal.fire({
-        title: "Error",
-        text: "No se pudo eliminar la imagen del servidor.",
-        icon: "error"
+        title: estaEnUso ? "Imagen en uso" : "Error",
+        text: estaEnUso
+          ? "No se puede eliminar esta imagen porque está asociada a un libro."
+          : "No se pudo eliminar la imagen del servidor.",
+        icon: estaEnUso ? "warning" : "error"
       });
     }
   };
