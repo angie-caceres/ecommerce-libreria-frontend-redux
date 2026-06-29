@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import { configureStore } from '@reduxjs/toolkit';
-
-
-export const store = configureStore({
-  reducer: { //aca van todos los reducer que se van a usar en la app
-    
-  },
-});
-=======
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { persistStore, persistReducer } from 'redux-persist'
 import authReducer from './authSlice'
@@ -46,4 +36,3 @@ export const store = configureStore({
 })
 
 export const persistor = persistStore(store)
->>>>>>> libro-user
