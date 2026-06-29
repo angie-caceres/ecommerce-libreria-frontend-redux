@@ -1,39 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchLibros } from '../redux/librosSlice'
 import LibroCard from '../components/LibroCard'
 import { calcularPrecioFinal } from '../utils/calcularPrecio'
 
-const BASE_URL = 'http://localhost:4002'
-
 function Busqueda() {
+  const dispatch = useDispatch()
+  const { items, loading: cargando, error } = useSelector((state) => state.libros)
 
   const [searchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
 
-  const [libros, setLibros]     = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError]       = useState(false)
-
   useEffect(() => {
-    const fetchLibros = async () => {
-      setCargando(true)
-      setError(false)
-      try {
-        const res = await fetch(`${BASE_URL}/libros`)
-        if (!res.ok) throw new Error('Error del servidor')
-        const data = await res.json()
-        setLibros(data)
-      } catch (e) {
-        setError(true)
-      } finally {
-        setCargando(false)
-      }
-    }
-    fetchLibros()
-  }, [])
+    if (items.length === 0) dispatch(fetchLibros())
+  }, [dispatch])
 
   const q = query.toLowerCase()
-  const resultados = libros.filter(libro =>
+  const resultados = items.filter(libro =>
     libro.titulo?.toLowerCase().includes(q) ||
     libro.autores?.some(a => a.toLowerCase().includes(q))
   )
