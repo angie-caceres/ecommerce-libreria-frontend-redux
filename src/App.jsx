@@ -2,8 +2,9 @@
 // El estado vive acá porque es el padre de todos los componentes
 // que necesitan acceder al carrito
 import { Routes, Route, useLocation, Navigate} from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { apiFetch } from './services/api'
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from './redux/authSlice'
 import Home from './views/Home'
 import Carrito from './views/Carrito'
 import DetalleLibro from './views/DetalleLibro'
@@ -42,63 +43,13 @@ function App() {
 
   // se evalua en qué ruta está parado el navegador actualmente
   const location = useLocation()
+  const dispatch = useDispatch()
 
-  // Lee el token de localStorage al arrancar — persiste entre recargas
-  const [token, setToken] = useState(localStorage.getItem('jwtToken'))
+  // useSelector — token y usuario vienen del store (persistido por redux-persist)
+  const { token, usuario } = useSelector((state) => state.auth)
 
-  // HOOK useState — estado global del carrito
-  // Solo se usa para el badge del Navbar — el carrito real vive en el backend
+  // useState — carrito: solo para el badge del Navbar, el carrito real vive en el backend
   const [carrito, setCarrito] = useState([])
-
-  // HOOK useState — estado global del usuario logueado
-  const [usuario, setUsuario] = useState(() => {
-    const guardado = localStorage.getItem("usuario")
-    return guardado ? JSON.parse(guardado) : null
-  })
-  // true mientras se verifica el token al arrancar — evita redirigir a /login antes de tiempo
-  const [cargandoUsuario, setCargandoUsuario] = useState(!!localStorage.getItem('jwtToken'))
-
-  // HOOK useEffect — recupera el usuario al recargar la página
-  // si hay un token guardado en localStorage
-useEffect(() => {
-  const tokenGuardado = localStorage.getItem('jwtToken')
-  if (tokenGuardado) {
-    apiFetch('/usuarios/me', tokenGuardado)
-      .then(data => {
-        setUsuario({
-          email: data.email,
-          nombre: data.firstname,
-          rol: data.role === 'ADMINISTRADOR' ? 'admin' : 'usuario'
-        })
-
-        // El carrito es solo para usuarios — si falla (ej: admin sin carrito),
-        // no debe afectar el token ya válido
-        if (data.role !== 'ADMINISTRADOR') {
-          apiFetch('/carrito', tokenGuardado)
-            .then(carritoData => {
-              if (carritoData?.items) {
-                const itemsFormateados = carritoData.items.map(item => ({
-                  id: item.idLibro,
-                  cantidad: item.cantidad
-                }))
-                setCarrito(itemsFormateados)
-              }
-            })
-            .catch(() => {
-              // si falla el carrito, no pasa nada grave — se ignora
-            })
-        }
-      })
-      .catch(() => {
-        // Solo si /usuarios/me falla (token inválido o expirado) se borra el token
-        localStorage.removeItem('jwtToken')
-        setToken(null)
-      })
-      .finally(() => setCargandoUsuario(false))
-  } else {
-    setCargandoUsuario(false)
-  }
-}, [token])
 
   // Si la ruta empieza con "/admin", esta constante va a ser true
   const esAdmin = location.pathname.startsWith("/admin") ||
@@ -131,16 +82,11 @@ useEffect(() => {
   // Limpia el badge del Navbar después del checkout
   const vaciarCarrito = () => setCarrito([])
 
-  // FUNCIÓN para cerrar sesión — limpia usuario, carrito y token
+  // FUNCIÓN para cerrar sesión — limpia el store de auth y el carrito local
   const cerrarSesion = () => {
-    localStorage.removeItem("usuario")
-    localStorage.removeItem("token")
-    localStorage.removeItem("jwtToken")
-    setUsuario(null)
+    dispatch(logout())
     setCarrito([])
-    setToken(null)
   }
-  console.log('App.jsx render - token:', token, 'usuario:', usuario, 'cargandoUsuario:', cargandoUsuario)
 
   return (
     <>
@@ -152,7 +98,7 @@ useEffect(() => {
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
       {!esAdmin && <Navbar carrito={carrito} usuario={usuario} />}
 
-      {!cargandoUsuario && <Routes>
+      <Routes>
 
         <Route path="/" element={<Home />} />
 
@@ -228,12 +174,12 @@ useEffect(() => {
         />
 
         <Route path="/quienes-somos" element={<QuienesSomos />} />
-        <Route path="/registro" element={<Registro setUsuario={setUsuario} setToken={setToken} />} />
+        <Route path="/registro" element={<Registro />} />
         <Route path="/contacto" element={<Contacto />} />
-        <Route path="/login" element={<Login setUsuario={setUsuario} setToken={setToken} />} />
+        <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
 
-      </Routes>}
+      </Routes>
 
       {/* RENDERIZADO CONDICIONAL: Solo muestra el Footer si NO es admin */}
       {!esAdmin && <Footer />}

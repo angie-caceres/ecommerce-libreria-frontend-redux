@@ -1,53 +1,33 @@
 // VISTA Registro
 import { useState } from 'react'
-import RegistroForm from "../components/RegistroForm"
-import { useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import RegistroForm from '../components/RegistroForm'
 import Alerta from '../components/Alerta'
-import { apiFetch } from '../services/api'
+import { registrarUsuario } from '../redux/authSlice'
 
-// PROPS — recibe setUsuario del padre App.jsx
-function Registro({ setUsuario, setToken }) {
+function Registro() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  // HOOK useState — controla si se muestra la alerta
+  // useSelector — lee loading y error del store
+  const { loading, error } = useSelector((state) => state.auth)
+
+  // useState — controla si se muestra la alerta de éxito (estado local de UI)
   const [registrado, setRegistrado] = useState(false)
 
-  // EVENTO — recibe los datos del hijo y actualiza el estado global
   const handleSubmit = async (nuevoUsuario) => {
-  try {
-    const data = await apiFetch('/api/v1/auth/register', null, {
-      method: 'POST',
-      body: JSON.stringify(nuevoUsuario)
-    })
+    const result = await dispatch(registrarUsuario(nuevoUsuario))
 
-    if (data) {
-      localStorage.setItem("jwtToken", data.access_token)
-      setToken(data.access_token)
-
-      const usuarioLogueado = {
-        email: nuevoUsuario.email,
-        nombre: `${nuevoUsuario.firstname} ${nuevoUsuario.lastname}`.trim(),
-        rol: nuevoUsuario.role === "ADMINISTRADOR" ? "admin" : "usuario",
-        token: data.access_token
-      }
-
-      localStorage.setItem("usuario", JSON.stringify(usuarioLogueado))
-      setUsuario(usuarioLogueado)
-
+    if (registrarUsuario.fulfilled.match(result)) {
       setRegistrado(true)
-      setTimeout(() => navigate("/"), 2000)
+      setTimeout(() => navigate('/'), 2000)
     }
-  } catch (error) {
-    console.error(error);
   }
-};
 
   return (
     <main className="bg-[#faf7f5] px-4 py-10">
 
-      {/* RENDERIZADO CONDICIONAL con &&
-          Muestra alerta si el registro fue exitoso
-  */}
       {registrado && (
         <div className="max-w-6xl mx-auto mb-4">
           <Alerta
@@ -57,7 +37,13 @@ function Registro({ setUsuario, setToken }) {
         </div>
       )}
 
-      <RegistroForm onSubmit={handleSubmit} />
+      {error && (
+        <div className="max-w-6xl mx-auto mb-4">
+          <p className="text-red-500 text-sm">Ocurrió un error al registrarse. Intentá de nuevo.</p>
+        </div>
+      )}
+
+      <RegistroForm onSubmit={handleSubmit} loading={loading} />
     </main>
   )
 }

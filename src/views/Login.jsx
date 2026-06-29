@@ -1,58 +1,28 @@
-// COMPONENTE Login
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { apiFetch } from "../services/api"
+// VISTA Login
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUsuario } from '../redux/authSlice'
 
-function Login({ setUsuario, setToken }) {
+function Login() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [cargando, setCargando] = useState(false)
+  // useSelector — lee loading y error del store
+  const { loading: cargando, error } = useSelector((state) => state.auth)
+
+  // useState — campos del formulario (estado local de UI)
+  const [email, setEmail]       = useState('')
+  const [password, setPassword] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError("")
-    setCargando(true)
+    const result = await dispatch(loginUsuario({ email, password }))
 
-    try {
-      // POST /api/v1/auth/authenticate — obtiene el token
-      const data = await apiFetch('/api/v1/auth/authenticate', null, {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      })
-
-      // Guarda el token en el estado de App.jsx
-      setToken(data.access_token)
-      // Guarda el token en localStorage para persistir entre recargas
-      localStorage.setItem('jwtToken', data.access_token)
-
-      // GET /usuarios/me — obtiene los datos del usuario logueado
-      const usuario = await apiFetch('/usuarios/me', data.access_token)
-
-      // Actualiza el estado global con el rol
-      const usuarioLogueado = {
-        email: usuario.email,
-        nombre: `${usuario.firstName || usuario.firstname || ""} ${usuario.lastName || usuario.lastname || ""}`.trim(),
-        rol: usuario.role === "ADMINISTRADOR" ? "admin" : "usuario",
-        token: data.token || data.access_token
-      }
-
-      localStorage.setItem("usuario", JSON.stringify(usuarioLogueado))
-      setUsuario(usuarioLogueado)
-
-      // Navega según el rol
-      if (usuario.role === 'ADMINISTRADOR') {
-        navigate('/admin')
-      } else {
-        navigate('/')
-      }
-
-    } catch (err) {
-      setError('Correo o contraseña incorrectos.')
-    } finally {
-      setCargando(false)
+    // Navega según el rol si el login fue exitoso
+    if (loginUsuario.fulfilled.match(result)) {
+      const rol = result.payload.usuario.rol
+      navigate(rol === 'admin' ? '/admin' : '/')
     }
   }
 
@@ -98,7 +68,7 @@ function Login({ setUsuario, setToken }) {
           </div>
 
           {error && (
-            <p className="text-red-500 text-sm mb-4">{error}</p>
+            <p className="text-red-500 text-sm mb-4">Correo o contraseña incorrectos.</p>
           )}
 
           <button
