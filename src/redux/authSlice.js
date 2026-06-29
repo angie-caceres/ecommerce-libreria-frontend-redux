@@ -44,7 +44,7 @@ const authSlice = createSlice({
     error: null,
   },
   reducers: {
-    // Acción síncrona — limpia el estado al cerrar sesión
+    // Acción síncrona que limpia el estado al cerrar sesión
     logout: (state) => {
       state.usuario = null
       state.token = null

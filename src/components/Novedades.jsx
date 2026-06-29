@@ -12,7 +12,7 @@ function Novedades() {
   // useSelector — lee todos los libros del store global
   const { items, loading, error } = useSelector((state) => state.libros)
 
-  // Solo hace fetch si el store todavía no tiene datos (evita llamada innecesaria al backend)
+  // Solo hace fetch si el store todavía no tiene datos
   useEffect(() => {
     if (items.length === 0) dispatch(fetchLibros())
   }, [dispatch, items.length])

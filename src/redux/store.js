@@ -3,7 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist'
 import authReducer from './authSlice'
 import librosReducer from './librosSlice'
 
-// Adaptador de storage — workaround por incompatibilidad de redux-persist con Vite
+// Adaptador de storage por incompatibilidad de redux-persist con Vite
 const storage = {
   getItem:    (key) => Promise.resolve(localStorage.getItem(key)),
   setItem:    (key, value) => Promise.resolve(localStorage.setItem(key, value)),
