@@ -13,7 +13,6 @@ function RegistroForm({ onSubmit }) {
   const [confirmarPassword, setConfirmarPassword] = useState("")
 
   // HOOK useState — error de validación
-  // Reemplaza alert() — no toca el DOM directamente
   const [error, setError] = useState("")
 
   // EVENTO — procesa el submit del formulario
@@ -21,7 +20,7 @@ function RegistroForm({ onSubmit }) {
     e.preventDefault()
 
     if (password !== confirmarPassword) {
-      // Validación con estado — no usa alert()
+      // Validación con estado 
       setError("Las contraseñas no coinciden")
       return
     }

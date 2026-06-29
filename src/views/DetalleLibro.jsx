@@ -1,44 +1,35 @@
-// VISTA — obtiene el libro por ID desde el backend
-// (PDF: useEffect - Llamadas a APIs)
-import { useState, useEffect } from 'react'
+// VISTA — obtiene el libro por ID desde el backend a través del store de Redux
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams, Link } from 'react-router-dom'
 import DetalleLibroCard from '../components/DetalleLibroCard'
-import { apiFetch } from '../services/api'
+import { fetchLibroById } from '../redux/librosSlice'
 
-function DetalleLibro({ agregarAlCarrito, puedeComprar,token }) {
+function DetalleLibro({ agregarAlCarrito, puedeComprar, token }) {
 
   const { id } = useParams()
+  const dispatch = useDispatch()
 
-  // HOOK useState — estado local del libro y loading
+  // useSelector — lee libroActual, loading y error del store
+  const { libroActual, loading: cargando, error } = useSelector((state) => state.libros)
 
-  const [libro, setLibro] = useState(null)
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState(null)
-
-  // HOOK useEffect — se ejecuta al montar el componente
-  // Hace GET /libros/{id} al backend
-
+  // useEffect — dispara la acción asíncrona cada vez que cambia el id en la URL
   useEffect(() => {
-    setCargando(true)
-    apiFetch(`/libros/${id}`)
-      .then(data => {
-        setLibro({
-          id: data.idLibro,
-          titulo: data.titulo,
-          descripcion: data.descripcion,
-          precioOriginal: data.precio,
-          descuento: data.porcentajeDescuento ? `-${data.porcentajeDescuento}%` : null,
-          hojas: data.paginas,
-          editorial: data.editorial,
-          autor: data.autores?.join(', '),
-          imagen: data.imagen
-            ? `data:image/jpeg;base64,${data.imagen}`
-            : '/libros/juegos.png',
-        })
-      })
-      .catch(err => setError('No se pudo cargar el libro.'))
-      .finally(() => setCargando(false))
-  }, [id])
+    dispatch(fetchLibroById(id))
+  }, [dispatch, id])
+
+  // Mapeo del formato del backend al formato que espera DetalleLibroCard
+  const libro = libroActual ? {
+    id:             libroActual.idLibro,
+    titulo:         libroActual.titulo,
+    descripcion:    libroActual.descripcion,
+    precioOriginal: libroActual.precio,
+    descuento:      libroActual.porcentajeDescuento ? `-${libroActual.porcentajeDescuento}%` : null,
+    hojas:          libroActual.paginas,
+    editorial:      libroActual.editorial,
+    autor:          libroActual.autores?.join(', '),
+    imagen:         libroActual.imagen ? `data:image/jpeg;base64,${libroActual.imagen}` : '/libros/juegos.png',
+  } : null
 
   return (
     <div className="bg-[#FCF9F8] min-h-screen px-12 py-8">

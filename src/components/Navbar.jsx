@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-
-const BASE_URL = 'http://localhost:4002'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchLibros } from '../redux/librosSlice'
 
 function Navbar({ carrito, usuario }) {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { items, loading: cargando, error: errorBack } = useSelector((state) => state.libros)
 
   const navLinks = [
     { label: 'INICIO', to: '/' },
@@ -17,54 +19,36 @@ function Navbar({ carrito, usuario }) {
   const [query, setQuery]                           = useState('')
   const [sugerencias, setSugerencias]               = useState([])
   const [mostrarSugerencias, setMostrarSugerencias] = useState(false)
-  const [cargando, setCargando]                     = useState(false)
-  const [errorBack, setErrorBack]                   = useState(false)
 
-  // Ref para el debounce — guarda el id del setTimeout anterior
   const debounceRef = useRef(null)
 
   const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0)
 
-  // EFECTO — se ejecuta cada vez que cambia query
-  // Cancela el fetch anterior y lanza uno nuevo tras 400ms sin escribir
+  useEffect(() => {
+    if (items.length === 0) dispatch(fetchLibros())
+  }, [dispatch])
+
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
     if (query.trim().length === 0) {
       setSugerencias([])
       setMostrarSugerencias(false)
-      setErrorBack(false)
       return
     }
 
-    debounceRef.current = setTimeout(async () => {
-      setCargando(true)
-      setErrorBack(false)
-      try {
-        const res = await fetch(`${BASE_URL}/libros`)
-        if (!res.ok) throw new Error('Error del servidor')
-        const data = await res.json()
-
-        // Filtramos en el front por título o autor
-        const q = query.toLowerCase()
-        const filtrados = data.filter(libro =>
-          libro.titulo?.toLowerCase().includes(q) ||
-          libro.autores?.some(a => a.toLowerCase().includes(q))
-        )
-        setSugerencias(filtrados.slice(0, 6)) // máximo 6 sugerencias
-        setMostrarSugerencias(true)
-      } catch (e) {
-        // Si el back no está corriendo, lo manejamos sin romper nada
-        setErrorBack(true)
-        setSugerencias([])
-        setMostrarSugerencias(true)
-      } finally {
-        setCargando(false)
-      }
+    debounceRef.current = setTimeout(() => {
+      const q = query.toLowerCase()
+      const filtrados = items.filter(libro =>
+        libro.titulo?.toLowerCase().includes(q) ||
+        libro.autores?.some(a => a.toLowerCase().includes(q))
+      )
+      setSugerencias(filtrados.slice(0, 6))
+      setMostrarSugerencias(true)
     }, 400)
 
     return () => clearTimeout(debounceRef.current)
-  }, [query])
+  }, [query, items])
 
   const seleccionarSugerencia = (libro) => {
     setQuery('')
