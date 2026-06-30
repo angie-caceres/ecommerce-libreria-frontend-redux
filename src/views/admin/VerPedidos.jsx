@@ -1,5 +1,6 @@
 // VISTA — gestión de pedidos del panel admin
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from "react-redux"
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
 import Pagination from "../../components/Pagination"
@@ -7,15 +8,26 @@ import FiltrosBotones from "../../components/FiltrosBotones"
 import EncabezadoSeccion from "../../components/EncabezadoSeccion"
 import Swal from "sweetalert2";
 
+import {fetchPedidos, cancelarPedido} from "../../redux/pedidosSlice"
+
 const ITEMS_POR_PAGINA = 15
 const AVATAR_COLORS = ["#CBAAE9"]
 
 export default function VerPedidos() {
 
   // HOOK useState — estados locales del componente
-  const [pedidos, setPedidos] = useState([])
+  //const [pedidos, setPedidos] = useState([])
+  const dispatch = useDispatch()
+
+  const {
+      items: pedidos,
+      loading,
+      error
+  } = useSelector(state => state.pedidos)
+
   const [currentPage, setCurrentPage] = useState(1)
   const [filtroEstado, setFiltroEstado] = useState("TODOS")
+  
   const cancelarOrden = async (idOrden) => {
     const resultado = await Swal.fire({
       title: "¿Cancelar compra?",
@@ -26,61 +38,33 @@ export default function VerPedidos() {
       cancelButtonText: "No, volver",
       confirmButtonColor: "#7B5B99",
       cancelButtonColor: "#aaa",
-    });
+    })
 
-    if (!resultado.isConfirmed) return;
+    if (!resultado.isConfirmed) return
 
-    const token = localStorage.getItem("jwtToken") || localStorage.getItem("token");
+    const action = await dispatch(cancelarPedido(idOrden))
 
-    const response = await fetch(
-      `http://localhost:4002/ordenes/${idOrden}/cancelar`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (response.ok) {
-      setPedidos((prev) =>
-        prev.map((pedido) =>
-          pedido.idOrden === idOrden
-            ? { ...pedido, estado: "CANCELADA" }
-            : pedido
-        )
-      );
-
+    if (cancelarPedido.fulfilled.match(action)) {
       Swal.fire({
         title: "Cancelada",
         text: "La compra fue cancelada correctamente",
         icon: "success",
         confirmButtonText: "OK",
         confirmButtonColor: "#7B5B99",
-      });
-    }
-  };
-  useEffect(() => {
-    const obtenerPedidos = async () => {
-      const token = localStorage.getItem("jwtToken") || localStorage.getItem("token")
-
-      const response = await fetch("http://localhost:4002/ordenes", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
       })
-
-      console.log("STATUS PEDIDOS:", response.status)
-
-      if (response.ok) {
-        const data = await response.json()
-        console.log("PEDIDOS BACKEND:", data)
-        setPedidos(data)
-      }
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: action.error?.message || "No se pudo cancelar la compra.",
+        icon: "error",
+        confirmButtonColor: "#7B5B99",
+      })
     }
+  }
 
-    obtenerPedidos()
-  }, [])
+  useEffect(() => {
+    dispatch(fetchPedidos())
+  }, [dispatch])
 
   const pedidosFiltrados = pedidos.filter(p =>
     filtroEstado === "TODOS" || p.estado === filtroEstado
@@ -123,9 +107,21 @@ export default function VerPedidos() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
+
+                  {loading && pedidos.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="px-6 py-16 text-center text-gray-400 text-sm animate-pulse"
+                      >
+                        Cargando pedidos...
+                      </td>
+                    </tr>
+                  )}
+
                   {/* RENDERIZADO DE LISTA con .map()
   */}
-                  {pedidosPagina.map(pedido => {
+                  {!loading && pedidosPagina.map(pedido => {
                     const iniciales = pedido.nombreUsuario
                       ? pedido.nombreUsuario
                           .split(" ")

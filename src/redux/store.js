@@ -9,6 +9,7 @@ import editorialesReducer from './editorialesSlice'
 import misOrdenesReducer from "./misOrdenesSlice";
 import carritoReducer from "./carritoSlice";
 import descuentosReducer from "./descuentosSlice";
+import pedidosReducer from "./pedidosSlice";
 
 // Adaptador de storage por incompatibilidad de redux-persist con Vite
 const storage = {
@@ -33,6 +34,8 @@ const rootReducer = combineReducers({
   misOrdenes: misOrdenesReducer,
   carrito: carritoReducer,
   descuentos: descuentosReducer,
+  pedidos: pedidosReducer,
+  
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
