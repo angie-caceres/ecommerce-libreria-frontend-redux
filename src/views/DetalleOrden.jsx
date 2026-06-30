@@ -1,43 +1,33 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { obtenerDetalleOrden } from "../redux/misOrdenesSlice";
 
 function DetalleOrden() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [orden, setOrden] = useState(null);
-  const [cargando, setCargando] = useState(true);
+  const {
+    ordenSeleccionada: orden,
+    loading: cargando,
+    error,
+  } = useSelector((state) => state.misOrdenes);
 
   useEffect(() => {
-    const obtenerOrden = async () => {
-      const token = localStorage.getItem("jwtToken") || localStorage.getItem("token");
-
-      const response = await fetch(`http://localhost:4002/ordenes/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setOrden(data);
-      }
-
-      setCargando(false);
-    };
-
-    obtenerOrden();
-  }, [id]);
+    dispatch(obtenerDetalleOrden(id));
+  }, [dispatch, id]);
 
   if (cargando) return <p>Cargando orden...</p>;
 
-  if (!orden) {
+  if (!orden || error) {
     return (
       <main className="bg-[#FCF9F8] px-4 py-10 min-h-screen">
         <section className="max-w-6xl mx-auto">
           <h1 className="font-serif text-5xl text-[#351118]">
             Orden no encontrada
           </h1>
+
           <button
             onClick={() => navigate("/mis-ordenes")}
             className="mt-8 bg-[#4b385c] text-white px-6 py-3"
@@ -55,7 +45,6 @@ function DetalleOrden() {
   return (
     <main className="bg-[#FCF9F8] px-4 py-10 min-h-screen">
       <section className="max-w-6xl mx-auto">
-
         <button
           onClick={() => navigate("/mis-ordenes")}
           className="mb-8 text-[#4b385c] hover:underline"
@@ -118,6 +107,7 @@ function DetalleOrden() {
                   <h3 className="font-serif text-2xl text-[#351118]">
                     {item.tituloLibro}
                   </h3>
+
                   <p className="text-gray-500">
                     Cantidad: {item.cantidad}
                   </p>
