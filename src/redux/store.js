@@ -5,6 +5,7 @@ import authReducer from './authSlice'
 import librosReducer from './librosSlice'
 import autoresReducer from './autoresSlice'
 import generosReducer from './generosSlice'
+import editorialesReducer from './editorialesSlice'
 
 // Adaptador de storage por incompatibilidad de redux-persist con Vite
 const storage = {
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   libros:  librosReducer,
   autores: autoresReducer,
   generos: generosReducer,
+  editoriales: editorialesReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
