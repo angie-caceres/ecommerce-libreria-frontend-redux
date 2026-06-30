@@ -52,6 +52,16 @@ export const vaciarCarritoBackend = createAsyncThunk(
   }
 );
 
+export const confirmarCompra = createAsyncThunk(
+  "carrito/confirmarCompra",
+  async (metodoPago) => {
+    const { data } = await axios.post(`${BASE_URL}/carrito/checkout`, {
+      metodoPago,
+    });
+
+    return data;
+  }
+);
 const carritoSlice = createSlice({
   name: "carrito",
   initialState: {
@@ -59,6 +69,8 @@ const carritoSlice = createSlice({
     loading: false,
     error: null,
     aviso: null,
+    ordenConfirmada: null,
+    itemsConfirmados: [],
   },
   reducers: {
     limpiarAviso: (state) => {
@@ -122,6 +134,20 @@ const carritoSlice = createSlice({
       })
       .addCase(vaciarCarritoBackend.rejected, (state) => {
         state.error = "No se pudo vaciar el carrito.";
+      })
+      .addCase(confirmarCompra.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(confirmarCompra.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ordenConfirmada = action.payload;
+        state.itemsConfirmados = state.items;
+        state.items = [];
+      })
+      .addCase(confirmarCompra.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "No se pudo confirmar la compra.";
       });
   },
 });
