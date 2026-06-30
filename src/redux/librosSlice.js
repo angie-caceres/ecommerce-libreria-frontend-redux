@@ -20,19 +20,23 @@ const librosSlice = createSlice({
     libroActual: null,
     loading: false,
     error: null,
+    status: 'idle',
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchLibros.pending, (state) => {
+        state.status = 'loading'
         state.loading = true
         state.error = null
       })
       .addCase(fetchLibros.fulfilled, (state, action) => {
+        state.status = 'succeeded'
         state.loading = false
         state.items = action.payload
       })
       .addCase(fetchLibros.rejected, (state, action) => {
+        state.status = 'failed'
         state.loading = false
         state.error = action.error.message
       })
