@@ -14,23 +14,36 @@ export const loginUsuario = createAsyncThunk('auth/login', async (credenciales) 
   return {
     token: authData.access_token,
     usuario: {
-      email: usuarioData.email,
-      nombre: `${usuarioData.firstName || usuarioData.firstname || ''} ${usuarioData.lastName || usuarioData.lastname || ''}`.trim(),
-      rol: usuarioData.role === 'ADMINISTRADOR' ? 'admin' : 'usuario',
+      email:     usuarioData.email,
+      nombre:    `${usuarioData.firstName || usuarioData.firstname || ''} ${usuarioData.lastName || usuarioData.lastname || ''}`.trim(),
+      firstName: usuarioData.firstName || usuarioData.firstname || '',
+      lastName:  usuarioData.lastName  || usuarioData.lastname  || '',
+      rol:       usuarioData.role === 'ADMINISTRADOR' ? 'admin' : 'usuario',
     }
   }
 })
 
-// Thunk 2: registro — POST register
+// Thunk 2: actualizar perfil — PATCH /usuarios/me
+export const actualizarPerfil = createAsyncThunk('auth/actualizarPerfil', async (datosActualizados, { getState }) => {
+  const token = getState().auth.token
+  const { data } = await axios.patch(`${BASE_URL}/usuarios/me`, datosActualizados, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  return data
+})
+
+// Thunk 3: registro — POST register
 export const registrarUsuario = createAsyncThunk('auth/registro', async (datosUsuario) => {
   const { data: authData } = await axios.post(`${BASE_URL}/api/v1/auth/register`, datosUsuario)
 
   return {
     token: authData.access_token,
     usuario: {
-      email: datosUsuario.email,
-      nombre: `${datosUsuario.firstname} ${datosUsuario.lastname}`.trim(),
-      rol: 'usuario',
+      email:     datosUsuario.email,
+      nombre:    `${datosUsuario.firstname} ${datosUsuario.lastname}`.trim(),
+      firstName: datosUsuario.firstname || '',
+      lastName:  datosUsuario.lastname  || '',
+      rol:       'usuario',
     }
   }
 })
@@ -64,6 +77,19 @@ const authSlice = createSlice({
         state.usuario = action.payload.usuario
       })
       .addCase(loginUsuario.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+
+      // actualizar perfil
+      .addCase(actualizarPerfil.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(actualizarPerfil.fulfilled, (state) => {
+        state.loading = false
+      })
+      .addCase(actualizarPerfil.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message
       })

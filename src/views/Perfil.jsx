@@ -1,20 +1,24 @@
 // VISTA Perfil
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { actualizarPerfil } from '../redux/authSlice'
 import { Pencil } from 'lucide-react'
 import Swal from 'sweetalert2'
 
-// PROPS — recibe usuario y cerrarSesion del padre App.jsx
-function Perfil({ usuario, cerrarSesion }) {
+// PROPS — recibe cerrarSesion del padre App.jsx (para limpiar el carrito al cerrar sesión)
+function Perfil({ cerrarSesion }) {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { usuario, loading } = useSelector((state) => state.auth)
 
   // HOOK useState — estado local del formulario
   const [form, setForm] = useState({
-    firstName: usuario?.firstName || usuario?.nombre || '',
-    lastName: usuario?.lastName || usuario?.apellido || '',
-    email: usuario?.email || '',
-    password: '',
+    firstName: usuario?.firstName || '',
+    lastName:  usuario?.lastName  || '',
+    email:     usuario?.email     || '',
+    password:  '',
   })
 
   // HOOK useState — controla qué campo está siendo editado
@@ -38,48 +42,38 @@ function Perfil({ usuario, cerrarSesion }) {
 
   // EVENTO — guarda los cambios y pide que vuelva a loguearse
   const handleGuardar = () => {
-  Swal.fire({
-    title: '¿Guardar cambios?',
-    text: 'Para aplicar los cambios vas a tener que volver a iniciar sesión.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#4b385c',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Sí, guardar',
-    cancelButtonText: 'Cancelar'
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      const token = localStorage.getItem("jwtToken") || localStorage.getItem("token")
+    Swal.fire({
+      title: '¿Guardar cambios?',
+      text: 'Para aplicar los cambios vas a tener que volver a iniciar sesión.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#4b385c',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (confirmacion) => {
+      if (confirmacion.isConfirmed) {
+        const datosActualizados = {
+          firstName: form.firstName,
+          lastName:  form.lastName,
+          email:     form.email,
+        }
+        if (form.password.trim() !== '') {
+          datosActualizados.password = form.password
+        }
 
-      const datosActualizados = {
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email
+        const resultado = await dispatch(actualizarPerfil(datosActualizados))
+
+        if (actualizarPerfil.fulfilled.match(resultado)) {
+          Swal.fire("Guardado", "Tus datos fueron actualizados", "success")
+          cerrarSesion()
+          navigate('/login')
+        } else {
+          Swal.fire("Error", "No se pudieron guardar los cambios", "error")
+        }
       }
-
-      if (form.password.trim() !== '') {
-        datosActualizados.password = form.password
-      }
-
-      const response = await fetch("http://localhost:4002/usuarios/me", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(datosActualizados)
-      })
-      if (!response.ok) {
-        Swal.fire("Error", "No se pudieron guardar los cambios", "error")
-        return
-      }
-
-      Swal.fire("Guardado", "Tus datos fueron actualizados", "success")
-      cerrarSesion()
-      navigate('/login')
-    }
-  })
-}
+    })
+  }
 
   const handleVolver = () => {
     // RENDERIZADO CONDICIONAL — vuelve según el rol
