@@ -170,7 +170,7 @@ function App() {
         {/* Perfil — cualquier rol logueado */}
         <Route
           path="/perfil"
-          element={usuario ? <Perfil usuario={usuario} cerrarSesion={cerrarSesion} /> : <Navigate to="/login" />}
+          element={usuario ? <Perfil cerrarSesion={cerrarSesion} /> : <Navigate to="/login" />}
         />
 
         <Route path="/quienes-somos" element={<QuienesSomos />} />
