@@ -1,7 +1,9 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { persistStore, persistReducer } from 'redux-persist'
+import axios from 'axios'
 import authReducer from './authSlice'
 import librosReducer from './librosSlice'
+import autoresReducer from './autoresSlice'
 
 // Adaptador de storage por incompatibilidad de redux-persist con Vite
 const storage = {
@@ -18,8 +20,9 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
-  auth: authReducer,
-  libros: librosReducer,
+  auth:    authReducer,
+  libros:  librosReducer,
+  autores: autoresReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -36,3 +39,12 @@ export const store = configureStore({
 })
 
 export const persistor = persistStore(store)
+
+// Interceptor global que inyecta el token JWT en todos los requests de axios automáticamente
+axios.interceptors.request.use((config) => {
+  const token = store.getState().auth.token
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
