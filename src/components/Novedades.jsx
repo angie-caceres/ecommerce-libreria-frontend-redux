@@ -10,12 +10,11 @@ function Novedades() {
   const dispatch = useDispatch()
 
   // useSelector — lee todos los libros del store global
-  const { items, loading, error } = useSelector((state) => state.libros)
+  const { items, loading, error, status } = useSelector((state) => state.libros)
 
-  // Solo hace fetch si el store todavía no tiene datos
   useEffect(() => {
-    if (items.length === 0) dispatch(fetchLibros())
-  }, [dispatch, items.length])
+    if (status === 'idle') dispatch(fetchLibros())
+  }, [dispatch, status])
 
   // Toma los primeros 4 para mostrar como novedades
   const novedades = items.slice(0, 4).map(libro => ({

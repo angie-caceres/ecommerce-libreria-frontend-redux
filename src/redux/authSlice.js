@@ -24,11 +24,8 @@ export const loginUsuario = createAsyncThunk('auth/login', async (credenciales) 
 })
 
 // Thunk 2: actualizar perfil — PATCH /usuarios/me
-export const actualizarPerfil = createAsyncThunk('auth/actualizarPerfil', async (datosActualizados, { getState }) => {
-  const token = getState().auth.token
-  const { data } = await axios.patch(`${BASE_URL}/usuarios/me`, datosActualizados, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
+export const actualizarPerfil = createAsyncThunk('auth/actualizarPerfil', async (datosActualizados) => {
+  const { data } = await axios.patch(`${BASE_URL}/usuarios/me`, datosActualizados)
   return data
 })
 
