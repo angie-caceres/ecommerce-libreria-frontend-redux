@@ -1,5 +1,5 @@
-// VISTA — gestión de editoriales del panel admin
 import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Pencil, Trash2 } from 'lucide-react'
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
@@ -7,7 +7,12 @@ import Pagination from "../../components/Pagination"
 import ModalFormulario from "../../components/ModalFormulario"
 import ModalConfirmacion from "../../components/ModalConfirmacion"
 import EncabezadoSeccion from "../../components/EncabezadoSeccion"
-import { apiFetch } from '../../services/api'
+import {
+  fetchEditoriales,
+  createEditorial,
+  updateEditorial,
+  deleteEditorial
+} from '../../redux/editorialesSlice'
 
 const POR_PAGINA = 9
 
@@ -15,43 +20,19 @@ const inputClass =
   "w-full border border-purple-400 rounded-lg px-3 py-2 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-purple-100"
 
 function GestionEditoriales() {
-  const token =
-    localStorage.getItem("jwtToken") ||
-    localStorage.getItem("token")
+  const dispatch = useDispatch()
+  const { items: lista, loading: cargando, error } = useSelector((state) => state.editoriales)
+  const token = useSelector((state) => state.auth.token)
 
-  const [lista, setLista] = useState([])
   const [pagina, setPagina] = useState(1)
   const [modal, setModal] = useState(null)
   const [editItem, setEditItem] = useState(null)
   const [nombre, setNombre] = useState('')
   const [deleteId, setDeleteId] = useState(null)
-  const [cargando, setCargando] = useState(false)
-  const [error, setError] = useState(null)
-
-  const cargarEditoriales = async () => {
-    setCargando(true)
-    setError(null)
-
-    try {
-      const data = await apiFetch('/editoriales', token)
-
-      const datosFormateados = data.map(e => ({
-        id: e.id || e.idEditorial,
-        nombre: e.nombre
-      }))
-
-      setLista(datosFormateados)
-    } catch (err) {
-      setError('No se pudieron cargar las editoriales desde el servidor.')
-      console.error(err)
-    } finally {
-      setCargando(false)
-    }
-  }
 
   useEffect(() => {
-    cargarEditoriales()
-  }, [])
+    dispatch(fetchEditoriales())
+  }, [dispatch])
 
   const totalPaginas = Math.ceil(lista.length / POR_PAGINA)
   const paginados = lista.slice(
@@ -76,54 +57,23 @@ function GestionEditoriales() {
     setDeleteId(null)
   }
 
-  const handleAceptar = async () => {
+  const handleAceptar = () => {
     if (!nombre.trim()) return
 
-    setCargando(true)
-
-    try {
-      const payload = {
-        nombre: nombre.trim()
-      }
-
-      if (modal === 'editar' && editItem) {
-        await apiFetch(`/editoriales/${editItem.id}`, token, {
-          method: 'PATCH',
-          body: JSON.stringify(payload)
-        })
-      } else {
-        await apiFetch('/editoriales', token, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        })
-      }
-
-      cerrarModal()
-      cargarEditoriales()
-    } catch (err) {
-      alert(err.message || 'Error al procesar la solicitud en el servidor.')
-    } finally {
-      setCargando(false)
+    if (modal === 'editar' && editItem) {
+      dispatch(updateEditorial({ id: editItem.id, nombre: nombre.trim() }))
+    } else {
+      dispatch(createEditorial(nombre.trim()))
     }
+
+    cerrarModal()
   }
 
-  const handleEliminar = async () => {
+  const handleEliminar = () => {
     if (!deleteId) return
 
-    setCargando(true)
-
-    try {
-      await apiFetch(`/editoriales/${deleteId}`, token, {
-        method: 'DELETE'
-      })
-
-      cerrarModal()
-      cargarEditoriales()
-    } catch (err) {
-      alert('No se pudo eliminar la editorial. Verificá si no tiene libros asociados.')
-    } finally {
-      setCargando(false)
-    }
+    dispatch(deleteEditorial(deleteId))
+    cerrarModal()
   }
 
   return (
@@ -166,7 +116,7 @@ function GestionEditoriales() {
                   {cargando && lista.length === 0 && (
                     <tr>
                       <td
-                        colSpan={4}
+                        colSpan={3}
                         className="px-6 py-16 text-center text-gray-400 text-sm animate-pulse"
                       >
                         Cargando editoriales desde MySQL...
