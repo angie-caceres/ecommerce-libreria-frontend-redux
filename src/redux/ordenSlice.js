@@ -36,14 +36,6 @@ export const fetchPedidos = createAsyncThunk(
   }
 );
 
-export const cancelarPedido = createAsyncThunk(
-  "orden/cancelarPedido",
-  async (idOrden) => {
-    await axios.patch(`${BASE_URL}/ordenes/${idOrden}/cancelar`);
-    return idOrden;
-  }
-);
-
 const ordenSlice = createSlice({
   name: "orden",
   initialState: {
@@ -116,23 +108,6 @@ const ordenSlice = createSlice({
         state.statusAdmin = "failed";
         state.error = action.error.message;
       })
-
-      // cancelarPedido — no toca statusAdmin
-      .addCase(cancelarPedido.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(cancelarPedido.fulfilled, (state, action) => {
-        state.loading = false;
-        const pedido = state.todos.find((p) => p.idOrden === action.payload);
-        if (pedido) {
-          pedido.estado = "CANCELADA";
-        }
-      })
-      .addCase(cancelarPedido.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      });
   },
 });
 

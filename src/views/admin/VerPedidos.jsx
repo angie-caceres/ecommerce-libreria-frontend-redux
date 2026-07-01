@@ -4,11 +4,9 @@ import { useDispatch, useSelector } from "react-redux"
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
 import Pagination from "../../components/Pagination"
-import FiltrosBotones from "../../components/FiltrosBotones"
 import EncabezadoSeccion from "../../components/EncabezadoSeccion"
-import Swal from "sweetalert2";
 
-import {fetchPedidos, cancelarPedido} from "../../redux/ordenSlice"
+import {fetchPedidos} from "../../redux/ordenSlice"
 
 const ITEMS_POR_PAGINA = 15
 const AVATAR_COLORS = ["#CBAAE9"]
@@ -27,54 +25,14 @@ export default function VerPedidos() {
   } = useSelector(state => state.orden)
 
   const [currentPage, setCurrentPage] = useState(1)
-  const [filtroEstado, setFiltroEstado] = useState("TODOS")
-  
-  const cancelarOrden = async (idOrden) => {
-    const resultado = await Swal.fire({
-      title: "¿Cancelar compra?",
-      text: "¿Estás seguro de que querés cancelar esta compra?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, cancelar",
-      cancelButtonText: "No, volver",
-      confirmButtonColor: "#7B5B99",
-      cancelButtonColor: "#aaa",
-    })
-
-    if (!resultado.isConfirmed) return
-
-    const action = await dispatch(cancelarPedido(idOrden))
-
-    if (cancelarPedido.fulfilled.match(action)) {
-      Swal.fire({
-        title: "Cancelada",
-        text: "La compra fue cancelada correctamente",
-        icon: "success",
-        confirmButtonText: "OK",
-        confirmButtonColor: "#7B5B99",
-      })
-    } else {
-      Swal.fire({
-        title: "Error",
-        text: action.error?.message || "No se pudo cancelar la compra.",
-        icon: "error",
-        confirmButtonColor: "#7B5B99",
-      })
-    }
-  }
 
   useEffect(() => {
     if (statusAdmin === 'idle') dispatch(fetchPedidos())
   }, [dispatch, statusAdmin])
 
-  const pedidosFiltrados = pedidos.filter(p =>
-    filtroEstado === "TODOS" || p.estado === filtroEstado
-  )
+  const pedidosFiltrados = pedidos
   const totalPages = Math.max(1, Math.ceil(pedidosFiltrados.length / ITEMS_POR_PAGINA))
   const pedidosPagina = pedidosFiltrados.slice((currentPage - 1) * ITEMS_POR_PAGINA, currentPage * ITEMS_POR_PAGINA)
-
-  const handleFiltro = (estado) => { setFiltroEstado(estado); setCurrentPage(1) }
-
 
   return (
     <div className="min-h-screen bg-[#f7f4ef] font-serif">
@@ -88,21 +46,12 @@ export default function VerPedidos() {
           <EncabezadoSeccion titulo="Todos los pedidos" />
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-gray-100">
-              {/* COMPONENTE reutilizable — botones de filtro
-  */}
-              <FiltrosBotones
-                opciones={["TODOS", "CONFIRMADA", "CANCELADA"]}
-                activo={filtroEstado}
-                onChange={handleFiltro}
-              />
-            </div>
 
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    {["ID", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO", "ACCIONES"].map(h => (
+                    {["ID", "CLIENTE", "PRODUCTOS", "TOTAL", "ESTADO"].map(h => (
                       <th key={h} className="text-left text-xs font-bold text-gray-400 uppercase tracking-wider px-6 py-3.5">{h}</th>
                     ))}
                   </tr>
@@ -112,7 +61,7 @@ export default function VerPedidos() {
                   {loading && pedidos.length === 0 && (
                     <tr>
                       <td
-                        colSpan={6}
+                        colSpan={5}
                         className="px-6 py-16 text-center text-gray-400 text-sm animate-pulse"
                       >
                         Cargando pedidos...
@@ -168,35 +117,16 @@ export default function VerPedidos() {
                             {pedido.total}
                           </p>
                         </td>
-
                         <td className="px-6 py-4">
-                          <span
-                            className={`text-xs font-bold tracking-wide ${
-                              pedido.estado === "CONFIRMADA"
-                                ? "text-emerald-600"
-                                : pedido.estado === "CANCELADA"
-                                ? "text-red-500"
-                                : "text-amber-500"
-                            }`}
-                          >
-                            {pedido.estado}
+                          <span className="text-xs font-bold tracking-wide text-emerald-600">
+                            {pedido.estado || "CONFIRMADA"}
                           </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          {pedido.estado === "CONFIRMADA" && (
-                            <button
-                              onClick={() => cancelarOrden(pedido.idOrden)}
-                              className="text-xs font-bold text-red-500 hover:text-red-700"
-                            >
-                              Cancelar
-                            </button>
-                          )}
                         </td>
                       </tr>
                     )
                   })}
                   {pedidosPagina.length === 0 && (
-                    <tr><td colSpan={6} className="px-6 py-16 text-center text-gray-400 text-sm">No se encontraron pedidos.</td></tr>
+                    <tr><td colSpan={5} className="px-6 py-16 text-center text-gray-400 text-sm">No se encontraron pedidos.</td></tr>
                   )}
                 </tbody>
               </table>
