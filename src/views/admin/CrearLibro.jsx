@@ -63,16 +63,22 @@ export default function CrearLibro() {
 
   const {
     loading: cargando,
-    error,
+    error, 
   } = useSelector((state) => state.libros);
+
+  const { status: autoresStatus } = useSelector((state) => state.autores);
 
   useEffect(() => {
     dispatch(fetchGeneros());
     dispatch(fetchEditoriales());
-    dispatch(fetchAutores());
+
+    if(autoresStatus === 'idle') {
+      dispatch(fetchAutores())
+    }
+
     dispatch(fetchImagenes());
     dispatch(fetchDescuentos(1));
-  }, [dispatch]);
+  }, [dispatch, autoresStatus]);
 
   const descuentosActivos = descuentos.filter((d) => d.activo);
 

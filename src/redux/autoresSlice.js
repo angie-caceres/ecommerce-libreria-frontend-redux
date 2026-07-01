@@ -49,6 +49,7 @@ const autoresSlice = createSlice({
     items:   [],
     loading: false,
     error:   null,
+    status: "idle",
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -56,13 +57,16 @@ const autoresSlice = createSlice({
       .addCase(fetchAutores.pending, (state) => {
         state.loading = true
         state.error = null
+        state.status = "loading"
       })
       .addCase(fetchAutores.fulfilled, (state, action) => {
         state.loading = false
+        state.status = "succeeded"
         state.items = action.payload
       })
       .addCase(fetchAutores.rejected, (state, action) => {
         state.loading = false
+        state.status = "failed"
         state.error = action.error.message
       })
 

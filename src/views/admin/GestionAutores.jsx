@@ -16,7 +16,7 @@ const inputClass = "w-full border border-purple-400 rounded-lg px-3 py-2 text-sm
 function GestionAutores() {
   const dispatch = useDispatch()
 
-  const { items: lista, loading: cargando, error } = useSelector(state => state.autores) //store de redux
+  const { items: lista, loading: cargando, error, status, } = useSelector(state => state.autores) //store de redux
 
   // HOOK useState — estados locales del componente
   const [pagina, setPagina]           = useState(1)
@@ -30,8 +30,10 @@ function GestionAutores() {
  
   // useEffect, carga la lista de autores desde el backend al montar el componente
   useEffect(() => {
-    dispatch(fetchAutores())
-  }, [dispatch])
+    if (status === "idle") {
+      dispatch(fetchAutores())
+    }
+  }, [dispatch, status])
 
   // Paginación
   const totalPaginas = Math.ceil(lista.length / POR_PAGINA)
