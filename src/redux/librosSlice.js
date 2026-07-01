@@ -198,13 +198,16 @@ const librosSlice = createSlice({
         state.loading = true
         state.error = null
         state.libroActual = null
+        state.statusAdmin = 'loading'
       })
       .addCase(fetchLibroByIdAdmin.fulfilled, (state, action) => {
         state.loading = false
+        state.statusAdmin = 'succeeded'
         state.libroActual = action.payload
       })
       .addCase(fetchLibroByIdAdmin.rejected, (state, action) => {
         state.loading = false
+        state.statusAdmin = 'failed'
         state.error = action.error.message
       })
 

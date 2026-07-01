@@ -6,7 +6,7 @@ import Sidebar from "../../components/Sidebar";
 import { BookOpen, Users } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux"
 
-import { fetchLibros } from "../../redux/librosSlice"
+import { fetchLibrosAdmin } from "../../redux/librosSlice"
 import { fetchUsuarios } from "../../redux/usuariosSlice"
 import { fetchPedidos } from "../../redux/ordenSlice"
 
@@ -150,26 +150,37 @@ export default function AdminDashboard() {
   const dispatch = useDispatch()
 
   const {
-      items: libros,
-      loading: loadingLibros
+      itemsAdmin: libros,
+      loading: loadingLibros, 
+      statusAdmin: statusLibros
   } = useSelector(state => state.libros)
 
   const {
       items: usuarios,
-      loading: loadingUsuarios
+      loading: loadingUsuarios,
+      status: statusUsuarios
   } = useSelector(state => state.usuarios)
 
   const {
       todos: pedidos,
-      loading: loadingPedidos
+      loading: loadingPedidos,
+      statusAdmin: statusPedidos
   } = useSelector(state => state.orden)
 
   
   useEffect(() => {
-      dispatch(fetchLibros())
-      dispatch(fetchUsuarios())
-      dispatch(fetchPedidos())
-  }, [dispatch])
+      if (statusLibros === "idle") {
+          dispatch(fetchLibrosAdmin())
+      }
+     
+      if (statusUsuarios === "idle") {
+          dispatch(fetchUsuarios())
+      }
+
+      if (statusPedidos === "idle") {
+          dispatch(fetchPedidos())
+      }
+  }, [dispatch, statusLibros, statusUsuarios, statusPedidos])
 
   const loading =
     loadingLibros ||
