@@ -1,36 +1,34 @@
 // COMPONENTE reutilizable — muestra el detalle de cualquier libro
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import Alerta from './Alerta'
 import { calcularPrecioFinal } from '../utils/calcularPrecio'
-import { apiFetch } from '../services/api'
+import { agregarItemCarrito } from '../redux/carritoSlice'
 
 // PROPS — recibe los datos del libro y la función del carrito desde el padre
-function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar, token }) {
+function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
 
-  // HOOK useState — controla si se muestra el mensaje de éxito
+  const dispatch = useDispatch()
+
+  // HOOK useState — UI local: éxito y error del intento de agregar al carrito
   const [agregado, setAgregado] = useState(false)
-  const [error, setError] = useState(null)
+  const [error, setError]       = useState(null)
 
   const precioFinal = calcularPrecioFinal(libro.precioOriginal, libro.descuento)
 
   // EVENTO — agrega el libro al carrito del backend
   const handleAgregar = async () => {
-    try {
-      await apiFetch('/carrito/items', token, {
-        method: 'POST',
-        body: JSON.stringify({
-          libroId: libro.id,
-          cantidad: 1
-        })
-      })
-      // Actualiza el badge del Navbar
+    setError(null)
+    const resultado = await dispatch(agregarItemCarrito({ libroId: libro.id, cantidad: 1 }))
+
+    if (agregarItemCarrito.fulfilled.match(resultado)) {
       agregarAlCarrito({ ...libro, precio: precioFinal })
       setAgregado(true)
-    } catch (err) {
-      setError(err.message)
+    } else {
+      setError(resultado.error.message)
     }
   }
- 
+
   return (
     <div className="flex gap-16 max-w-5xl mx-auto">
 

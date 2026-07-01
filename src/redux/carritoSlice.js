@@ -13,6 +13,14 @@ const formatearItem = (item) => ({
   subtotal: item.subtotal,
 });
 
+export const agregarItemCarrito = createAsyncThunk(
+  "carrito/agregarItem",
+  async ({ libroId, cantidad }) => {
+    const { data } = await axios.post(`${BASE_URL}/carrito/items`, { libroId, cantidad })
+    return data
+  }
+)
+
 export const fetchCarrito = createAsyncThunk(
   "carrito/fetchCarrito",
   async () => {
@@ -68,6 +76,7 @@ const carritoSlice = createSlice({
     items: [],
     loading: false,
     error: null,
+    status: "idle",
     aviso: null,
     ordenConfirmada: null,
     itemsConfirmados: [],
@@ -82,13 +91,16 @@ const carritoSlice = createSlice({
       .addCase(fetchCarrito.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.status = "loading";
       })
       .addCase(fetchCarrito.fulfilled, (state, action) => {
         state.loading = false;
+        state.status = "succeeded";
         state.items = action.payload;
       })
       .addCase(fetchCarrito.rejected, (state) => {
         state.loading = false;
+        state.status = "failed";
         state.error = "No se pudo cargar el carrito.";
       })
 
@@ -138,15 +150,18 @@ const carritoSlice = createSlice({
       .addCase(confirmarCompra.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.status = "loading";
       })
       .addCase(confirmarCompra.fulfilled, (state, action) => {
         state.loading = false;
+        state.status = "succeeded";
         state.ordenConfirmada = action.payload;
         state.itemsConfirmados = state.items;
         state.items = [];
       })
       .addCase(confirmarCompra.rejected, (state, action) => {
         state.loading = false;
+        state.status = "failed";
         state.error = action.error.message || "No se pudo confirmar la compra.";
       });
   },

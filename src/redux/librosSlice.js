@@ -3,40 +3,77 @@ import axios from 'axios'
 
 const BASE_URL = 'http://localhost:4002'
 
-export const fetchLibros = createAsyncThunk('libros/fetchAll', async () => {
-  const { data } = await axios.get(`${BASE_URL}/libros`)
-  return data
-})
+export const fetchLibros = createAsyncThunk(
+  'libros/fetchAll',
+  async () => {
+    const { data } = await axios.get(`${BASE_URL}/libros`)
+    return data
+  }
+)
 
-export const fetchLibroById = createAsyncThunk('libros/fetchById', async (id) => {
-  const { data } = await axios.get(`${BASE_URL}/libros/${id}`)
-  return data
-})
+export const fetchLibroById = createAsyncThunk(
+  'libros/fetchById',
+  async (id) => {
+    const { data } = await axios.get(`${BASE_URL}/libros/${id}`)
+    return data
+  }
+)
+
+export const crearLibro = createAsyncThunk(
+  'libros/crear',
+  async (libroBody) => {
+    const { data } = await axios.post(
+      `${BASE_URL}/libros`,
+      libroBody
+    )
+    return data
+  }
+)
+
+export const asignarImagenLibro = createAsyncThunk(
+  'libros/asignarImagen',
+  async ({ idLibro, imagenId }) => {
+    await axios.patch(
+      `${BASE_URL}/libros/${idLibro}/imagen/${imagenId}`
+    )
+
+    return { idLibro, imagenId }
+  }
+)
 
 const librosSlice = createSlice({
   name: 'libros',
+
   initialState: {
     items: [],
     libroActual: null,
     loading: false,
     error: null,
+    status: 'idle', // idle | loading | succeeded | failed
   },
+
   reducers: {},
+
   extraReducers: (builder) => {
     builder
+      // FETCH LIBROS
       .addCase(fetchLibros.pending, (state) => {
         state.loading = true
         state.error = null
+        state.status = 'loading'
       })
       .addCase(fetchLibros.fulfilled, (state, action) => {
         state.loading = false
+        state.status = 'succeeded'
         state.items = action.payload
       })
       .addCase(fetchLibros.rejected, (state, action) => {
         state.loading = false
+        state.status = 'failed'
         state.error = action.error.message
       })
 
+      // FETCH LIBRO POR ID — no toca status para no interferir con el idle check de fetchLibros
       .addCase(fetchLibroById.pending, (state) => {
         state.loading = true
         state.error = null
@@ -47,6 +84,33 @@ const librosSlice = createSlice({
         state.libroActual = action.payload
       })
       .addCase(fetchLibroById.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+
+      // CREAR LIBRO — no toca status
+      .addCase(crearLibro.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(crearLibro.fulfilled, (state, action) => {
+        state.loading = false
+        state.items.push(action.payload)
+      })
+      .addCase(crearLibro.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+
+      // ASIGNAR IMAGEN — no toca status
+      .addCase(asignarImagenLibro.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(asignarImagenLibro.fulfilled, (state) => {
+        state.loading = false
+      })
+      .addCase(asignarImagenLibro.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message
       })
