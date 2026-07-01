@@ -1,62 +1,132 @@
 # TPO — Librería Online
 
-Aplicación web de e-commerce para una librería. Permite a los usuarios explorar el catálogo de libros, agregar productos al carrito y realizar compras. Incluye un panel de administración para gestionar libros, autores, géneros, editoriales, descuentos, imágenes, usuarios y pedidos.
+Aplicación web de e-commerce para una librería desarrollada con React. Permite a los usuarios explorar el catálogo de libros, agregar productos al carrito y realizar compras. Además, incluye un panel de administración para gestionar libros, autores, géneros, editoriales, descuentos, imágenes, usuarios y pedidos.
 
-## Tecnologías
+## Tecnologías utilizadas
 
-- **React 19** con React Router DOM v6
-- **Vite** como bundler
-- **Tailwind CSS v4** para estilos
-- **Recharts** para gráficos en el dashboard admin
-- **SweetAlert2** y **React Toastify** para notificaciones
+### Frontend
+
+- React 19
+- React Router DOM v6
+- Redux Toolkit
+- Redux Persist
+- Axios
+- Vite
+- Tailwind CSS v4
+- Recharts
+- SweetAlert2
+- React Toastify
+- Lucide React
+
+### Arquitectura
+
+El proyecto implementa una arquitectura basada en:
+
+- Componentes reutilizables.
+- Gestión de estado global mediante Redux Toolkit.
+- Slices independientes por dominio (`libros`, `usuarios`, `ordenes`, `carrito`, `autores`, `géneros`, `editoriales`, `descuentos`, `imágenes` y `auth`).
+- Comunicación con la API REST utilizando Axios.
+- Persistencia de la sesión del usuario mediante Redux Persist.
+- Interceptores de Axios para el envío automático del token JWT y el manejo centralizado de errores.
+
+## Funcionalidades principales
+
+### Usuario
+
+- Registro e inicio de sesión.
+- Exploración del catálogo.
+- Búsqueda y filtrado de libros.
+- Visualización del detalle de un libro.
+- Gestión del carrito de compras.
+- Confirmación de pedidos.
+- Consulta del historial de compras.
+- Edición del perfil.
+
+### Administrador
+
+- Dashboard con estadísticas.
+- Gestión de libros.
+- Gestión de autores.
+- Gestión de géneros.
+- Gestión de editoriales.
+- Gestión de descuentos.
+- Gestión de imágenes.
+- Gestión de usuarios.
+- Gestión de pedidos.
 
 ## Credenciales de prueba
 
 | Rol | Email | Contraseña |
-|-----|-------|------------|
+|------|-------|------------|
 | Administrador | administrator@gmail.com | admin123 |
 | Usuario | juan@gmail.com | juan123 |
 
 ## Requisitos
 
-- Node.js >= 18
-- npm >= 9
+- Node.js 18 o superior
+- npm 9 o superior
 
-## Instalación y ejecución
+## Instalación
 
 ```bash
-# 1. Ingresar a la carpeta del cliente
+# Clonar el repositorio
+
+# Ingresar al proyecto
 cd Client
 
-# 2. Instalar dependencias
+# Instalar dependencias
 npm install
 
-# 3. Iniciar el servidor de desarrollo
+# Ejecutar la aplicación
 npm run dev
 ```
 
-La aplicación quedará disponible en `http://localhost:5173`.
+La aplicación estará disponible en:
 
-## Script
+```
+http://localhost:5173
+```
+
+## Scripts
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run dev` | Inicia el servidor de desarrollo |
+| npm run dev | Inicia el servidor de desarrollo |
+| npm run build | Genera la versión de producción |
+| npm run preview | Ejecuta la versión compilada |
+| npm run lint | Ejecuta ESLint |
 
--------------------------------------------------------------
-# React + Vite
+## Estado global (Redux)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+La aplicación utiliza Redux Toolkit para centralizar el estado mediante los siguientes slices:
 
-Currently, two official plugins are available:
+- `authSlice`
+- `librosSlice`
+- `usuariosSlice`
+- `ordenSlice`
+- `carritoSlice`
+- `autoresSlice`
+- `generosSlice`
+- `editorialesSlice`
+- `descuentosSlice`
+- `imagenesSlice`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Cada slice encapsula:
 
-## React Compiler
+- Estado.
+- Reducers.
+- Async Thunks para comunicación con la API.
+- Manejo de carga y errores.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## API
 
-## Expanding the ESLint configuration
+El frontend consume una API REST desarrollada en Spring Boot.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Las solicitudes HTTP se realizan mediante Axios y utilizan interceptores para:
+
+- agregar automáticamente el token JWT en cada petición autenticada;
+- centralizar el manejo de errores provenientes del backend.
+
+## Autores
+
+Trabajo Práctico Obligatorio — Desarrollo de Software.
