@@ -19,7 +19,7 @@ const inputClass =
 function GestionGeneros() {
   const dispatch = useDispatch()
 
-  const { items: lista, loading: cargando, error } = useSelector(state => state.generos) //Store de Redux
+  const { items: lista, loading: cargando, error, status } = useSelector(state => state.generos) //Store de Redux
 
   // Estados locales UI
   const [pagina, setPagina]       = useState(1)
@@ -31,8 +31,10 @@ function GestionGeneros() {
 
   // useEffect, carga la lista de géneros desde el backend al montar el componente
   useEffect(() => {
-    dispatch(fetchGeneros())
-  }, [dispatch])
+    if(status === 'idle'){
+      dispatch(fetchGeneros())
+    }
+  }, [dispatch, status])
 
   // Paginación
   const totalPaginas = Math.ceil(lista.length / POR_PAGINA)

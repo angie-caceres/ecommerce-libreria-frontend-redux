@@ -68,9 +68,13 @@ export default function CrearLibro() {
 
   const { status: autoresStatus } = useSelector((state) => state.autores);
   const { status: editorialesStatus } = useSelector((state) => state.editoriales);
+  const { status: generosStatus } = useSelector((state) => state.generos);
 
   useEffect(() => {
-    dispatch(fetchGeneros());
+    if(generosStatus === 'idle') {
+      dispatch(fetchGeneros())
+    }
+
     if(editorialesStatus === 'idle') {
       dispatch(fetchEditoriales())
     }
