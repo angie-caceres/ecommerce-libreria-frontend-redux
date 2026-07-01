@@ -62,36 +62,30 @@ const descuentosSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(crearDescuento.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.status = "loading";
-      })
-      .addCase(crearDescuento.fulfilled, (state) => {
-        state.loading = false;
-        state.status = "succeeded";
-      })
-      .addCase(crearDescuento.rejected, (state) => {
-        state.loading = false;
-        state.error = "No se pudo crear el descuento.";
-        state.status = "failed";
-      })
+  builder
+    .addCase(fetchDescuentos.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.status = "loading";
+    })
+    .addCase(fetchDescuentos.fulfilled, (state, action) => {
+      state.loading = false;
+      state.status = "succeeded";
+      state.lista = action.payload.lista;
+      state.totalPaginas = action.payload.totalPaginas;
+      state.totalItems = action.payload.totalItems;
+    })
+    .addCase(fetchDescuentos.rejected, (state) => {
+      state.loading = false;
+      state.error = "No se pudieron cargar los descuentos.";
+      state.status = "failed";
+    })
 
-      .addCase(toggleDescuento.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.status = "loading";
-      })
-      .addCase(toggleDescuento.fulfilled, (state) => {
-        state.loading = false;
-        state.status = "succeeded";
-      })
-      .addCase(toggleDescuento.rejected, (state) => {
-        state.loading = false;
-        state.error = "Error al cambiar estado del descuento.";
-        state.status = "failed";
-      });
+    .addCase(crearDescuento.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.status = "loading";
+    })
   },
 });
 

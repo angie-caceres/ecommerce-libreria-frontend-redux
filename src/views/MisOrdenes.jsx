@@ -9,11 +9,11 @@ function MisOrdenes() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { ordenes, loading, error } = useSelector((state) => state.misOrdenes);
+  const { ordenes, loading, error, status } = useSelector((state) => state.misOrdenes);
 
   useEffect(() => {
-    dispatch(obtenerMisOrdenes());
-  }, [dispatch]);
+    if (status === 'idle') dispatch(obtenerMisOrdenes())
+  }, [dispatch, status]);
 
   return (
     <main className="bg-[#FCF9F8] px-4 py-10">

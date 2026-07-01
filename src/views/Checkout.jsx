@@ -9,7 +9,7 @@ function Checkout({ vaciarCarrito }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { items, loading: cargando } = useSelector((state) => state.carrito);
+  const { items, loading: cargando, status } = useSelector((state) => state.carrito);
 
   const [metodoPago, setMetodoPago] = useState("tarjeta");
   const [errorPago, setErrorPago] = useState("");
@@ -30,8 +30,8 @@ function Checkout({ vaciarCarrito }) {
   });
 
   useEffect(() => {
-    dispatch(fetchCarrito());
-  }, [dispatch]);
+    if (status === 'idle') dispatch(fetchCarrito())
+  }, [dispatch, status]);
 
   const handleGuardarDireccion = () => {
     setDireccion(direccionTemp);
