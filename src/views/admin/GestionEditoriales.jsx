@@ -21,7 +21,7 @@ const inputClass =
 
 function GestionEditoriales() {
   const dispatch = useDispatch()
-  const { items: lista, loading: cargando, error } = useSelector((state) => state.editoriales)
+  const { items: lista, loading: cargando, error, status} = useSelector((state) => state.editoriales)
   const token = useSelector((state) => state.auth.token)
 
   const [pagina, setPagina] = useState(1)
@@ -31,8 +31,10 @@ function GestionEditoriales() {
   const [deleteId, setDeleteId] = useState(null)
 
   useEffect(() => {
-    dispatch(fetchEditoriales())
-  }, [dispatch])
+    if(status === 'idle'){
+      dispatch(fetchEditoriales())
+    }
+  }, [dispatch, status])
 
   const totalPaginas = Math.ceil(lista.length / POR_PAGINA)
   const paginados = lista.slice(
