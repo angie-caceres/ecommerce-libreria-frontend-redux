@@ -60,3 +60,16 @@ axios.interceptors.request.use((config) => {
   }
   return config
 })
+
+// Interceptor de respuesta — extrae el mensaje real del backend en los errores
+// Equivalente a lo que hacía apiFetch: leer response.json() y sacar .message
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const mensaje =
+      error.response?.data?.message ||
+      (typeof error.response?.data === 'string' ? error.response.data : null) ||
+      error.message
+    return Promise.reject(new Error(mensaje))
+  }
+)

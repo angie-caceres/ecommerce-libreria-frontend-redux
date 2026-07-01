@@ -102,14 +102,12 @@ function App() {
 
         <Route path="/" element={<Home />} />
 
-        {/* DetalleLibro recibe agregarAlCarrito y token como props */}
         <Route
           path="/libro/:id"
           element={
             <DetalleLibro
               agregarAlCarrito={agregarAlCarrito}
               puedeComprar={usuario?.rol === 'usuario'}
-              token={token}
             />
           }
         />

@@ -13,6 +13,14 @@ const formatearItem = (item) => ({
   subtotal: item.subtotal,
 });
 
+export const agregarItemCarrito = createAsyncThunk(
+  "carrito/agregarItem",
+  async ({ libroId, cantidad }) => {
+    const { data } = await axios.post(`${BASE_URL}/carrito/items`, { libroId, cantidad })
+    return data
+  }
+)
+
 export const fetchCarrito = createAsyncThunk(
   "carrito/fetchCarrito",
   async () => {
