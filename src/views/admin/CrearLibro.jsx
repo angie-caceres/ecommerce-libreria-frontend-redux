@@ -69,6 +69,7 @@ export default function CrearLibro() {
   const { status: autoresStatus } = useSelector((state) => state.autores);
   const { status: editorialesStatus } = useSelector((state) => state.editoriales);
   const { status: generosStatus } = useSelector((state) => state.generos);
+  const { status: descuentosStatus } = useSelector((state) => state.descuentos);
 
   useEffect(() => {
     if(generosStatus === 'idle') {
@@ -84,8 +85,10 @@ export default function CrearLibro() {
     }
 
     dispatch(fetchImagenes());
-    dispatch(fetchDescuentos(1));
-  }, [dispatch, autoresStatus]);
+    if(descuentosStatus === 'idle') {
+      dispatch(fetchDescuentos(1))
+    }
+  }, [dispatch, autoresStatus, editorialesStatus, generosStatus, descuentosStatus]);
 
   const descuentosActivos = descuentos.filter((d) => d.activo);
 

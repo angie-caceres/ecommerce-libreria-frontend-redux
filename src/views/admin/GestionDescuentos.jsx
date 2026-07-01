@@ -25,6 +25,7 @@ function GestionDescuentos() {
     totalItems,
     loading,
     error,
+    status,
   } = useSelector((state) => state.descuentos);
 
   const [pagina, setPagina] = useState(1);
@@ -33,8 +34,10 @@ function GestionDescuentos() {
   const [errorPorcentaje, setErrorPorcentaje] = useState("");
 
   useEffect(() => {
-    dispatch(fetchDescuentos(pagina));
-  }, [dispatch, pagina]);
+    if (status === "idle") {
+      dispatch(fetchDescuentos(pagina));
+    }
+  }, [dispatch, pagina, status]);
 
   const abrirCrear = () => {
     setPorcentaje("");
