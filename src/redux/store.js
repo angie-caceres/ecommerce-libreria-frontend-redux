@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { persistStore, persistReducer } from 'redux-persist'
 import axios from 'axios'
 import authReducer from './authSlice'
+import usuariosReducer from './usuariosSlice'
 import librosReducer from './librosSlice'
 import autoresReducer from './autoresSlice'
 import generosReducer from './generosSlice'
@@ -10,6 +11,8 @@ import misOrdenesReducer from "./misOrdenesSlice";
 import carritoReducer from "./carritoSlice";
 import descuentosReducer from "./descuentosSlice";
 import pedidosReducer from "./pedidosSlice";
+import imagenesReducer from "./imagenesSlice";
+
 
 // Adaptador de storage por incompatibilidad de redux-persist con Vite
 const storage = {
@@ -26,8 +29,9 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
-  auth:    authReducer,
-  libros:  librosReducer,
+  auth:     authReducer,
+  usuarios: usuariosReducer,
+  libros:   librosReducer,
   autores: autoresReducer,
   generos: generosReducer,
   editoriales: editorialesReducer,
@@ -35,7 +39,7 @@ const rootReducer = combineReducers({
   carrito: carritoReducer,
   descuentos: descuentosReducer,
   pedidos: pedidosReducer,
-  
+  imagenes: imagenesReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

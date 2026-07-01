@@ -7,7 +7,7 @@ function Navbar({ carrito, usuario }) {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { items, loading: cargando, error: errorBack } = useSelector((state) => state.libros)
+  const { items, loading: cargando, error: errorBack, status } = useSelector((state) => state.libros)
 
   const navLinks = [
     { label: 'INICIO', to: '/' },
@@ -25,8 +25,8 @@ function Navbar({ carrito, usuario }) {
   const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0)
 
   useEffect(() => {
-    if (items.length === 0) dispatch(fetchLibros())
-  }, [dispatch])
+    if (status === 'idle') dispatch(fetchLibros())
+  }, [dispatch, status])
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)

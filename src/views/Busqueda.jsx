@@ -7,14 +7,14 @@ import { calcularPrecioFinal } from '../utils/calcularPrecio'
 
 function Busqueda() {
   const dispatch = useDispatch()
-  const { items, loading: cargando, error } = useSelector((state) => state.libros)
+  const { items, loading: cargando, error, status } = useSelector((state) => state.libros)
 
   const [searchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
 
   useEffect(() => {
-    if (items.length === 0) dispatch(fetchLibros())
-  }, [dispatch])
+    if (status === 'idle') dispatch(fetchLibros())
+  }, [dispatch, status])
 
   const q = query.toLowerCase()
   const resultados = items.filter(libro =>
