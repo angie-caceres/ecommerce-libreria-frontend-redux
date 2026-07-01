@@ -1,13 +1,13 @@
-// VISTA — gestión de libros del panel admin
 import { useState, useEffect } from 'react'
 import { Pencil } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
 import Pagination from "../../components/Pagination"
 import ModalConfirmacion from "../../components/ModalConfirmacion"
 import EncabezadoSeccion from "../../components/EncabezadoSeccion"
 import { useNavigate } from "react-router-dom"
-import { apiFetch } from "../../services/api"
+import { fetchLibrosAdmin, toggleActivoLibro } from '../../redux/librosSlice'
 
 const PALETA_COLORES = [
   'bg-purple-100 text-purple-700',
@@ -38,53 +38,27 @@ const getColorAutor = (autor) => {
 
 const POR_PAGINA = 9
 
-function GestionLibros({ token }) {
+function GestionLibros() {
+  const navigate  = useNavigate()
+  const dispatch  = useDispatch()
 
-  const navigate = useNavigate()
+  const { itemsAdmin: lista, loading: cargando, error, statusAdmin } = useSelector(state => state.libros)
 
-  const [lista, setLista]       = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError]       = useState(null)
   const [pagina, setPagina]     = useState(1)
   const [toggleId, setToggleId] = useState(null)
 
   useEffect(() => {
-    apiFetch('/libros/todos', token)
-      .then(data => {
-        setLista(data.map(libro => ({
-          id:             libro.idLibro,
-          titulo:         libro.titulo,
-          autor:          libro.autores?.join(', ') || 'Sin autor',
-          genero:         libro.genero,
-          precioOriginal: libro.precio,
-          descuento:      libro.porcentajeDescuento ? `${libro.porcentajeDescuento}%` : '0%',
-          stock:          libro.stock,
-          activo:         !!libro.activo,
-        })))
-      })
-      .catch(() => setError('No se pudieron cargar los libros.'))
-      .finally(() => setCargando(false))
-  }, [token])
+    if (statusAdmin === 'idle') dispatch(fetchLibrosAdmin())
+  }, [dispatch, statusAdmin])
 
-  const totalPaginas    = Math.ceil(lista.length / POR_PAGINA)
-  const paginados       = lista.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
+  const totalPaginas      = Math.ceil(lista.length / POR_PAGINA)
+  const paginados         = lista.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
   const libroSeleccionado = lista.find(l => l.id === toggleId)
 
   const handleToggle = async () => {
     if (!toggleId || !libroSeleccionado) return
-    setError(null)
-    try {
-      if (libroSeleccionado.activo) {
-        await apiFetch(`/libros/${toggleId}`, token, { method: 'DELETE' })
-      } else {
-        await apiFetch(`/libros/${toggleId}/activar`, token, { method: 'PATCH' })
-      }
-      setLista(prev => prev.map(l => l.id === toggleId ? { ...l, activo: !l.activo } : l))
-    } catch {
-      setError(`No se pudo ${libroSeleccionado.activo ? 'desactivar' : 'activar'} el libro.`)
-    } finally {
-      setToggleId(null)
-    }
+    await dispatch(toggleActivoLibro({ id: toggleId, activo: libroSeleccionado.activo }))
+    setToggleId(null)
   }
 
   const getPrecio = (libro) => {

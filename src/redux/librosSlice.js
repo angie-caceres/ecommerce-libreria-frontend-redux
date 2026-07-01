@@ -44,6 +44,35 @@ export const fetchLibroByIdAdmin = createAsyncThunk(
   }
 )
 
+export const fetchLibrosAdmin = createAsyncThunk(
+  'libros/fetchAllAdmin',
+  async () => {
+    const { data } = await axios.get(`${BASE_URL}/libros/todos`)
+    return data.map(libro => ({
+      id:             libro.idLibro,
+      titulo:         libro.titulo,
+      autor:          libro.autores?.join(', ') || 'Sin autor',
+      genero:         libro.genero,
+      precioOriginal: libro.precio,
+      descuento:      libro.porcentajeDescuento ? `${libro.porcentajeDescuento}%` : '0%',
+      stock:          libro.stock,
+      activo:         !!libro.activo,
+    }))
+  }
+)
+
+export const toggleActivoLibro = createAsyncThunk(
+  'libros/toggleActivo',
+  async ({ id, activo }) => {
+    if (activo) {
+      await axios.delete(`${BASE_URL}/libros/${id}`)
+    } else {
+      await axios.patch(`${BASE_URL}/libros/${id}/activar`)
+    }
+    return { id, activo }
+  }
+)
+
 export const editarLibro = createAsyncThunk(
   'libros/editar',
   async ({ id, form, libroOriginal, generos, editoriales }) => {
@@ -93,10 +122,12 @@ const librosSlice = createSlice({
 
   initialState: {
     items: [],
+    itemsAdmin: [],
     libroActual: null,
     loading: false,
     error: null,
     status: 'idle',
+    statusAdmin: 'idle',
   },
 
   reducers: {},
@@ -190,9 +221,36 @@ const librosSlice = createSlice({
         state.error = action.error.message
       })
 
-      // LOGOUT — resetea status para que el catálogo re-fetchee con data fresca
+      // FETCH LIBROS ADMIN — modifica statusAdmin (no status)
+      .addCase(fetchLibrosAdmin.pending, (state) => {
+        state.loading = true
+        state.error = null
+        state.statusAdmin = 'loading'
+      })
+      .addCase(fetchLibrosAdmin.fulfilled, (state, action) => {
+        state.loading = false
+        state.statusAdmin = 'succeeded'
+        state.itemsAdmin = action.payload
+      })
+      .addCase(fetchLibrosAdmin.rejected, (state, action) => {
+        state.loading = false
+        state.statusAdmin = 'failed'
+        state.error = action.error.message
+      })
+
+      // TOGGLE ACTIVO — actualiza el item en itemsAdmin directamente
+      .addCase(toggleActivoLibro.fulfilled, (state, action) => {
+        const libro = state.itemsAdmin.find(l => l.id === action.payload.id)
+        if (libro) libro.activo = !action.payload.activo
+      })
+      .addCase(toggleActivoLibro.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+      // LOGOUT — resetea status y statusAdmin para re-fetchear con data fresca
       .addCase(logout, (state) => {
         state.status = 'idle'
+        state.statusAdmin = 'idle'
       })
   },
 })

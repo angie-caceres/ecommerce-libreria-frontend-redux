@@ -11,6 +11,16 @@ export const fetchImagenes = createAsyncThunk(
   }
 );
 
+export const agregarImagen = createAsyncThunk(
+  "imagenes/agregar",
+  async ({ nombre, archivo }) => {
+    const formData = new FormData()
+    formData.append("name", nombre)
+    formData.append("file", archivo)
+    await axios.post(`${BASE_URL}/imagenes`, formData)
+  }
+)
+
 export const eliminarImagen = createAsyncThunk(
   "imagenes/eliminar",
   async (id) => {
@@ -30,6 +40,7 @@ const imagenesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // FETCH IMAGENES — único que modifica status
       .addCase(fetchImagenes.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -46,22 +57,32 @@ const imagenesSlice = createSlice({
         state.error = "No se pudieron cargar las imágenes.";
       })
 
+      // AGREGAR IMAGEN — resetea status para que el useEffect re-fetchee con la nueva imagen
+      .addCase(agregarImagen.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(agregarImagen.fulfilled, (state) => {
+        state.loading = false;
+        state.status = "idle";
+      })
+      .addCase(agregarImagen.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
+      // ELIMINAR IMAGEN — no toca status
       .addCase(eliminarImagen.pending, (state) => {
         state.loading = true;
-        state.status = "loading";
+        state.error = null;
       })
       .addCase(eliminarImagen.fulfilled, (state, action) => {
         state.loading = false;
-        state.status = "succeeded";
-        state.items = state.items.filter(
-          (imagen) => imagen.id !== action.payload
-        );
+        state.items = state.items.filter((img) => img.id !== action.payload);
       })
       .addCase(eliminarImagen.rejected, (state, action) => {
         state.loading = false;
-        state.status = "failed";
-        state.error =
-          action.error.message || "No se pudo eliminar la imagen.";
+        state.error = action.error.message || "No se pudo eliminar la imagen.";
       })
   },
 });
