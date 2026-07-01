@@ -52,8 +52,10 @@ function App() {
 
   // Fetch del carrito cuando hay token — así el badge se muestra al iniciar sesión
   useEffect(() => {
-    if (token) dispatch(fetchCarrito())
-  }, [token, dispatch])
+    if (token && usuario?.rol === "usuario") {
+      dispatch(fetchCarrito())
+    }
+  }, [token, usuario, dispatch])
 
   const cerrarSesion = () => {
     dispatch(logout())
