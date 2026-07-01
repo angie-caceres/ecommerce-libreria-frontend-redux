@@ -112,7 +112,7 @@ function App() {
         <Route path="/admin/autores" element={usuario?.rol === 'admin' ? <GestionAutores /> : <Navigate to="/login" />} />
         <Route path="/admin/descuentos" element={usuario?.rol === 'admin' ? <GestionDescuentos /> : <Navigate to="/login" />} />
         <Route path="/admin" element={usuario?.rol === 'admin' ? <AdminDashboard /> : <Navigate to="/login" />} />
-        <Route path="/admin/libros" element={usuario?.rol === 'admin' ? <GestionLibros token={token} /> : <Navigate to="/login" />} />
+        <Route path="/admin/libros" element={usuario?.rol === 'admin' ? <GestionLibros /> : <Navigate to="/login" />} />
         <Route path="/admin/libros/crear" element={usuario?.rol === 'admin' ? <CrearLibro token={token} /> : <Navigate to="/login" />} />
         <Route path="/admin/libros/editar/:id" element={usuario?.rol === 'admin' ? <EditarLibro token={token} /> : <Navigate to="/login" />} />
         <Route path="/admin/usuarios" element={usuario?.rol === 'admin' ? <GestionUsuario /> : <Navigate to="/login" />} />

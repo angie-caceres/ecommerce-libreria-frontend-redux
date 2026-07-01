@@ -4,26 +4,20 @@ import { Plus, Trash2 } from "lucide-react";
 import HeaderAdmin from "../../components/HeaderAdmin";
 import Sidebar from "../../components/Sidebar";
 import Swal from "sweetalert2";
-import { fetchImagenes, eliminarImagen } from "../../redux/imagenesSlice";
-import axios from "axios"
+import { fetchImagenes, agregarImagen, eliminarImagen } from "../../redux/imagenesSlice";
 
 export default function GestionImagenes() {
   const dispatch = useDispatch();
 
-  const {
-    items: imagenes,
-    loading,
-    error,
-  } = useSelector((state) => state.imagenes);
+  const { items: imagenes, loading, error, status } = useSelector((state) => state.imagenes);
 
-  const [nombre, setNombre] = useState("");
+  const [nombre, setNombre]   = useState("");
   const [archivo, setArchivo] = useState(null);
   const [mensaje, setMensaje] = useState("");
-  const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchImagenes());
-  }, [dispatch]);
+    if (status === 'idle') dispatch(fetchImagenes());
+  }, [dispatch, status]);
 
   const handleAgregarImagen = async (e) => {
     e.preventDefault()
@@ -33,27 +27,17 @@ export default function GestionImagenes() {
       return
     }
 
-    setCargando(true)
     setMensaje("")
+    const resultado = await dispatch(agregarImagen({ nombre, archivo }))
 
-    try {
-      const formData = new FormData()
-      formData.append("name", nombre)
-      formData.append("file", archivo)
-
-      await axios.post("http://localhost:4002/imagenes", formData)
-
+    if (agregarImagen.fulfilled.match(resultado)) {
       setMensaje("Imagen cargada correctamente en el servidor")
       setNombre("")
       setArchivo(null)
-      dispatch(fetchImagenes())
-    } catch (err) {
-      setMensaje(err.response?.data?.message || err.message || "Error al subir la imagen.")
-    } finally {
-      setCargando(false)
+      setTimeout(() => setMensaje(""), 4000)
+    } else {
+      setMensaje(resultado.error.message || "Error al subir la imagen.")
     }
-
-    setTimeout(() => setMensaje(""), 4000)
   }
 
   const handleEliminar = async (id) => {
@@ -82,10 +66,7 @@ export default function GestionImagenes() {
       });
     } else {
       const mensajeError = respuesta.error?.message || "";
-
-      const estaEnUso = mensajeError
-        .toLowerCase()
-        .includes("asociada a un libro");
+      const estaEnUso = mensajeError.toLowerCase().includes("asociada a un libro");
 
       Swal.fire({
         title: estaEnUso ? "Imagen en uso" : "Error",
@@ -141,18 +122,13 @@ export default function GestionImagenes() {
                 type="text"
                 placeholder="Nombre de la imagen"
                 value={nombre}
-                onChange={(e) => {
-                  setNombre(e.target.value);
-                  setMensaje("");
-                }}
+                onChange={(e) => { setNombre(e.target.value); setMensaje("") }}
                 className="px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 outline-none text-sm"
-                disabled={cargando}
+                disabled={loading}
               />
 
               <label className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-sm cursor-pointer hover:bg-gray-100 transition-colors">
-                <span className="text-gray-400 whitespace-nowrap">
-                  Seleccionar archivo
-                </span>
+                <span className="text-gray-400 whitespace-nowrap">Seleccionar archivo</span>
                 <span className="truncate italic text-gray-700">
                   {archivo ? `"${archivo.name}"` : ""}
                 </span>
@@ -160,28 +136,23 @@ export default function GestionImagenes() {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => {
-                    setArchivo(e.target.files[0] || null);
-                    setMensaje("");
-                  }}
-                  disabled={cargando}
+                  onChange={(e) => { setArchivo(e.target.files[0] || null); setMensaje("") }}
+                  disabled={loading}
                 />
               </label>
 
               <button
                 type="submit"
-                disabled={cargando}
+                disabled={loading}
                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-[#CBAAE9] text-white text-sm font-semibold hover:opacity-90"
               >
                 <Plus size={18} />
-                {cargando ? "Cargando..." : "Cargar imagen"}
+                {loading ? "Cargando..." : "Cargar imagen"}
               </button>
             </form>
 
             {mensaje && (
-              <p className="mt-4 text-sm font-semibold text-[#7b5b99]">
-                {mensaje}
-              </p>
+              <p className="mt-4 text-sm font-semibold text-[#7b5b99]">{mensaje}</p>
             )}
           </div>
 

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { fetchLibros } from "../../redux/librosSlice"
 import { fetchUsuarios } from "../../redux/usuariosSlice"
-import { fetchPedidos } from "../../redux/pedidosSlice"
+import { fetchPedidos } from "../../redux/ordenSlice"
 
 // TARJETA ESTADÍSTICA 
 
@@ -160,9 +160,9 @@ export default function AdminDashboard() {
   } = useSelector(state => state.usuarios)
 
   const {
-      items: pedidos,
+      todos: pedidos,
       loading: loadingPedidos
-  } = useSelector(state => state.pedidos)
+  } = useSelector(state => state.orden)
 
   
   useEffect(() => {

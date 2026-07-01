@@ -3,17 +3,17 @@ import Quote from "../components/Quote";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { obtenerMisOrdenes } from "../redux/misOrdenesSlice";
+import { obtenerMisOrdenes } from "../redux/ordenSlice";
 
 function MisOrdenes() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { ordenes, loading, error, status } = useSelector((state) => state.misOrdenes);
+  const { ordenes, loading, error, statusUsuario } = useSelector((state) => state.orden);
 
   useEffect(() => {
-    if (status === 'idle') dispatch(obtenerMisOrdenes())
-  }, [dispatch, status]);
+    if (statusUsuario === 'idle') dispatch(obtenerMisOrdenes())
+  }, [dispatch, statusUsuario]);
 
   return (
     <main className="bg-[#FCF9F8] px-4 py-10">
