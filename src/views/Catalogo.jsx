@@ -12,7 +12,7 @@ function Catalogo() {
   const dispatch = useDispatch()
 
   // useSelector — lee del store: datos que vienen del backend
-  const { items: libros, loading: cargando, error } = useSelector((state) => state.libros)
+  const { items: libros, loading: cargando, error, status } = useSelector((state) => state.libros)
 
   // useState — filtros: estado local de UI, solo lo usa este componente
   const [precioMax, setPrecioMax]                         = useState(0)
@@ -21,10 +21,9 @@ function Catalogo() {
   const [editorialSeleccionada, setEditorialSeleccionada] = useState('')
   const [generosSeleccionados, setGenerosSeleccionados]   = useState([])
 
-  // useEffect — dispara la acción asíncrona al montar el componente
   useEffect(() => {
-    dispatch(fetchLibros())
-  }, [dispatch])
+    if (status === 'idle') dispatch(fetchLibros())
+  }, [dispatch, status])
 
   // useEffect — actualiza el slider de precio cuando llegan los datos del store
   useEffect(() => {
