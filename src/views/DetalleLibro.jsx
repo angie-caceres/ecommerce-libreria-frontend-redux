@@ -5,7 +5,7 @@ import { useParams, Link } from 'react-router-dom'
 import DetalleLibroCard from '../components/DetalleLibroCard'
 import { fetchLibroById } from '../redux/librosSlice'
 
-function DetalleLibro({ agregarAlCarrito, puedeComprar, token }) {
+function DetalleLibro({ agregarAlCarrito, puedeComprar }) {
 
   const { id } = useParams()
   const dispatch = useDispatch()
@@ -35,7 +35,7 @@ function DetalleLibro({ agregarAlCarrito, puedeComprar, token }) {
     <div className="bg-[#FCF9F8] min-h-screen px-12 py-8">
 
       <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 mb-8 inline-block">
-        ← VOLVER
+        {'← VOLVER'}
       </Link>
 
       {cargando && (
@@ -55,7 +55,6 @@ function DetalleLibro({ agregarAlCarrito, puedeComprar, token }) {
           libro={libro}
           agregarAlCarrito={agregarAlCarrito}
           puedeComprar={puedeComprar}
-          token={token}
         />
       )}
 
