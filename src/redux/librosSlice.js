@@ -77,43 +77,60 @@ export const editarLibro = createAsyncThunk(
   'libros/editar',
   async ({ id, form, libroOriginal, generos, editoriales }) => {
     await axios.patch(`${BASE_URL}/libros/${id}`, {
-      titulo:      form.titulo.trim(),
+      titulo: form.titulo.trim(),
       descripcion: form.descripcion.trim(),
-      paginas:     parseInt(form.paginas) || 0,
-      precio:      parseFloat(form.precio) || 0,
-      stock:       0,
-      idGenero:    null,
-      idEditorial: null,
-      idDescuento: null,
-      idAutores:   [],
+      paginas:
+        form.paginas !== ""
+          ? parseInt(form.paginas)
+          : libroOriginal.paginas,
+      precio:
+        form.precio !== ""
+          ? parseFloat(form.precio)
+          : libroOriginal.precio,
+      stock: 0,
     })
 
-    const generoOriginalId = generos.find(g => g.nombre === libroOriginal.genero)?.id
+    const generoOriginalId = generos.find(
+      g => g.nombre === libroOriginal.genero
+    )?.id
+
     if (form.genero && Number(form.genero) !== generoOriginalId) {
       await axios.patch(`${BASE_URL}/libros/${id}/genero/${form.genero}`)
     }
 
-    const editorialOriginalId = editoriales.find(e => e.nombre === libroOriginal.editorial)?.id
+    const editorialOriginalId = editoriales.find(
+      e => e.nombre === libroOriginal.editorial
+    )?.id
+
     if (form.editorial && Number(form.editorial) !== editorialOriginalId) {
       await axios.patch(`${BASE_URL}/libros/${id}/editorial/${form.editorial}`)
     }
 
     if (form.autores) {
-      await axios.patch(`${BASE_URL}/libros/${id}/autores`, [parseInt(form.autores)])
+      await axios.patch(`${BASE_URL}/libros/${id}/autores`, [
+        parseInt(form.autores),
+      ])
     }
 
     const stockNum = parseInt(form.stock)
+
     if (stockNum > 0) {
       await axios.patch(`${BASE_URL}/libros/${id}/stock?cantidad=${stockNum}`)
     }
 
-    if (form.imagenId && form.imagenId !== libroOriginal.imagen?.id?.toString()) {
+    if (
+      form.imagenId &&
+      form.imagenId !== libroOriginal.imagen?.id?.toString()
+    ) {
       await axios.patch(`${BASE_URL}/libros/${id}/imagen/${form.imagenId}`)
     }
 
     if (form.descuento) {
       await axios.patch(`${BASE_URL}/libros/${id}/descuento/${form.descuento}`)
     }
+
+    const { data } = await axios.get(`${BASE_URL}/libros/${id}/admin`)
+    return data
   }
 )
 
@@ -130,7 +147,11 @@ const librosSlice = createSlice({
     statusAdmin: 'idle',
   },
 
-  reducers: {},
+  reducers: {
+    limpiarLibroActual: (state) => {
+      state.libroActual = null
+    },
+  },
 
   extraReducers: (builder) => {
     builder
@@ -216,8 +237,29 @@ const librosSlice = createSlice({
         state.loading = true
         state.error = null
       })
-      .addCase(editarLibro.fulfilled, (state) => {
+      .addCase(editarLibro.fulfilled, (state, action) => {
         state.loading = false
+        state.libroActual = action.payload
+        state.statusAdmin = 'idle'
+
+        const libroActualizado = action.payload
+
+        state.itemsAdmin = state.itemsAdmin.map(libro =>
+          libro.id === libroActualizado.idLibro
+            ? {
+                id: libroActualizado.idLibro,
+                titulo: libroActualizado.titulo,
+                autor: libroActualizado.autores?.join(', ') || 'Sin autor',
+                genero: libroActualizado.genero,
+                precioOriginal: libroActualizado.precio,
+                descuento: libroActualizado.porcentajeDescuento
+                  ? `${libroActualizado.porcentajeDescuento}%`
+                  : '0%',
+                stock: libroActualizado.stock,
+                activo: !!libroActualizado.activo,
+              }
+            : libro
+        )
       })
       .addCase(editarLibro.rejected, (state, action) => {
         state.loading = false
@@ -257,5 +299,5 @@ const librosSlice = createSlice({
       })
   },
 })
-
+export const { limpiarLibroActual } = librosSlice.actions
 export default librosSlice.reducer

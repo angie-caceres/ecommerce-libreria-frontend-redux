@@ -10,6 +10,7 @@ import { fetchGeneros } from "../../redux/generosSlice"
 import { fetchAutores } from "../../redux/autoresSlice"
 import { fetchImagenes } from "../../redux/imagenesSlice"
 import { fetchDescuentos } from "../../redux/descuentosSlice"
+import { fetchEditoriales } from "../../redux/editorialesSlice"
 
 function FormField({ label, children, className = "" }) {
   return (
@@ -55,11 +56,10 @@ export default function EditarLibro() {
   const statusAutores = useSelector(state => state.autores.status)
   const statusImagenes = useSelector(state => state.imagenes.status)
   const statusDescuentos = useSelector(state => state.descuentos.status)
+  const statusEditoriales = useSelector(state => state.editoriales.status)
 
   useEffect(() => {
-    if (!libroOriginal) {
-      dispatch(fetchLibroByIdAdmin(id))
-    }
+    dispatch(fetchLibroByIdAdmin(id))
     if (statusGeneros === "idle") {
       dispatch(fetchGeneros())
     }
@@ -74,7 +74,10 @@ export default function EditarLibro() {
     if (statusDescuentos === "idle") {
       dispatch(fetchDescuentos(1))
     }
-  }, [dispatch, id, libroOriginal,statusGeneros,statusAutores,statusImagenes,statusDescuentos])
+    if (statusEditoriales === "idle") {
+      dispatch(fetchEditoriales())
+    }
+  }, [dispatch, id,statusGeneros,statusAutores,statusImagenes,statusDescuentos,statusEditoriales,])
 
   useEffect(() => {
     if (!libroOriginal) return

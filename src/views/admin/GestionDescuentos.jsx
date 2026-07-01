@@ -5,11 +5,9 @@ import Sidebar from "../../components/Sidebar";
 import Pagination from "../../components/Pagination";
 import ModalFormulario from "../../components/ModalFormulario";
 import EncabezadoSeccion from "../../components/EncabezadoSeccion";
-import {
-  fetchDescuentos,
-  crearDescuento,
-  toggleDescuento,
-} from "../../redux/descuentosSlice";
+import { fetchDescuentos, crearDescuento, toggleDescuento,} from "../../redux/descuentosSlice";
+import Swal from "sweetalert2";
+import { fetchLibrosAdmin } from "../../redux/librosSlice";
 
 const POR_PAGINA = 9;
 
@@ -78,11 +76,43 @@ function GestionDescuentos() {
       }
   };
 
-  const handleToggleActivo = async (id) => {
-    const resultado = await dispatch(toggleDescuento(id));
+  const handleToggleActivo = async (descuento) => {
+    const accion = descuento.activo ? "desactivar" : "activar";
+
+    const mensaje = descuento.activo
+      ? `¿Querés desactivar el descuento de ${descuento.porcentaje}%? Si hay libros con este descuento asignado, quedarán sin descuento.`
+      : `¿Querés activar el descuento de ${descuento.porcentaje}%?`;
+
+    const resultadoConfirmacion = await Swal.fire({
+      title: descuento.activo ? "Desactivar descuento" : "Activar descuento",
+      text: mensaje,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#4b385c",
+      cancelButtonColor: "#d33",
+      confirmButtonText: descuento.activo
+        ? "Sí, desactivar y quitar de libros"
+        : "Sí, activar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!resultadoConfirmacion.isConfirmed) return;
+
+    const resultado = await dispatch(toggleDescuento(descuento.id));
 
     if (toggleDescuento.fulfilled.match(resultado)) {
-      dispatch(fetchDescuentos(pagina));
+      await dispatch(fetchDescuentos(pagina));
+      await dispatch(fetchLibrosAdmin());
+
+      Swal.fire({
+        title: descuento.activo ? "Descuento desactivado" : "Descuento activado",
+        text: descuento.activo
+          ? "Los libros que lo tenían asignado quedaron sin descuento."
+          : "El descuento fue activado correctamente.",
+        icon: "success",
+        timer: 1600,
+        showConfirmButton: false,
+      });
     }
   };
 
@@ -165,7 +195,7 @@ function GestionDescuentos() {
 
                         <td className="px-6 py-4">
                           <button
-                            onClick={() => handleToggleActivo(descuento.id)}
+                            onClick={() => handleToggleActivo(descuento)}
                             className="text-xs px-3 py-1 rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50"
                           >
                             {descuento.activo ? "Desactivar" : "Activar"}

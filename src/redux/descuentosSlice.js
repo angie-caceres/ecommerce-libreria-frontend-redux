@@ -86,6 +86,33 @@ const descuentosSlice = createSlice({
       state.error = null;
       state.status = "loading";
     })
+    .addCase(crearDescuento.fulfilled, (state) => {
+      state.loading = false
+      state.status = "succeeded"
+    })
+    .addCase(crearDescuento.rejected, (state, action) => {
+      state.loading = false
+      state.error = action.payload || action.error.message
+      state.status = "failed"
+    })
+
+    .addCase(toggleDescuento.pending, (state) => {
+      state.loading = true
+      state.error = null
+    })
+    .addCase(toggleDescuento.fulfilled, (state, action) => {
+      state.loading = false
+
+      const actualizado = action.payload
+
+      state.lista = state.lista.map((descuento) =>
+        descuento.id === actualizado.id ? actualizado : descuento
+      )
+    })
+    .addCase(toggleDescuento.rejected, (state, action) => {
+      state.loading = false
+      state.error = action.error.message
+    })
   },
 });
 
