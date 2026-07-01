@@ -1,10 +1,15 @@
 // VISTA — editar libro del panel admin
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
 import Alerta from "../../components/Alerta"
-import { apiFetch } from "../../services/api"
+import { fetchLibroByIdAdmin, editarLibro } from "../../redux/librosSlice"
+import { fetchGeneros } from "../../redux/generosSlice"
+import { fetchAutores } from "../../redux/autoresSlice"
+import { fetchImagenes } from "../../redux/imagenesSlice"
+import { fetchDescuentos } from "../../redux/descuentosSlice"
 
 function FormField({ label, children, className = "" }) {
   return (
@@ -22,96 +27,65 @@ const inputClass =
   "focus:outline-none focus:ring-2 focus:ring-[#EBE5F2] focus:border-[#7B5B98] " +
   "placeholder:text-[#877270] transition-colors"
 
-export default function EditarLibro({ token }) {
-  const { id } = useParams()
-  const navigate = useNavigate()
+export default function EditarLibro() {
+  const { id }     = useParams()
+  const navigate   = useNavigate()
+  const dispatch   = useDispatch()
 
-  // HOOK useState — datos del libro original, traídos del backend
-  const [libroOriginal, setLibroOriginal] = useState(null)
+  const libroOriginal = useSelector((state) => state.libros.libroActual)
+  const guardando     = useSelector((state) => state.libros.loading)
+  const generos       = useSelector((state) => state.generos.items)
+  const autores       = useSelector((state) => state.autores.items)
+  const imagenes      = useSelector((state) => state.imagenes.items)
+  const descuentos    = useSelector((state) => state.descuentos.lista)
+  const editoriales   = useSelector((state) => state.editoriales.items)
 
-  // HOOK useState — estado del formulario
   const [form, setForm] = useState({
     titulo: "", descripcion: "", paginas: "", precio: "",
-    stock: "", genero: "", editorial: "", autores: "",
+    stock: "0", genero: "", editorial: "", autores: "",
     imagenId: "", descuento: "",
   })
 
-  const [generos, setGeneros] = useState([])
-  const [editoriales, setEditoriales] = useState([])
-  const [autores, setAutores] = useState([])
-  const [imagenes, setImagenes] = useState([])
-  const [descuentos, setDescuentos] = useState([])
-
-  const [cargando, setCargando] = useState(true)
-  const [guardando, setGuardando] = useState(false)
-  const [error, setError] = useState(null)
+  const [errors, setErrors]   = useState({})
   const [updated, setUpdated] = useState(false)
-  const [errors, setErrors] = useState({})
 
-  // HOOK useEffect — trae el libro y los selectores al montar
   useEffect(() => {
-    console.log('EditarLibro - token recibido:', token, 'id:', id)
-    if (!token) return
+    dispatch(fetchLibroByIdAdmin(id))
+    dispatch(fetchGeneros())
+    dispatch(fetchAutores())
+    dispatch(fetchImagenes())
+    dispatch(fetchDescuentos(1))
+  }, [dispatch, id])
 
-    const cargarTodo = async () => {
-      setCargando(true)
-      setError(null)
-      try {
-        const [libro, dataGeneros, dataEditoriales, dataAutores, dataImagenes, dataDescuentos] = await Promise.all([
-          apiFetch(`/libros/${id}/admin`, token),
-          apiFetch("/generos", token),
-          apiFetch("/editoriales", token),
-          apiFetch("/autores", token),
-          apiFetch("/imagenes/todas", token),
-          apiFetch("/descuentos?page=0&size=100", token),
-        ])
+  useEffect(() => {
+    if (!libroOriginal) return
 
-        setGeneros(dataGeneros)
-        setEditoriales(dataEditoriales)
-        setAutores(dataAutores)
-        setImagenes(dataImagenes || [])
+    const generoActual    = generos.find(g => g.nombre === libroOriginal.genero)
+    const editorialActual = editoriales.find(e => e.nombre === libroOriginal.editorial)
+    const autorActual     = autores.find(a =>
+      libroOriginal.autores?.[0] === `${a.nombre} ${a.apellido}`.trim()
+    )
+    const descuentoActual = descuentos
+      .filter(d => d.activo)
+      .find(d => d.porcentaje === libroOriginal.porcentajeDescuento)
+    const imagenActual = imagenes.find(img =>
+      img.file && libroOriginal.imagen &&
+      img.file.substring(0, 30) === libroOriginal.imagen.substring(0, 30)
+    )
 
-        const descuentosActivos = (dataDescuentos?.content || []).filter(d => d.activo)
-        setDescuentos(descuentosActivos)
-
-        setLibroOriginal(libro)
-
-        // Busca el id del género y editorial actuales comparando por nombre
-        // (el backend devuelve LibroResponse con nombres, no ids)
-        const generoActual = dataGeneros.find(g => g.nombre === libro.genero)
-        const editorialActual = dataEditoriales.find(e => e.nombre === libro.editorial)
-        const autorActual = dataAutores.find(a =>
-          libro.autores?.[0] === `${a.nombre} ${a.apellido}`.trim()
-        )
-        const descuentoActual = descuentosActivos.find(d => d.porcentaje === libro.porcentajeDescuento)
-        
-        const imagenActual = (dataImagenes || []).find(img => 
-          img.file === libro.imagen || 
-          (img.file && libro.imagen && img.file.substring(0, 30) === libro.imagen.substring(0, 30))
-        );
-        
-        setForm({
-          titulo: libro.titulo || "",
-          descripcion: libro.descripcion || "",
-          paginas: libro.paginas !== undefined && libro.paginas !== null ? libro.paginas.toString() : "0",
-          precio: libro.precio || "",
-          stock: "0",
-          genero: generoActual?.idGenero?.toString() || "",
-          editorial: editorialActual?.id?.toString() || "",
-          autores: autorActual?.idAutor?.toString() || "",
-          imagenId: imagenActual?.id?.toString() || "",
-          descuento: descuentoActual?.idDescuento?.toString() || descuentoActual?.id?.toString() || "",
-        })
-
-      } catch (err) {
-        setError("No se pudo cargar el libro.")
-      } finally {
-        setCargando(false)
-      }
-    }
-
-    cargarTodo()
-  }, [id, token])
+    setForm({
+      titulo:      libroOriginal.titulo || "",
+      descripcion: libroOriginal.descripcion || "",
+      paginas:     libroOriginal.paginas?.toString() ?? "0",
+      precio:      libroOriginal.precio || "",
+      stock:       "0",
+      genero:      generoActual?.id?.toString() || "",
+      editorial:   editorialActual?.id?.toString() || "",
+      autores:     autorActual?.id?.toString() || "",
+      imagenId:    imagenActual?.id?.toString() || "",
+      descuento:   descuentoActual?.idDescuento?.toString() || descuentoActual?.id?.toString() || "",
+    })
+  }, [libroOriginal, generos, autores, imagenes, descuentos, editoriales])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -121,93 +95,31 @@ export default function EditarLibro({ token }) {
 
   const validate = () => {
     const e = {}
-    if (!form.titulo.trim()) e.titulo = "El título es obligatorio"
-    if (!String(form.precio).trim()) e.precio = "Ingresá un precio"
-    if (!form.genero) e.genero = "Seleccioná un género"
-    if (!form.editorial) e.editorial = "Seleccioná una editorial"
-    if (!form.descuento) e.descuento = "Seleccioná un descuento"
+    if (!form.titulo.trim())         e.titulo    = "El título es obligatorio"
+    if (!String(form.precio).trim()) e.precio    = "Ingresá un precio"
+    if (!form.genero)                e.genero    = "Seleccioná un género"
+    if (!form.editorial)             e.editorial = "Seleccioná una editorial"
+    if (!form.descuento)             e.descuento = "Seleccioná un descuento"
     return e
   }
 
-  // EVENTO — guarda los cambios llamando a los PATCH correspondientes
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const newErrors = validate()
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
     }
 
-    setGuardando(true)
-    setError(null)
-
-    try {
-      // 1. PATCH datos básicos: título, descripción, precio, páginas
-      await apiFetch(`/libros/${id}`, token, {
-        method: "PATCH",
-        body: JSON.stringify({
-          titulo: form.titulo.trim(),
-          descripcion: form.descripcion.trim(),
-          paginas: parseInt(form.paginas) || 0,
-          precio: parseFloat(form.precio) || 0,
-          stock: 0,
-          idGenero: null,
-          idEditorial: null,
-          idDescuento: null,
-          idAutores: [],
-        })
+    dispatch(editarLibro({ id, form, libroOriginal, generos, editoriales }))
+      .then(() => {
+        setUpdated(true)
+        setTimeout(() => setUpdated(false), 3000)
       })
-
-      // 2. PATCH género — solo si cambió
-      const generoOriginalId = generos.find(g => g.nombre === libroOriginal.genero)?.idGenero
-      if (form.genero && Number(form.genero) !== generoOriginalId) {
-        await apiFetch(`/libros/${id}/genero/${form.genero}`, token, { method: "PATCH" })
-      }
-
-      // 3. PATCH editorial — solo si cambió
-      const editorialOriginalId = editoriales.find(e => e.nombre === libroOriginal.editorial)?.id
-      if (form.editorial && Number(form.editorial) !== editorialOriginalId) {
-        await apiFetch(`/libros/${id}/editorial/${form.editorial}`, token, { method: "PATCH" })
-      }
-
-      // 4. PATCH autores — solo si cambió
-      if (form.autores) {
-        await apiFetch(`/libros/${id}/autores`, token, {
-          method: "PATCH",
-          body: JSON.stringify([parseInt(form.autores)])
-        })
-      }
-
-      // 5. PATCH stock — solo si se ingresó una cantidad a sumar
-      const stockNum = parseInt(form.stock)
-      if (stockNum > 0) {
-        await apiFetch(`/libros/${id}/stock?cantidad=${stockNum}`, token, { method: "PATCH" })
-      }
-
-      // 6. PATCH imagen — solo si cambió respecto a la original
-      if (form.imagenId && form.imagenId !== libroOriginal.imagen?.id?.toString()) {
-        await apiFetch(`/libros/${id}/imagen/${form.imagenId}`, token, { method: "PATCH" })
-      }
-
-      // 7. PATCH descuento — aplicando el ID de descuento seleccionado
-      if (form.descuento) {
-        await apiFetch(`/libros/${id}/descuento/${form.descuento}`, token, { method: "PATCH" })
-      }
-
-      setUpdated(true)
-      setTimeout(() => setUpdated(false), 3000)
-
-    } catch (err) {
-      setError(err.message || "No se pudo actualizar el libro.")
-    } finally {
-      setGuardando(false)
-    }
   }
 
-  const handleCancel = () => {
-    navigate("/admin/libros")
-  }
+  const handleCancel = () => navigate("/admin/libros")
 
-  if (cargando) {
+  if (!libroOriginal) {
     return (
       <div className="min-h-screen bg-[#f7f4ef] font-serif flex items-center justify-center">
         <p className="text-gray-400 text-sm uppercase tracking-widest">Cargando libro...</p>
@@ -226,19 +138,11 @@ export default function EditarLibro({ token }) {
             <h2 className="text-4xl text-[#1C1B1B]" style={{ fontFamily: "'Playfair Display', serif" }}>
               Editar Libro
             </h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Modificá los detalles de la obra literaria.
-            </p>
+            <p className="text-sm text-gray-400 mt-1">Modificá los detalles de la obra literaria.</p>
           </div>
 
           {updated && (
             <Alerta texto="¡Libro actualizado correctamente!" onClose={() => setUpdated(false)} icono={false} />
-          )}
-
-          {error && (
-            <p className="text-center text-red-500 font-bold tracking-wide py-2 bg-red-50 border border-red-200 rounded-xl">
-              {error}
-            </p>
           )}
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-5">
@@ -276,7 +180,7 @@ export default function EditarLibro({ token }) {
                 <select name="genero" value={form.genero} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`} disabled={guardando}>
                   <option value="">Seleccionar género</option>
                   {generos.map(g => (
-                    <option key={g.idGenero} value={g.idGenero}>{g.nombre}</option>
+                    <option key={g.id} value={g.id}>{g.nombre}</option>
                   ))}
                 </select>
                 {errors.genero && <p className="text-xs text-red-500">{errors.genero}</p>}
@@ -297,8 +201,8 @@ export default function EditarLibro({ token }) {
               <select name="autores" value={form.autores} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`} disabled={guardando}>
                 <option value="">Seleccionar autor</option>
                 {autores.map(a => (
-                  <option key={a.idAutor} value={a.idAutor}>
-                    {`${a.nombre} ${a.apellido || ''}`.trim()}
+                  <option key={a.id} value={a.id}>
+                    {`${a.nombre} ${a.apellido}`.trim()}
                   </option>
                 ))}
               </select>
@@ -318,10 +222,8 @@ export default function EditarLibro({ token }) {
             <FormField label="Descuento">
               <select name="descuento" value={form.descuento} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`} disabled={guardando}>
                 <option value="">Seleccionar descuento</option>
-                {descuentos.map(d => (
-                  <option key={d.id} value={d.id}>
-                    {d.porcentaje}%
-                  </option>
+                {descuentos.filter(d => d.activo).map(d => (
+                  <option key={d.id} value={d.id}>{d.porcentaje}%</option>
                 ))}
               </select>
               {errors.descuento && <p className="text-xs text-red-500 mt-0.5">{errors.descuento}</p>}

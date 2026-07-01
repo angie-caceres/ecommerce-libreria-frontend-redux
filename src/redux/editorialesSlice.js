@@ -31,6 +31,7 @@ const editorialesSlice = createSlice({
     items: [],
     loading: false,
     error: null,
+    status: "idle",
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -39,13 +40,16 @@ const editorialesSlice = createSlice({
       .addCase(fetchEditoriales.pending, (state) => {
         state.loading = true
         state.error = null
+        state.status = "loading"
       })
       .addCase(fetchEditoriales.fulfilled, (state, action) => {
         state.loading = false
+        state.status = "succeeded"
         state.items = action.payload.map(normalizar)
       })
       .addCase(fetchEditoriales.rejected, (state, action) => {
         state.loading = false
+        state.status = "failed"
         state.error = action.error.message
       })
 

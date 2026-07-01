@@ -63,16 +63,32 @@ export default function CrearLibro() {
 
   const {
     loading: cargando,
-    error,
+    error, 
   } = useSelector((state) => state.libros);
 
+  const { status: autoresStatus } = useSelector((state) => state.autores);
+  const { status: editorialesStatus } = useSelector((state) => state.editoriales);
+  const { status: generosStatus } = useSelector((state) => state.generos);
+  const { status: descuentosStatus } = useSelector((state) => state.descuentos);
+
   useEffect(() => {
-    dispatch(fetchGeneros());
-    dispatch(fetchEditoriales());
-    dispatch(fetchAutores());
+    if(generosStatus === 'idle') {
+      dispatch(fetchGeneros())
+    }
+
+    if(editorialesStatus === 'idle') {
+      dispatch(fetchEditoriales())
+    }
+
+    if(autoresStatus === 'idle') {
+      dispatch(fetchAutores())
+    }
+
     dispatch(fetchImagenes());
-    dispatch(fetchDescuentos(1));
-  }, [dispatch]);
+    if(descuentosStatus === 'idle') {
+      dispatch(fetchDescuentos(1))
+    }
+  }, [dispatch, autoresStatus, editorialesStatus, generosStatus, descuentosStatus]);
 
   const descuentosActivos = descuentos.filter((d) => d.activo);
 
