@@ -19,11 +19,12 @@ function Carrito({ eliminarDelCarrito, vaciarCarrito }) {
     loading: cargando,
     error,
     aviso,
+    status,
   } = useSelector((state) => state.carrito);
 
   useEffect(() => {
-    dispatch(fetchCarrito());
-  }, [dispatch]);
+    if (status === 'idle') dispatch(fetchCarrito())
+  }, [dispatch, status]);
 
   const handleEliminar = async (id) => {
     const itemToRemove = items.find((i) => i.id === id);
