@@ -23,6 +23,7 @@ const misOrdenesSlice = createSlice({
     ordenes: [],
     loading: false,
     error: null,
+    status: "idle",
     ordenSeleccionada: null,
   },
   reducers: {
@@ -36,29 +37,35 @@ const misOrdenesSlice = createSlice({
       .addCase(obtenerMisOrdenes.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.status = "loading";
       })
       .addCase(obtenerMisOrdenes.fulfilled, (state, action) => {
         state.loading = false;
+        state.status = "succeeded";
         state.ordenes = action.payload;
       })
       .addCase(obtenerMisOrdenes.rejected, (state, action) => {
         state.loading = false;
+        state.status = "failed";
         state.error = action.error.message;
       })
       .addCase(obtenerDetalleOrden.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.status = "loading";
         state.ordenSeleccionada = null;
       })
       .addCase(obtenerDetalleOrden.fulfilled, (state, action) => {
         state.loading = false;
+        state.status = "succeeded";
         state.ordenSeleccionada = action.payload;
       })
       .addCase(obtenerDetalleOrden.rejected, (state, action) => {
         state.loading = false;
+        state.status = "failed";
         state.error = action.error.message;
         state.ordenSeleccionada = null;
-      });
+      })
   },
 });
 
