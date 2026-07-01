@@ -5,13 +5,10 @@ import HeaderAdmin from "../../components/HeaderAdmin";
 import Sidebar from "../../components/Sidebar";
 import Swal from "sweetalert2";
 import { fetchImagenes, eliminarImagen } from "../../redux/imagenesSlice";
+import axios from "axios"
 
 export default function GestionImagenes() {
   const dispatch = useDispatch();
-
-  const token =
-    localStorage.getItem("jwtToken") ||
-    localStorage.getItem("token");
 
   const {
     items: imagenes,
@@ -29,47 +26,35 @@ export default function GestionImagenes() {
   }, [dispatch]);
 
   const handleAgregarImagen = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!nombre.trim() || !archivo) {
-      setMensaje("Completá todos los campos");
-      return;
+      setMensaje("Completá todos los campos")
+      return
     }
 
-    setCargando(true);
-    setMensaje("");
+    setCargando(true)
+    setMensaje("")
 
     try {
-      const formData = new FormData();
-      formData.append("name", nombre);
-      formData.append("file", archivo);
+      const formData = new FormData()
+      formData.append("name", nombre)
+      formData.append("file", archivo)
 
-      const response = await fetch("http://localhost:4002/imagenes", {
-        method: "POST",
-        body: formData,
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
+      await axios.post("http://localhost:4002/imagenes", formData)
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || `Error ${response.status}`);
-      }
-
-      setMensaje("Imagen cargada correctamente en el servidor");
-      setNombre("");
-      setArchivo(null);
-
-      dispatch(fetchImagenes());
+      setMensaje("Imagen cargada correctamente en el servidor")
+      setNombre("")
+      setArchivo(null)
+      dispatch(fetchImagenes())
     } catch (err) {
-      setMensaje(err.message || "Error al subir la imagen.");
+      setMensaje(err.response?.data?.message || err.message || "Error al subir la imagen.")
     } finally {
-      setCargando(false);
+      setCargando(false)
     }
 
-    setTimeout(() => setMensaje(""), 4000);
-  };
+    setTimeout(() => setMensaje(""), 4000)
+  }
 
   const handleEliminar = async (id) => {
     const resultado = await Swal.fire({
