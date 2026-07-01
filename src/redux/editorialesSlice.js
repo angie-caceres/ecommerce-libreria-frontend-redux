@@ -18,10 +18,21 @@ export const updateEditorial = createAsyncThunk('editoriales/update', async ({ i
   return data
 })
 
-export const deleteEditorial = createAsyncThunk('editoriales/delete', async (id) => {
-  await axios.delete(`${BASE_URL}/editoriales/${id}`)
-  return id
-})
+export const deleteEditorial = createAsyncThunk(
+  'editoriales/delete',
+  async (id, { rejectWithValue }) => {
+    return axios
+      .delete(`${BASE_URL}/editoriales/${id}`)
+      .then(() => id)
+      .catch((error) =>
+        rejectWithValue(
+          error.response?.data?.message ||
+          error.response?.data ||
+          'No se pudo eliminar la editorial'
+        )
+      )
+  }
+)
 
 const normalizar = (e) => ({ id: e.id || e.idEditorial, nombre: e.nombre })
 
@@ -94,7 +105,7 @@ const editorialesSlice = createSlice({
       })
       .addCase(deleteEditorial.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message
+        state.error = action.payload || action.error.message
       })
   },
 })

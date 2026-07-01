@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Pencil, Trash2 } from 'lucide-react'
+import Swal from "sweetalert2";
 import HeaderAdmin from "../../components/HeaderAdmin"
 import Sidebar from "../../components/Sidebar"
 import Pagination from "../../components/Pagination"
@@ -71,10 +72,37 @@ function GestionEditoriales() {
     cerrarModal()
   }
 
-  const handleEliminar = () => {
+  const handleEliminar = async () => {
     if (!deleteId) return
 
-    dispatch(deleteEditorial(deleteId))
+    const respuesta = await dispatch(deleteEditorial(deleteId))
+
+    if (deleteEditorial.fulfilled.match(respuesta)) {
+      Swal.fire({
+        title: "¡Eliminada!",
+        text: "La editorial fue eliminada correctamente.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      })
+    } else {
+      const mensajeError =
+        respuesta.payload || respuesta.error?.message || ""
+
+      const estaEnUso =
+        mensajeError.toLowerCase().includes("libro") ||
+        mensajeError.toLowerCase().includes("constraint") ||
+        mensajeError.toLowerCase().includes("foreign key")
+
+      Swal.fire({
+        title: estaEnUso ? "Editorial en uso" : "Error",
+        text: estaEnUso
+          ? "No se puede eliminar esta editorial porque está asociada a un libro."
+          : "No se pudo eliminar la editorial.",
+        icon: estaEnUso ? "warning" : "error",
+      })
+    }
+
     cerrarModal()
   }
 
@@ -92,11 +120,7 @@ function GestionEditoriales() {
             onAccion={abrirCrear}
           />
 
-          {error && (
-            <p className="text-sm text-red-500 font-semibold bg-red-50 p-4 rounded-xl border border-red-100">
-              ⚠️ {error}
-            </p>
-          )}
+          
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">

@@ -46,11 +46,27 @@ const usuariosSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(toggleEstadoUsuario.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
       .addCase(toggleEstadoUsuario.fulfilled, (state, action) => {
+        state.loading = false
+
         const actualizado = action.payload
-        state.items = state.items.map(u =>
-          u.idUsuario === actualizado.idUsuario ? actualizado : u
-        )
+        const idActualizado = actualizado.idUsuario || actualizado.id
+
+        state.items = state.items.map(u => {
+          const idUsuario = u.idUsuario || u.id
+
+          return idUsuario === idActualizado
+            ? { ...u, ...actualizado }
+            : u
+        })
+      })
+      .addCase(toggleEstadoUsuario.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
       })
 
       .addCase(actualizarPerfil.pending, (state) => {
