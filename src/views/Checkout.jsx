@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ResumenCompra from "../components/ResumenCompra";
 import { fetchCarrito, confirmarCompra } from "../redux/carritoSlice";
 
-function Checkout({ vaciarCarrito }) {
+function Checkout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -103,8 +103,6 @@ function Checkout({ vaciarCarrito }) {
     const resultado = await dispatch(confirmarCompra(metodo));
 
     if (confirmarCompra.fulfilled.match(resultado)) {
-      vaciarCarrito();
-
       navigate("/pedido", {
         state: {
           orden: resultado.payload,

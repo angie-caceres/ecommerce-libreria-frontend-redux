@@ -3,11 +3,12 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchLibros } from '../redux/librosSlice'
 
-function Navbar({ carrito, usuario }) {
+function Navbar({ usuario }) {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { items, loading: cargando, error: errorBack, status } = useSelector((state) => state.libros)
+  const { items: carritoItems } = useSelector((state) => state.carrito)
 
   const navLinks = [
     { label: 'INICIO', to: '/' },
@@ -22,7 +23,7 @@ function Navbar({ carrito, usuario }) {
 
   const debounceRef = useRef(null)
 
-  const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0)
+  const totalItems = carritoItems.reduce((acc, item) => acc + item.cantidad, 0)
 
   useEffect(() => {
     if (status === 'idle') dispatch(fetchLibros())

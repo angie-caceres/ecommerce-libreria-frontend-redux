@@ -30,7 +30,7 @@ function ResumenCompra({
     return acc + (item.precioOriginal - item.precio) * item.cantidad
   }, 0)
 
-  const envio = 2400
+  const envio = 0
 
   // RENDERIZADO CONDICIONAL — total con o sin envío según la vista
   const total = mostrarEnvio ? subtotal + envio : subtotal

@@ -1,10 +1,8 @@
-// COMPONENTE raíz — contiene el estado global del carrito
-// El estado vive acá porque es el padre de todos los componentes
-// que necesitan acceder al carrito
 import { Routes, Route, useLocation, Navigate} from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from './redux/authSlice'
+import { fetchCarrito } from './redux/carritoSlice'
 import Home from './views/Home'
 import Carrito from './views/Carrito'
 import DetalleLibro from './views/DetalleLibro'
@@ -48,55 +46,23 @@ function App() {
   // useSelector — token y usuario vienen del store (persistido por redux-persist)
   const { token, usuario } = useSelector((state) => state.auth)
 
-  // useState — carrito: solo para el badge del Navbar, el carrito real vive en el backend
-  const [carrito, setCarrito] = useState([])
-
   // Si la ruta empieza con "/admin", esta constante va a ser true
   const esAdmin = location.pathname.startsWith("/admin") ||
     (location.pathname === "/perfil" && usuario?.rol === "admin")
 
-  // FUNCIÓN para agregar un libro al carrito
-  // Solo actualiza el badge del Navbar — el POST al backend lo hace DetalleLibroCard
-  const agregarAlCarrito = (libro) => {
-    const existe = carrito.find(item => item.id === libro.id)
-    if (existe) {
-      // Si ya existe, aumenta la cantidad
-      setCarrito(carrito.map(item =>
-        item.id === libro.id
-          ? { ...item, cantidad: item.cantidad + 1 }
-          : item
-      ))
-    } else {
-      // Si no existe, lo agrega con cantidad 1
-      setCarrito([...carrito, { ...libro, cantidad: 1 }])
-    }
-  }
+  // Fetch del carrito cuando hay token — así el badge se muestra al iniciar sesión
+  useEffect(() => {
+    if (token) dispatch(fetchCarrito())
+  }, [token, dispatch])
 
-  // FUNCIÓN para eliminar un libro del carrito
-  // Solo actualiza el badge del Navbar — el DELETE al backend lo hace Carrito.jsx
-  const eliminarDelCarrito = (id) => {
-    setCarrito(carrito.filter(item => item.id !== id))
-  }
-
-  // FUNCIÓN para vaciar el carrito
-  // Limpia el badge del Navbar después del checkout
-  const vaciarCarrito = () => setCarrito([])
-
-  // FUNCIÓN para cerrar sesión — limpia el store de auth y el carrito local
   const cerrarSesion = () => {
     dispatch(logout())
-    setCarrito([])
   }
 
   return (
     <>
       <ScrollArriba /> 
-      {/* Navbar recibe carrito como prop para mostrar el badge*/}
-      
-      {/*RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
-      {/* Navbar recibe carrito como prop para mostrar el badge */}
-      {/* RENDERIZADO CONDICIONAL: Solo muestra el Navbar si NO es admin */}
-      {!esAdmin && <Navbar carrito={carrito} usuario={usuario} />}
+      {!esAdmin && <Navbar usuario={usuario} />}
 
       <Routes>
 
@@ -106,7 +72,6 @@ function App() {
           path="/libro/:id"
           element={
             <DetalleLibro
-              agregarAlCarrito={agregarAlCarrito}
               puedeComprar={usuario?.rol === 'usuario'}
             />
           }
@@ -117,11 +82,7 @@ function App() {
           path="/carrito"
           element={
             usuario?.rol === 'usuario' ? (
-              <Carrito
-                eliminarDelCarrito={eliminarDelCarrito}
-                vaciarCarrito={vaciarCarrito}
-                token={token}
-              />
+              <Carrito />
             ) : <Navigate to="/login" />
           }
         />
@@ -137,10 +98,7 @@ function App() {
           path="/checkout"
           element={
             usuario?.rol === 'usuario' ? (
-              <Checkout
-                vaciarCarrito={vaciarCarrito}
-                token={token}
-              />
+              <Checkout />
             ) : <Navigate to="/login" />
           }
         />

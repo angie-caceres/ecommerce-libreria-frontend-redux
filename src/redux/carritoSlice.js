@@ -104,6 +104,17 @@ const carritoSlice = createSlice({
         state.error = "No se pudo cargar el carrito.";
       })
 
+      .addCase(agregarItemCarrito.fulfilled, (state, action) => {
+        const nuevo = formatearItem(action.payload)
+        const existente = state.items.find(i => i.id === nuevo.id)
+        if (existente) {
+          existente.cantidad = nuevo.cantidad
+          existente.subtotal = nuevo.subtotal
+        } else {
+          state.items.push(nuevo)
+        }
+      })
+
       .addCase(eliminarItemCarrito.fulfilled, (state, action) => {
         state.items = state.items.filter((item) => item.id !== action.payload);
       })

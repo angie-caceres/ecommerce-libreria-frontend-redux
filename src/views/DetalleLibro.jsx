@@ -5,7 +5,7 @@ import { useParams, Link } from 'react-router-dom'
 import DetalleLibroCard from '../components/DetalleLibroCard'
 import { fetchLibroById } from '../redux/librosSlice'
 
-function DetalleLibro({ agregarAlCarrito, puedeComprar }) {
+function DetalleLibro({ puedeComprar }) {
 
   const { id } = useParams()
   const dispatch = useDispatch()
@@ -53,7 +53,6 @@ function DetalleLibro({ agregarAlCarrito, puedeComprar }) {
       {!cargando && !error && libro && (
         <DetalleLibroCard
           libro={libro}
-          agregarAlCarrito={agregarAlCarrito}
           puedeComprar={puedeComprar}
         />
       )}

@@ -6,7 +6,7 @@ import { calcularPrecioFinal } from '../utils/calcularPrecio'
 import { agregarItemCarrito } from '../redux/carritoSlice'
 
 // PROPS — recibe los datos del libro y la función del carrito desde el padre
-function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
+function DetalleLibroCard({ libro, puedeComprar }) {
 
   const dispatch = useDispatch()
 
@@ -22,7 +22,6 @@ function DetalleLibroCard({ libro, agregarAlCarrito, puedeComprar }) {
     const resultado = await dispatch(agregarItemCarrito({ libroId: libro.id, cantidad: 1 }))
 
     if (agregarItemCarrito.fulfilled.match(resultado)) {
-      agregarAlCarrito({ ...libro, precio: precioFinal })
       setAgregado(true)
     } else {
       setError(resultado.error.message)

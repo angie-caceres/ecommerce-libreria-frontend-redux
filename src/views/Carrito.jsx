@@ -11,7 +11,7 @@ import {
   limpiarAviso,
 } from "../redux/carritoSlice";
 
-function Carrito({ eliminarDelCarrito, vaciarCarrito }) {
+function Carrito() {
   const dispatch = useDispatch();
 
   const {
@@ -27,13 +27,7 @@ function Carrito({ eliminarDelCarrito, vaciarCarrito }) {
   }, [dispatch, status]);
 
   const handleEliminar = async (id) => {
-    const itemToRemove = items.find((i) => i.id === id);
-
-    const resultado = await dispatch(eliminarItemCarrito(id));
-
-    if (eliminarItemCarrito.fulfilled.match(resultado)) {
-      eliminarDelCarrito(itemToRemove?.idLibro);
-    }
+    await dispatch(eliminarItemCarrito(id));
   };
 
   const handleIncrementar = async (id) => {
@@ -43,24 +37,11 @@ function Carrito({ eliminarDelCarrito, vaciarCarrito }) {
 
   const handleDecrementar = async (id) => {
     dispatch(limpiarAviso());
-
-    const itemToRemove = items.find((i) => i.id === id);
-    const resultado = await dispatch(decrementarItemCarrito(id));
-
-    if (
-      decrementarItemCarrito.fulfilled.match(resultado) &&
-      !resultado.payload.data
-    ) {
-      eliminarDelCarrito(itemToRemove?.idLibro);
-    }
+    await dispatch(decrementarItemCarrito(id));
   };
 
   const handleVaciarCarrito = async () => {
-    const resultado = await dispatch(vaciarCarritoBackend());
-
-    if (vaciarCarritoBackend.fulfilled.match(resultado)) {
-      vaciarCarrito();
-    }
+    await dispatch(vaciarCarritoBackend());
   };
 
   return (
