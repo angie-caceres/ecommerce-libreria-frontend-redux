@@ -4,30 +4,37 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import LibroCard from './LibroCard'
 import { fetchLibros } from '../redux/librosSlice'
+import { calcularPrecioFinal } from '../utils/calcularPrecio'
 
 function Novedades() {
 
   const dispatch = useDispatch()
 
   // useSelector — lee todos los libros del store global
-  const { items, loading, error } = useSelector((state) => state.libros)
+  const { items, loading, error, status } = useSelector((state) => state.libros)
 
-  // Solo hace fetch si el store todavía no tiene datos
   useEffect(() => {
-    if (items.length === 0) dispatch(fetchLibros())
-  }, [dispatch, items.length])
+    if (status === 'idle') dispatch(fetchLibros())
+  }, [dispatch, status])
 
   // Toma los primeros 4 para mostrar como novedades
-  const novedades = items.slice(0, 4).map(libro => ({
-    id:             libro.idLibro,
-    titulo:         libro.titulo,
-    categoria:      libro.genero,
-    precio:         libro.precio,
-    precioOriginal: libro.precio,
-    descuento:      libro.porcentajeDescuento ? `-${libro.porcentajeDescuento}%` : null,
-    imagen:         libro.imagen ? `data:image/jpeg;base64,${libro.imagen}` : '/libros/juegos.png',
-    tieneDetalle:   true,
-  }))
+  const novedades = items.slice(0, 4).map(libro => {
+
+  const descuento = libro.porcentajeDescuento
+    ? `-${libro.porcentajeDescuento}%`
+    : null
+
+  return {
+      id:             libro.idLibro,
+      titulo:         libro.titulo,
+      categoria:      libro.genero,
+      precioOriginal: libro.precio,
+      precio:         calcularPrecioFinal(libro.precio, descuento),
+      descuento,
+      imagen: libro.imagen ? `data:image/jpeg;base64,${libro.imagen}`: '/libros/juegos.png',
+      tieneDetalle: true,
+    }
+  })
 
   return (
     <div className="px-12 py-12 bg-[#FCF9F8]">
