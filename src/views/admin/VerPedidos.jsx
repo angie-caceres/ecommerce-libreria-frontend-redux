@@ -8,7 +8,7 @@ import FiltrosBotones from "../../components/FiltrosBotones"
 import EncabezadoSeccion from "../../components/EncabezadoSeccion"
 import Swal from "sweetalert2";
 
-import {fetchPedidos, cancelarPedido} from "../../redux/pedidosSlice"
+import {fetchPedidos, cancelarPedido} from "../../redux/ordenSlice"
 
 const ITEMS_POR_PAGINA = 15
 const AVATAR_COLORS = ["#CBAAE9"]
@@ -20,10 +20,11 @@ export default function VerPedidos() {
   const dispatch = useDispatch()
 
   const {
-      items: pedidos,
-      loading,
-      error
-  } = useSelector(state => state.pedidos)
+    todos: pedidos,
+    loading,
+    error,
+    statusAdmin,
+  } = useSelector(state => state.orden)
 
   const [currentPage, setCurrentPage] = useState(1)
   const [filtroEstado, setFiltroEstado] = useState("TODOS")
@@ -63,8 +64,8 @@ export default function VerPedidos() {
   }
 
   useEffect(() => {
-    dispatch(fetchPedidos())
-  }, [dispatch])
+    if (statusAdmin === 'idle') dispatch(fetchPedidos())
+  }, [dispatch, statusAdmin])
 
   const pedidosFiltrados = pedidos.filter(p =>
     filtroEstado === "TODOS" || p.estado === filtroEstado

@@ -7,10 +7,9 @@ import librosReducer from './librosSlice'
 import autoresReducer from './autoresSlice'
 import generosReducer from './generosSlice'
 import editorialesReducer from './editorialesSlice'
-import misOrdenesReducer from "./misOrdenesSlice";
+import misOrdenesReducer from "./ordenSlice";
 import carritoReducer from "./carritoSlice";
 import descuentosReducer from "./descuentosSlice";
-import pedidosReducer from "./pedidosSlice";
 import imagenesReducer from "./imagenesSlice";
 
 
@@ -35,10 +34,9 @@ const rootReducer = combineReducers({
   autores: autoresReducer,
   generos: generosReducer,
   editoriales: editorialesReducer,
-  misOrdenes: misOrdenesReducer,
+  orden: misOrdenesReducer,
   carrito: carritoReducer,
   descuentos: descuentosReducer,
-  pedidos: pedidosReducer,
   imagenes: imagenesReducer,
 })
 

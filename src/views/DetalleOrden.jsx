@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { obtenerDetalleOrden } from "../redux/misOrdenesSlice";
+import { obtenerDetalleOrden } from "../redux/ordenSlice";
 
 function DetalleOrden() {
   const { id } = useParams();
@@ -12,7 +12,7 @@ function DetalleOrden() {
     ordenSeleccionada: orden,
     loading: cargando,
     error,
-  } = useSelector((state) => state.misOrdenes);
+  } = useSelector((state) => state.orden);
 
   useEffect(() => {
     dispatch(obtenerDetalleOrden(id));
