@@ -11,6 +11,7 @@ import ModalFormulario from '../../components/ModalFormulario'
 import ModalConfirmacion from '../../components/ModalConfirmacion'
 import EncabezadoSeccion from '../../components/EncabezadoSeccion'
 import { fetchGeneros, crearGenero, editarGenero, eliminarGenero } from '../../redux/generosSlice'
+import Swal from 'sweetalert2'
 
 const POR_PAGINA = 9
 const inputClass =
@@ -76,7 +77,35 @@ function GestionGeneros() {
   // Eliminar
   const handleEliminar = async () => {
     if (!deleteId) return
-    await dispatch(eliminarGenero(deleteId))
+
+    const respuesta = await dispatch(eliminarGenero(deleteId))
+
+    if (eliminarGenero.fulfilled.match(respuesta)) {
+      Swal.fire({
+        title: '¡Eliminado!',
+        text: 'El género fue eliminado correctamente.',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+      })
+    } else {
+      const mensajeError =
+        respuesta.payload || respuesta.error?.message || ''
+
+      const generoEnUso =
+        mensajeError.toLowerCase().includes('libro') ||
+        mensajeError.toLowerCase().includes('constraint') ||
+        mensajeError.toLowerCase().includes('foreign key')
+
+      Swal.fire({
+        title: generoEnUso ? 'Género en uso' : 'Error',
+        text: generoEnUso
+          ? 'No se puede eliminar este género porque está asociado a uno o más libros.'
+          : 'No se pudo eliminar el género.',
+        icon: generoEnUso ? 'warning' : 'error',
+      })
+    }
+
     cerrarModal()
   }
 

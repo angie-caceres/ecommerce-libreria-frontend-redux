@@ -30,10 +30,21 @@ export const editarGenero = createAsyncThunk('generos/editar', async ({ id, camb
   }
 })
 
-export const eliminarGenero = createAsyncThunk('generos/eliminar', async (id) => {
-  await axios.delete(`${BASE_URL}/generos/${id}`)
-  return id
-})
+export const eliminarGenero = createAsyncThunk(
+  'generos/eliminar',
+  async (id, { rejectWithValue }) => {
+    return axios
+      .delete(`${BASE_URL}/generos/${id}`)
+      .then(() => id)
+      .catch((error) =>
+        rejectWithValue(
+          error.response?.data?.message ||
+          error.response?.data ||
+          'No se pudo eliminar el género'
+        )
+      )
+  }
+)
 
 // Slice
 
@@ -75,6 +86,10 @@ const generosSlice = createSlice({
 
       .addCase(eliminarGenero.fulfilled, (state, action) => {
         state.items = state.items.filter(g => g.id !== action.payload)
+      })
+      .addCase(eliminarGenero.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload || action.error.message
       })
   },
 })

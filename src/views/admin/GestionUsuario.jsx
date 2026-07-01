@@ -13,11 +13,9 @@ const ITEMS_POR_PAGINA = 15
 const AVATAR_BG = "bg-[#CBAAE9]"
 
 export default function GestionUsuarios() {
-
   const dispatch = useDispatch()
   const { items: usuarios, loading, error, status } = useSelector((state) => state.usuarios)
 
-  // HOOK useState — estados locales de UI
   const [currentPage, setCurrentPage] = useState(1)
   const [filtroActivo, setFiltroActivo] = useState("Todos")
 
@@ -25,7 +23,6 @@ export default function GestionUsuarios() {
     if (status === 'idle') dispatch(fetchUsuarios())
   }, [dispatch, status])
 
-  // RENDERIZADO CONDICIONAL — excluye admins y filtra según estado activo
   const usuariosFiltrados = usuarios
     .filter(u => u.role !== 'ADMINISTRADOR')
     .filter(u => {
@@ -36,13 +33,20 @@ export default function GestionUsuarios() {
     })
 
   const totalPages = Math.max(1, Math.ceil(usuariosFiltrados.length / ITEMS_POR_PAGINA))
-  const usuariosPagina = usuariosFiltrados.slice((currentPage - 1) * ITEMS_POR_PAGINA, currentPage * ITEMS_POR_PAGINA)
 
-  const handleFiltroActivo = (v) => { setFiltroActivo(v); setCurrentPage(1) }
+  const usuariosPagina = usuariosFiltrados.slice(
+    (currentPage - 1) * ITEMS_POR_PAGINA,
+    currentPage * ITEMS_POR_PAGINA
+  )
 
-  // No GET después del PATCH — el store se actualiza directo con la respuesta
+  const handleFiltroActivo = (v) => {
+    setFiltroActivo(v)
+    setCurrentPage(1)
+  }
+
   const cambiarEstadoUsuario = async (idUsuario, activoActual) => {
     const accion = activoActual ? 'desactivar' : 'activar'
+
     const resultado = await Swal.fire({
       title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} usuario?`,
       text: `¿Estás segura de que querés ${accion} este usuario?`,
@@ -55,31 +59,39 @@ export default function GestionUsuarios() {
     })
 
     if (resultado.isConfirmed) {
-      dispatch(toggleEstadoUsuario(idUsuario))
+      const respuesta = await dispatch(toggleEstadoUsuario(idUsuario))
+
+      if (toggleEstadoUsuario.rejected.match(respuesta)) {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo cambiar el estado del usuario.",
+          icon: "error",
+        })
+      }
     }
   }
 
-  const rolStyle = (rol) => rol === "Administrador"
-    ? "bg-purple-100 text-purple-700 border border-purple-200"
-    : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+  const rolStyle = (rol) =>
+    rol === "Administrador"
+      ? "bg-purple-100 text-purple-700 border border-purple-200"
+      : "bg-emerald-50 text-emerald-700 border border-emerald-200"
 
   return (
     <div className="min-h-screen bg-[#f7f4ef] font-serif">
       <Sidebar />
+
       <div className="ml-56 min-h-screen flex flex-col">
         <HeaderAdmin />
-        <main className="flex-1 p-8 space-y-6">
 
-          {/* COMPONENTE reutilizable — título sin botón */}
+        <main className="flex-1 p-8 space-y-6">
           <EncabezadoSeccion titulo="Gestión de usuarios" />
 
           {loading && <p className="text-gray-400 text-sm">Cargando usuarios...</p>}
-          {error   && <p className="text-red-400 text-sm">No se pudieron cargar los usuarios.</p>}
+          {error && <p className="text-red-400 text-sm">No se pudieron cargar los usuarios.</p>}
 
           {!loading && !error && (
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="p-4 border-b border-gray-100">
-                {/* COMPONENTE reutilizable — botones de filtro */}
                 <FiltrosBotones
                   opciones={["Todos", "Activo", "Inactivo"]}
                   activo={filtroActivo}
@@ -91,13 +103,18 @@ export default function GestionUsuarios() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-100">
-                      {["USUARIO", "ROL", "ESTADO", ...(filtroActivo !== "Todos" ? ["ACCIONES"] : [])].map(h => (
-                        <th key={h} className="text-left text-xs font-bold text-gray-400 uppercase tracking-widest px-6 py-4">{h}</th>
+                      {["USUARIO", "ROL", "ESTADO", "ACCIONES"].map(h => (
+                        <th
+                          key={h}
+                          className="text-left text-xs font-bold text-gray-400 uppercase tracking-widest px-6 py-4"
+                        >
+                          {h}
+                        </th>
                       ))}
                     </tr>
                   </thead>
+
                   <tbody className="divide-y divide-gray-50">
-                    {/* RENDERIZADO DE LISTA con .map() */}
                     {usuariosPagina.map(usuario => {
                       const nombreCompleto = `${usuario.firstName || ""} ${usuario.lastName || ""}`.trim()
                       const iniciales = `${usuario.firstName?.[0] || ""}${usuario.lastName?.[0] || ""}`.toUpperCase()
@@ -105,7 +122,7 @@ export default function GestionUsuarios() {
 
                       return (
                         <tr
-                          key={usuario.idUsuario}
+                          key={usuario.idUsuario || usuario.id}
                           className={`transition-colors ${
                             usuario.activo
                               ? 'hover:bg-purple-50/30'
@@ -117,6 +134,7 @@ export default function GestionUsuarios() {
                               <div className={`w-10 h-10 rounded-full ${AVATAR_BG} flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}>
                                 {iniciales}
                               </div>
+
                               <p className="text-base font-semibold text-gray-800">
                                 {nombreCompleto}
                               </p>
@@ -129,7 +147,6 @@ export default function GestionUsuarios() {
                             </span>
                           </td>
 
-                          {/* Badge de estado — igual que GestionLibros */}
                           <td className="px-6 py-4">
                             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
                               usuario.activo
@@ -141,31 +158,43 @@ export default function GestionUsuarios() {
                             </span>
                           </td>
 
-                          {/* Botón de acción — solo visible cuando hay un filtro activo */}
                           <td className="px-6 py-4">
-                            {filtroActivo !== "Todos" && (
-                              <button
-                                onClick={() => cambiarEstadoUsuario(usuario.idUsuario, usuario.activo)}
-                                className="text-xs px-3 py-1 rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50 transition-colors"
-                              >
-                                {usuario.activo ? 'Desactivar' : 'Activar'}
-                              </button>
-                            )}
+                            <button
+                              onClick={() =>
+                                cambiarEstadoUsuario(usuario.idUsuario || usuario.id, usuario.activo)
+                              }
+                              className="text-xs px-3 py-1 rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50 transition-colors"
+                            >
+                              {usuario.activo ? 'Desactivar' : 'Activar'}
+                            </button>
                           </td>
                         </tr>
                       )
                     })}
+
                     {usuariosPagina.length === 0 && (
-                      <tr><td colSpan={4} className="px-6 py-16 text-center text-gray-400 text-sm">No se encontraron usuarios.</td></tr>
+                      <tr>
+                        <td colSpan={4} className="px-6 py-16 text-center text-gray-400 text-sm">
+                          No se encontraron usuarios.
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
-              <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={usuariosFiltrados.length} itemsPerPage={ITEMS_POR_PAGINA} itemLabel="usuarios" onPageChange={page => { if (page >= 1 && page <= totalPages) setCurrentPage(page) }} />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={usuariosFiltrados.length}
+                itemsPerPage={ITEMS_POR_PAGINA}
+                itemLabel="usuarios"
+                onPageChange={page => {
+                  if (page >= 1 && page <= totalPages) setCurrentPage(page)
+                }}
+              />
             </div>
           )}
-
         </main>
       </div>
     </div>
