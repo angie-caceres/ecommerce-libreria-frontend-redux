@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { actualizarPerfil } from '../redux/authSlice'
+import { actualizarPerfil } from '../redux/usuariosSlice'
 import { Pencil } from 'lucide-react'
 import Swal from 'sweetalert2'
 
@@ -11,7 +11,8 @@ function Perfil({ cerrarSesion }) {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { usuario, loading } = useSelector((state) => state.auth)
+  const { usuario } = useSelector((state) => state.auth)
+  const { loading } = useSelector((state) => state.usuarios)
 
   // HOOK useState — estado local del formulario
   const [form, setForm] = useState({

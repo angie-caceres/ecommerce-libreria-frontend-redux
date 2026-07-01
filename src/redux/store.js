@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { persistStore, persistReducer } from 'redux-persist'
 import axios from 'axios'
 import authReducer from './authSlice'
+import usuariosReducer from './usuariosSlice'
 import librosReducer from './librosSlice'
 import autoresReducer from './autoresSlice'
 import generosReducer from './generosSlice'
@@ -25,8 +26,9 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
-  auth:    authReducer,
-  libros:  librosReducer,
+  auth:     authReducer,
+  usuarios: usuariosReducer,
+  libros:   librosReducer,
   autores: autoresReducer,
   generos: generosReducer,
   editoriales: editorialesReducer,

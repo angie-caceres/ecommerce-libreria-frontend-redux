@@ -23,13 +23,7 @@ export const loginUsuario = createAsyncThunk('auth/login', async (credenciales) 
   }
 })
 
-// Thunk 2: actualizar perfil — PATCH /usuarios/me
-export const actualizarPerfil = createAsyncThunk('auth/actualizarPerfil', async (datosActualizados) => {
-  const { data } = await axios.patch(`${BASE_URL}/usuarios/me`, datosActualizados)
-  return data
-})
-
-// Thunk 3: registro — POST register
+// Thunk 2: registro — POST register
 export const registrarUsuario = createAsyncThunk('auth/registro', async (datosUsuario) => {
   const { data: authData } = await axios.post(`${BASE_URL}/api/v1/auth/register`, datosUsuario)
 
@@ -74,19 +68,6 @@ const authSlice = createSlice({
         state.usuario = action.payload.usuario
       })
       .addCase(loginUsuario.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.error.message
-      })
-
-      // actualizar perfil
-      .addCase(actualizarPerfil.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(actualizarPerfil.fulfilled, (state) => {
-        state.loading = false
-      })
-      .addCase(actualizarPerfil.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message
       })
