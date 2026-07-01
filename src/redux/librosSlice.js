@@ -73,54 +73,45 @@ const librosSlice = createSlice({
         state.error = action.error.message
       })
 
-      // FETCH LIBRO POR ID
+      // FETCH LIBRO POR ID — no toca status para no interferir con el idle check de fetchLibros
       .addCase(fetchLibroById.pending, (state) => {
         state.loading = true
         state.error = null
-        state.status = 'loading'
         state.libroActual = null
       })
       .addCase(fetchLibroById.fulfilled, (state, action) => {
         state.loading = false
-        state.status = 'succeeded'
         state.libroActual = action.payload
       })
       .addCase(fetchLibroById.rejected, (state, action) => {
         state.loading = false
-        state.status = 'failed'
         state.error = action.error.message
       })
 
-      // CREAR LIBRO
+      // CREAR LIBRO — no toca status
       .addCase(crearLibro.pending, (state) => {
         state.loading = true
         state.error = null
-        state.status = 'loading'
       })
       .addCase(crearLibro.fulfilled, (state, action) => {
         state.loading = false
-        state.status = 'succeeded'
         state.items.push(action.payload)
       })
       .addCase(crearLibro.rejected, (state, action) => {
         state.loading = false
-        state.status = 'failed'
         state.error = action.error.message
       })
 
-      // ASIGNAR IMAGEN
+      // ASIGNAR IMAGEN — no toca status
       .addCase(asignarImagenLibro.pending, (state) => {
         state.loading = true
         state.error = null
-        state.status = 'loading'
       })
       .addCase(asignarImagenLibro.fulfilled, (state) => {
         state.loading = false
-        state.status = 'succeeded'
       })
       .addCase(asignarImagenLibro.rejected, (state, action) => {
         state.loading = false
-        state.status = 'failed'
         state.error = action.error.message
       })
   },
