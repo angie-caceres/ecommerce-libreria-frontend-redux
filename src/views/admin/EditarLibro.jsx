@@ -49,13 +49,32 @@ export default function EditarLibro() {
   const [errors, setErrors]   = useState({})
   const [updated, setUpdated] = useState(false)
 
+  const { statusAdmin } = useSelector(state => state.libros)
+
+  const statusGeneros = useSelector(state => state.generos.status)
+  const statusAutores = useSelector(state => state.autores.status)
+  const statusImagenes = useSelector(state => state.imagenes.status)
+  const statusDescuentos = useSelector(state => state.descuentos.status)
+
   useEffect(() => {
-    dispatch(fetchLibroByIdAdmin(id))
-    dispatch(fetchGeneros())
-    dispatch(fetchAutores())
-    dispatch(fetchImagenes())
-    dispatch(fetchDescuentos(1))
-  }, [dispatch, id])
+    if (!libroOriginal) {
+      dispatch(fetchLibroByIdAdmin(id))
+    }
+    if (statusGeneros === "idle") {
+      dispatch(fetchGeneros())
+    }
+    if (statusAutores === "idle") {
+      dispatch(fetchAutores())
+    }
+
+    if (statusImagenes === "idle") {
+      dispatch(fetchImagenes())
+    }
+
+    if (statusDescuentos === "idle") {
+      dispatch(fetchDescuentos(1))
+    }
+  }, [dispatch, id, libroOriginal,statusGeneros,statusAutores,statusImagenes,statusDescuentos])
 
   useEffect(() => {
     if (!libroOriginal) return

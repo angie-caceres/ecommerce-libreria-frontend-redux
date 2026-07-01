@@ -70,6 +70,7 @@ export default function CrearLibro() {
   const { status: editorialesStatus } = useSelector((state) => state.editoriales);
   const { status: generosStatus } = useSelector((state) => state.generos);
   const { status: descuentosStatus } = useSelector((state) => state.descuentos);
+  const { status: imagenesStatus } = useSelector((state) => state.imagenes);
 
   useEffect(() => {
     if(generosStatus === 'idle') {
@@ -84,7 +85,10 @@ export default function CrearLibro() {
       dispatch(fetchAutores())
     }
 
-    dispatch(fetchImagenes());
+    if(imagenesStatus === 'idle') {
+      dispatch(fetchImagenes())
+    }
+
     if(descuentosStatus === 'idle') {
       dispatch(fetchDescuentos(1))
     }
