@@ -21,9 +21,20 @@ export const fetchDescuentos = createAsyncThunk(
 
 export const crearDescuento = createAsyncThunk(
   "descuentos/crear",
-  async (porcentaje) => {
-    const { data } = await axios.post(BASE_URL, { porcentaje });
-    return data;
+  async (porcentaje, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(BASE_URL, {
+        porcentaje,
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "No se pudo crear el descuento."
+      );
+    }
   }
 );
 
@@ -43,6 +54,7 @@ const descuentosSlice = createSlice({
     totalItems: 0,
     loading: false,
     error: null,
+    status: "idle",
   },
   reducers: {
     limpiarErrorDescuentos: (state) => {
@@ -51,35 +63,34 @@ const descuentosSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDescuentos.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchDescuentos.fulfilled, (state, action) => {
-        state.loading = false;
-        state.lista = action.payload.lista;
-        state.totalPaginas = action.payload.totalPaginas;
-        state.totalItems = action.payload.totalItems;
-      })
-      .addCase(fetchDescuentos.rejected, (state) => {
-        state.loading = false;
-        state.error = "Error al cargar descuentos.";
-      })
-
       .addCase(crearDescuento.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.status = "loading";
       })
       .addCase(crearDescuento.fulfilled, (state) => {
         state.loading = false;
+        state.status = "succeeded";
       })
       .addCase(crearDescuento.rejected, (state) => {
         state.loading = false;
         state.error = "No se pudo crear el descuento.";
+        state.status = "failed";
       })
 
+      .addCase(toggleDescuento.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.status = "loading";
+      })
+      .addCase(toggleDescuento.fulfilled, (state) => {
+        state.loading = false;
+        state.status = "succeeded";
+      })
       .addCase(toggleDescuento.rejected, (state) => {
+        state.loading = false;
         state.error = "Error al cambiar estado del descuento.";
+        state.status = "failed";
       });
   },
 });

@@ -67,8 +67,12 @@ function GestionDescuentos() {
       cerrarModal();
       dispatch(fetchDescuentos(pagina));
     } else {
-      setErrorPorcentaje("No se pudo crear el descuento.");
-    }
+        setErrorPorcentaje(
+          resultado.payload ||
+          resultado.error?.message ||
+          "No se pudo crear el descuento."
+        );
+      }
   };
 
   const handleToggleActivo = async (id) => {
